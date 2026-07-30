@@ -203,4 +203,4 @@ _(Add new patterns here as we invent them.)_
 | Piece | Folder | Pattern(s) used | Status |
 |-------|--------|-----------------|--------|
 | Scope Neglect | `scope-neglect/` | hero photo, explainer diagram, predict-then-reveal, data table, gap chart, pictogram grid | v5 draft (AI text, awaiting human edit) |
-| You and Your Research | `you-and-your-research/` | reading edition (TOC + index drawer, pull quotes, highlights, margin notes, ELI5 popovers, progress bar) | v2 (reader-annotated through §9; interactive layer planned) |
+| You and Your Research | `you-and-your-research/` | reading edition (contents rail, pull quotes, highlights, margin notes, ELI5 popovers, progress bar), hero photo, loop diagrams ×3, compound-interest slider, importance 2×2 | v3, live on Netlify |
