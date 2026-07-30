@@ -37,6 +37,10 @@ NOTES = {
   37: ("What are the important problems of your field?", "This dining-hall question is still in circulation: researchers today call it “the Hamming question.”"),
   44: ("the door open", "A modern reading: the door is partly virtual now - which seminars you sit in, which people, groups, and preprints you follow. The tradeoff Hamming describes carries over."),
   45: ("It ain’t what you do", "A swing-era song, written by Sy Oliver and Trummy Young in 1939."),
+  46: ("shoulders of giants", "Newton’s line comes from a 1675 letter to Robert Hooke: “If I have seen further it is by standing on the shoulders of giants.”"),
+  55: ("Schelkunoff", "Sergei Schelkunoff: Bell Labs mathematician, a founder of electromagnetic waveguide theory."),
+  57: ("BSTJ", "The Bell System Technical Journal, where Bell Labs published its research. Shannon’s information theory paper appeared in it in 1948."),
+  63: ("590 Madison Avenue", "IBM’s New York headquarters. Bell Labs rented time on IBM machines there before it had computers of its own."),
   69: ("Barney Oliver", "Barney Oliver ran Hewlett-Packard’s research labs for decades and later led NASA’s SETI program."),
   81: ("Ed David", "Ed David directed research at Bell Labs and later served as science advisor to President Nixon."),
   97: ("hamming window", "The Hamming window is a smoothing curve used throughout signal processing. This answer is the story of its name."),
@@ -61,6 +65,27 @@ HIGHLIGHTS = {
   34: ["Great contributions are rarely done by adding another decimal place."],
   35: ["Keep your subconscious starved so it has to work on *your* problem, so you can sleep peacefully and get the answer in the morning, free."],
   39: ["It's not the consequence that makes a problem important, it is that you have a reasonable attack."],
+  45: ["By changing the problem slightly, I did important work rather than trivial work."],
+  46: ["These days we stand on each other's feet!"],
+  48: ["The business of abstraction frequently makes things simple."],
+  49: ["It's just as easy to do a broad, general job as one very special case."],
+  51: ["You have to learn to write clearly and well so that people will read it, you must learn to give reasonably formal talks, and you also must learn to give informal talks."],
+  52: ["I realized I either had to learn to give speeches smoothly or I would essentially partially cripple my whole career."],
+  53: ["Most of the time the audience wants a broad general talk and wants much more survey and background than the speaker is willing to give."],
+  54: ["I committed 10% of my time trying to understand the bigger problems in the field"],
+  57: ["You can educate your bosses. It's a hard job."],
+  58: ["The success and fame are sort of dividends, in my opinion."],
+  60: ["The people who do great work with less ability but who are committed to it, get more done that those who have great skill and dabble in it"],
+  61: ["If you will learn to work with the system, you can go as far as the system will support you."],
+  63: ["was I going to assert my ego and dress the way I wanted to and have it steadily drain my effort from my professional life, or was I going to appear to conform better?"],
+  65: ["The *appearance of conforming* gets you a long way."],
+  66: ["Or you can fight it steadily, as a small undeclared war, for the whole of your life."],
+  68: ["He rose to be the President of Bell Laboratories."],
+  70: ["Which do you want to be? The person who changes the system or the person who does first-class science?"],
+  71: ["you cannot be original in one area without having originality in others"],
+  72: ["Amusement, yes, anger, no."],
+  73: ["I used my ego to make myself behave the way I wanted to. I bragged about something so I'd have to perform."],
+  74: ["You can tell other people all the alibis you want. I don't mind. But to yourself try to be honest."],
 }
 
 # ---------- ELI5 popovers: para index -> [(anchor phrase, def key)] ----------
@@ -68,6 +93,7 @@ TERMS = {
   20: [("information theory", "infotheory"), ("coding theory", "codingtheory")],
   21: [("stationary local maximum", "localmax")],
   24: [("What would the average random code do?", "randomcode")],
+  29: [("absolute binary", "absbinary")],
 }
 DEFS = {
   "infotheory": {
@@ -82,6 +108,10 @@ DEFS = {
     "t": "A frozen wave crest",
     "b": "A “stationary local maximum” here means a wave crest standing still. Maxwell’s equations say a light wave can never stand still - yet riding alongside a beam at the speed of light, a frozen crest is exactly what you would see. Einstein spotted the contradiction as a boy; special relativity grew out of resolving it.",
     "u": "https://en.wikipedia.org/wiki/Special_relativity", "l": "Special relativity"},
+  "absbinary": {
+    "t": "Absolute binary",
+    "b": "Programming by writing raw machine instructions as numbers, with no assembler or compiler to help: every operation and memory address coded by hand. Hamming’s answer - make the machine write its own programs - was an early step toward automatic programming.",
+    "u": "https://en.wikipedia.org/wiki/Machine_code", "l": "Machine code"},
   "randomcode": {
     "t": "Why this was daring",
     "b": "Engineers built codes one careful design at a time. Shannon skipped designing entirely: he averaged the error rate over every possible code and showed the average is good - so at least one excellent code must exist. He proved great codes are out there without ever constructing one.",
@@ -151,11 +181,13 @@ SECTIONS = [
  ("Selling the work", [50,51,52,53], {
     50: "It is not sufficient to do a job, you have to sell it."}),
  ("Taking control", [54,55,56,57], {
-    54: "I deny that it is all luck, but I admit there is a fair element of luck."}),
+    54: "I deny that it is all luck, but I admit there is a fair element of luck.",
+    55: "You set your deadlines; you can change them."}),
  ("Is it worth it?", [58,59,60], {
     58: "The value is in the struggle more than it is in the result."}),
  ("Fighting the system", [61,62,63,64,65,66,67,68,69,70,71], {
-    62: "Good scientists will fight the system rather than learn to work with the system."}),
+    62: "Good scientists will fight the system rather than learn to work with the system.",
+    70: "Very few of you have the ability to both reform the system *and* become a first-class scientist."}),
  ("Know yourself", [72,73,74,75,76], {
     75: "You need to know yourself, your weaknesses, your strengths, and your bad faults."}),
 ]
