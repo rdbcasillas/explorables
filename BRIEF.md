@@ -172,11 +172,19 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
   personalized verdict line. Include a "Try again" reset.
 
 - **Reading edition** — a long primary text presented in full, verbatim, with an
-  editorial layer: thematic section headings + TOC, one verbatim pull quote per
-  section, numbered margin notes (right margin ≥1220px, inline note cards below),
-  reading progress bar, collapsible front matter (`<details>`). Build the page from
-  a script that asserts every source paragraph is placed and every pull quote /
-  note anchor matches the text exactly — never hand-paste 14k words.
+  editorial layer: thematic section headings + TOC, verbatim pull quotes, numbered
+  margin notes (right margin ≥1220px, inline note cards below), reading progress
+  bar, collapsible front matter (`<details>`). Build the page from a script that
+  asserts every source paragraph is placed and every pull quote / note anchor
+  matches the text exactly — never hand-paste 14k words. Companion elements:
+  - **Marker highlight** (`mark.hl`) — key sentences get a soft accent wash
+    (verbatim, verified). Reader-flagged lines, not decoration.
+  - **ELI5 popover** (`.term`) — dotted-underlined jargon opens a small card with
+    a 2-sentence plain-language explanation + one outbound link. For context a
+    newcomer needs (what information theory is, why Shannon's proof was daring).
+  - **Index drawer** — fixed "§ Contents" button opens a slide-in section list
+    with current-section highlighting, so a reader deep in the text can jump
+    without scrolling to the top TOC.
 
 _(Add new patterns here as we invent them.)_
 
@@ -194,4 +202,4 @@ _(Add new patterns here as we invent them.)_
 | Piece | Folder | Pattern(s) used | Status |
 |-------|--------|-----------------|--------|
 | Scope Neglect | `scope-neglect/` | hero photo, explainer diagram, predict-then-reveal, data table, gap chart, pictogram grid | v5 draft (AI text, awaiting human edit) |
-| You and Your Research | `you-and-your-research/` | reading edition (TOC, pull quotes, margin notes, progress bar) | v1 (text verbatim; scrolly/interactive layer planned) |
+| You and Your Research | `you-and-your-research/` | reading edition (TOC + index drawer, pull quotes, highlights, margin notes, ELI5 popovers, progress bar) | v2 (reader-annotated through §9; interactive layer planned) |
