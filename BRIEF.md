@@ -182,9 +182,10 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
   - **ELI5 popover** (`.term`) — dotted-underlined jargon opens a small card with
     a 2-sentence plain-language explanation + one outbound link. For context a
     newcomer needs (what information theory is, why Shannon's proof was daring).
-  - **Index drawer** — fixed "§ Contents" button opens a slide-in section list
-    with current-section highlighting, so a reader deep in the text can jump
-    without scrolling to the top TOC.
+  - **Contents rail** — the section list with current-section highlighting is
+    always visible as a left rail on wide screens (the reader sees the journey by
+    default); below ~1220px it collapses to a fixed "§ Contents" button opening
+    a slide-in drawer.
 
 _(Add new patterns here as we invent them.)_
 
