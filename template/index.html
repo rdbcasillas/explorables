@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--
+  Explorable STARTER TEMPLATE  ·  copy this to <topic>/index.html
+  ------------------------------------------------------------------
+  Keep: token CSS, theme toggle, the JS toolkit (svgEl / rangeControl /
+        onResize / css()), the reading-column layout.
+  Replace: the title/dek/prose, and the EXAMPLE widget below.
+  Deps: none (vanilla JS + SVG/Canvas). Add D3 only if the piece is chart-heavy.
+  See ../BRIEF.md for the house style + pattern vocabulary.
+-->
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New Explorable</title>
+<style>
+  :root{
+    --bg:#f7f3ec; --surface:#fffdf9; --fg:#26221c; --muted:#7a7264;
+    --line:#e4dccd; --accent:#c8492e; --accent-2:#2e6ec8; --shade:rgba(200,73,46,.12);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){:root{
+    --bg:#151310; --surface:#1e1b16; --fg:#ece5da; --muted:#9c9284;
+    --line:#332e26; --accent:#f0704f; --accent-2:#6ea3f0; --shade:rgba(240,112,79,.14);}}
+  :root[data-theme="dark"]{--bg:#151310;--surface:#1e1b16;--fg:#ece5da;--muted:#9c9284;--line:#332e26;--accent:#f0704f;--accent-2:#6ea3f0;--shade:rgba(240,112,79,.14);}
+  :root[data-theme="light"]{--bg:#f7f3ec;--surface:#fffdf9;--fg:#26221c;--muted:#7a7264;--line:#e4dccd;--accent:#c8492e;--accent-2:#2e6ec8;--shade:rgba(200,73,46,.12);}
+  *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:19px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  main{max-width:40rem;margin:0 auto;padding:1.25rem 1.15rem 5rem}
+  h1{font-size:2.1rem;line-height:1.12;letter-spacing:-.01em;margin:.2em 0 .1em}
+  .dek{font-family:var(--sans);color:var(--muted);font-size:1.02rem;line-height:1.4;margin:.2em 0 1.4em}
+  h2{font-size:1.4rem;line-height:1.2;margin:2.2em 0 .3em;letter-spacing:-.01em}
+  p{margin:.9em 0} a{color:var(--accent)} .lede{font-size:1.12rem}
+  .byline{font-family:var(--sans);font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0}
+  em.term{font-style:normal;font-weight:600;color:var(--accent)}
+  .pull{font-family:var(--sans);font-weight:600;font-size:1.2rem;line-height:1.35;border-left:3px solid var(--accent);padding:.1rem 0 .1rem 1rem;margin:1.8em 0}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1rem 1.15rem;margin:1.6em 0}
+  .fig figcaption{font-family:var(--sans);font-size:.82rem;color:var(--muted);line-height:1.45;margin-top:.7rem}
+  .control{font-family:var(--sans);margin:.2rem 0 .8rem}
+  .control label{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+  .control .val{font-variant-numeric:tabular-nums;font-size:1.05rem;text-transform:none;letter-spacing:0;color:var(--fg);font-weight:600}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:34px;margin:0;background:transparent;cursor:pointer}
+  input[type=range]:focus{outline:none}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:var(--line)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--shade)}
+  svg,canvas{display:block;width:100%;height:auto}
+  .themebtn{position:fixed;top:.7rem;right:.7rem;z-index:10;font-family:var(--sans);font-size:.9rem;background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.35rem .7rem;cursor:pointer}
+  footer{font-family:var(--sans);font-size:.82rem;color:var(--muted);line-height:1.5;border-top:1px solid var(--line);margin-top:3rem;padding-top:1.1rem}
+  footer h2{font-family:var(--sans);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:.2em 0 .6em}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<button class="themebtn" id="themebtn" aria-label="Toggle dark mode">◐ theme</button>
+<main>
+  <p class="byline">An explorable · TOPIC AREA</p>
+  <h1>Working Title</h1>
+  <p class="dek">One-sentence promise: the surprising thing the reader will come to see.</p>
+
+  <p class="lede">Open on a single, concrete, vivid image. One case, not a category.</p>
+  <p>Set up the naive expectation — what the reader assumes will happen.</p>
+
+  <!-- ===== EXAMPLE WIDGET (delete / replace) — slider-driven SVG ===== -->
+  <figure class="fig">
+    <div class="control">
+      <label for="knob"><span>A knob to turn</span><span class="val" id="knob-val">50</span></label>
+      <input type="range" id="knob" min="0" max="100" value="50">
+    </div>
+    <svg id="demo" viewBox="0 0 680 220" role="img" aria-label="Example visualization."></svg>
+    <figcaption>Label the control, show a live readout, make the consequence visible in the same screenful.</figcaption>
+  </figure>
+
+  <p class="pull">Land the surprise in one line the reader will remember.</p>
+  <h2>Why it happens</h2>
+  <p>Explain the mechanism behind what they just felt.</p>
+
+  <footer>
+    <h2>Sources</h2>
+    <p>Every stat gets a real citation. Never invent one.</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- toolkit ---------- */
+  function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function svgEl(tag,attrs){ var e=document.createElementNS("http://www.w3.org/2000/svg",tag); for(var k in (attrs||{})) e.setAttribute(k,attrs[k]); return e; }
+  function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
+  // wire a range input -> onChange(value, t01); returns a redraw() you can call on theme/resize
+  function rangeControl(id, valId, onChange, format){
+    var el=document.getElementById(id), out=valId?document.getElementById(valId):null;
+    function run(){ var v=+el.value, t=(v-el.min)/(el.max-el.min);
+      if(out) out.textContent=format?format(v,t):v; onChange(v,t); }
+    el.addEventListener("input", run); return run;
+  }
+  function onResize(fn){ var t; addEventListener("resize",function(){clearTimeout(t);t=setTimeout(fn,120);}); }
+
+  /* ---------- theme toggle ---------- */
+  document.getElementById("themebtn").addEventListener("click", function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", dark?"light":"dark");
+    redraw();
+  });
+
+  /* ---------- EXAMPLE widget (replace me) ---------- */
+  var svg=document.getElementById("demo");
+  var lastT=0.5;
+  function draw(t){
+    clear(svg);
+    var accent=css("--accent"), line=css("--line");
+    svg.appendChild(svgEl("line",{x1:0,y1:110,x2:680,y2:110,stroke:line,"stroke-width":1}));
+    svg.appendChild(svgEl("circle",{cx:40+t*600,cy:110,r:14+t*40,fill:accent}));
+  }
+  var redrawKnob = rangeControl("knob","knob-val",function(v,t){ lastT=t; draw(t); });
+  function redraw(){ draw(lastT); }
+
+  onResize(redraw);
+  redrawKnob();  // init
+})();
+</script>
+</body>
+</html>

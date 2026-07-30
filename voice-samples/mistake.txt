@@ -1,0 +1,87 @@
+A person discovers a mole on her leg. She Googles it. She browses multiple websites and finds that ~95% of moles are benign. But she isn’t satisfied. She shares zoomed-in photos of it with ChatGPT (“found this yesterday. does this look abnormal to you? Should I be worried?”). ChatGPT tells her to go see a skin specialist. Doctor says it’s fine. But then she checks online and even though most reviews are five or four stars, she finds a few one star reviews for that doctor (there’s a long one that specifically describes the doctor misdiagnosing an issue). She sets up another appointment with a different doctor.
+
+It is clear that this person doesn’t want to have cancer. All the evidence she’s collecting is pointing against it. So why can’t she stop worrying? Why can’t she let it go?
+
+The common explanation for why people sometimes deceive themselves is this - we believe what we want to be true. The flattering belief, the comfortable belief, the belief that lets us feel that we are on the right track. If a startup founder has poured in a lot of time and effort into her startup, she will try her best to ignore the negative data that’s asking her to reconsider the whole thing.
+
+But the hypochondriac isn’t doing that. She’s clinging to the frightening belief, not the comforting one. If self-deception is about protecting your comfort, her behavior doesn’t make sense. Something else is going on.
+
+She’s just an anxious person
+
+You might respond with: “she’s just an anxious person, she needs to talk to a therapist and work on her anxiety!” Sure, some people do worry more than others. It could be her neurochemistry, her temperament in general. It could be her childhood environment that made her this way.
+
+But I don’t think those causes explain much. Just saying “she is over-worrying because she’s an anxious person” is a curiosity stopper. Why is she so anxious about this than some other things that could go wrong in her life? Anxiety doesn’t land randomly. It tends to cluster around certain beliefs more than others. Why is that?
+
+Think about a person in a new relationship who regularly worries if he’s about to get hurt even though all the evidnece says that things are going well. His partner is kind, enjoys his company and he can see happiness in her eyes when she’s around him. Still some part of him is bracing for things to fall apart. He’s always on gaurd. Every missed call or every late reply creates a fresh wave of worry.
+
+What’s happening in these cases is an inability to accept reassurance in specific areas of life. What is it about these beliefs or these thought processes that turns good evidence into a weak one?
+
+New evidence goes in → mind tries to update the belief pattern → Fails miserably
+
+Asking a different question
+
+Instead of asking “what does she (the hypochondriac) want to believe?”, what if we ask “what would it cost her to be wrong?” What if we ask “what is she scared of losing?”
+
+She can be wrong in two ways
+
+She believes she might have cancer but she doesn’t. What’s the cost here? Anxiety of course. Maybe embarrasment, wasted time, some bad nights of sleep. It is a genuine cost. But compared to what?
+
+She believes she’s fine but she has cancer. Cost? She misses early diagnosis and treatment. And maybe she dies.
+
+These two errors don’t weigh the same. The second one could kill her. So her mind isn’t optimizing for comfort or accuracy. It is trying to answer a completely different question: what mistake can I not afford to make?
+
+This is sometimes called error cost asymmetry. When the costs of being wrong are heavily lopsided in your mind, evidence loses its power over you. Your belief drifts toward whichever mistake is cheaper to make. For the hypochondriac, false alarm costs some sleep and embarraassment maybe. Missed cancer costs everything. For the person in the relationship, maybe being taken for a ride hurts far more than staying on guard.
+
+And maybe this is why anxiety clusters around some areas of life where the cost of being wrong is most asymmetrical.
+
+Examples from my past
+
+When i was about eight or nine, I went through a phase where I was terrified of thieves. My parents used to watch India’s Most Wanted and even though it was entertaining, that show scared the shit out of me. Every night, the faintest of sounds - from terrace above or balcony outside my room - would keep me from going to sleep. I would get up again and again to see outside the window(s). The doors were locked of course and my parents always slept peacefully through all this. Sometimes it was just the wind. There wasn’t any evidence for any person making any of those faint sounds. But I couldn’t stop. Every night i would go through the same routine until i became too sleepy and just couldn’t. This went on for months.
+
+There was a clear cost asymmetry here. The cost of a false alarm - disturbing my parents, losing on sleep time, feeling scare - wasn’t that bad. The cost of not alerting my parents - in case there were thieves trying to intrude - could literally be my whole family’s death.
+
+And this hasn’t gone away. I recenly moved to a new house. First few weeks, the same pattern came back - faintest of unfamiliar sounds created an impulse to check the CCTV cameras again and again. A low hum of vigilance just woudn’t switch off. After all these decades, the asymmetry had found the right trigger again.
+
+I have observed same pattern in people around me. My sister had a baby few years ago. She told me that her sleep in the first year wasn’t just wrecked because the baby would wake up and cry. Even when the baby was sleeping peacefully, she’d wake up multiple times through the night to check if he was breathing properly. He had no conditions, no visible breathing abnormalities. She could see his chest rising and falling as expected. But she would keep checking throughout the night. And it turns out, this isn’t that uncommon. I found this thread on reddit “what’s your “ok I was a little crazy” moment after becoming a FTM parent?”
+
+Mine was sleeping with the bedroom light on for the first 3 months so that I could see her immediately when I woke up to make sure she was still breathing. Seems nuts in hindsight, but felt like I needed to always be watching her.
+
+New parents know the baby is almost certainly fine. But the cost of multiple false alarms - lost sleep, grogginess in the morning - is nothing compared to the horrible alternative. So the pattern repeats, night after night, no matter how much counter evidence piles up.
+
+Cost asymmetry in the usual story
+
+So far, the cost asymmetry has been pushing people toward the worrisome belief. But what about the cases that seem to match the usual explanation for self deception - where people persistently cling to the comforting beliefs?
+
+Let’s take the startup founder example again. She’s getting signal after signal that things aren’t working. Her CTO has decided to leave the company and join the main rival company. User base has grown by only 5% in the last 3 months. The existing user base is coming back to the product less frequently. The founder keeps reframing each of these pieces of data into non-issues. “CTO is greedy and will go wherever he can earn more”. “This is the kind of product where slow growth is actually great”. “I don’t want users to become addicted to my app so it is fine that they don’t come back often”.
+
+It is much more comforting to cling to the belief that she’s on the right track rather than considering that the whole thing is going in the wrong direction and that she potentially wasted her last two years. Self-deception as “comfort seeking” tool.
+
+But what if we looked at this situation also through the asymmetry lens? The belief “I might be completely wrong about the status of my company and need to re-evaluate everything” is not free. If she takes it seriously, everything can unravel. She has to consider shutting down, which means letting go of this identity as a founder of a mental health software company (something she’s been proudly telling to whoever would listen at networking events). She will have to disappoint her investors who strongly believe in her and are rooting for her success. These reputional and identity costs are enormous! And unlike the costs of keeping the status quo, these feel like they need to be paid immediately.
+
+And what’s the cost of the belief “I am pretty much on the right track, just need to work harder” for few more months? Not much, at least not immediately. Most of the costs here are a bit distant in future (more money and time wasted). These costs are incurred gradually.
+
+Now consider someone who’s drinking too much. At first, the error cost asymmetry framework seems to point in the wrong direction. If you compare two errors - missing a real drinking problem vs cutting back unnecessarily - the asymmetry should push him towards worry just like the hypochondriac. But there’s another cost that’s easy to miss: the cost of holding the belief “I might have a drinking problem”. That cost is immediate and demands an identity update. Tough conversations, lifestyle changes, admitting something is wrong. The cost of saying “it’s not too bad, I’m fine” for another few weeks? Nothing changes. So “I’m fine” wins.”
+
+The explanation “we believe what we would like to be true” describes the surface pattern but not the mechanism, which is usually the same: our minds ask “which mistake can I least afford to make right now?”
+
+A question to sit with
+
+So I want you to sit with a question. You can ask this question about any belief that you hold strongly:
+
+What would it cost me to be wrong in either direction?
+
+If the costs are roughly equal, chances are that good evidence will do a decent job of updating your belief appropriately without too much internal resistance. We notice this happens when we are learning about scientific concepts or electronics. We don’t have particularly strong opinions or anything in particular to protect, so when new knowledge comes in, we absorb it and update our beliefs accordingly. No identity at stake, no social cost and therefore no asymmetry.
+
+But if the costs are wildly lopsided, be a bit suspicious and watch out for tricks your mind might be playing. It wants to “protect” you from an expensive error that isn’t as expensive as it’s making it out to be. Costs have been miscalculated.
+
+This lens doesn’t explain everything
+
+This lens has its limitations. We sometimes strongly cling to incorrect beliefs purely out of ignorance. Sometimes our cultural environments are set up so that good evidence never even reaches us. Sometimes, it’s just cognitive inertia - updating beliefs takes effort and people never bother.
+
+And there’s also a question about where this framework ends and clinical anxiety begins. Clinical anxiety is a real phenomenon. Anxiety disorders do distort how the mind calculates risk. If clinical anxiety is the primary reason why costs are being miscalculated, then working on that directly (via therapy or drugs) makes complete sense.
+
+But I think it’s a useful framework when noticing a thinking pattern you can’t seem to break - a belief that keeps pulling you back even though a part of you knows better. The error cost asymmetry won’t necessarily fix anything by itself but it tells you where to look.
+
+And sometimes, just knowing where to look is enough to notice that you have been avoiding looking there for a long time. Not because you didn’t have enough evidence, but because you couldn’t afford to.
+
+P.S. : I'm running a workshop exploring this framework (and strategies for working with it) in Bangalore on 31st May 2026. Details here.
