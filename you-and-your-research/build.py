@@ -183,15 +183,19 @@ def _loop_panel(y0, title, quote, nodes, color):
             parts.append(f'<text x="{x:.1f}" y="{ty + li*15:.1f}" text-anchor="middle" class="svgnodetext">{line}</text>')
     return ''.join(parts)
 
-LOOPS_SVG = (
-  '<svg class="narrow" viewBox="0 0 360 950" role="img" aria-label="Three loops: the confidence flywheel, the knowledge flywheel, and the fame trap.">'
-  + _loop_panel(8, 'The confidence flywheel', '“One success brought him confidence and courage.”',
-      [['Courage'], ['Attempt an', 'important problem'], ['A success'], ['Confidence']], 'var(--accent-2)')
-  + _loop_panel(322, 'The knowledge flywheel', '“Knowledge and productivity are like compound interest.”',
-      [['The more you know'], ['the more you can do'], ['the more opportunity', 'finds you']], 'var(--accent-2)')
-  + _loop_panel(636, 'The fame trap', '“When you get early recognition it seems to sterilize you.”',
-      [['Recognition'], ['Committees, and only', '“great” problems'], ['No little acorns', 'planted'], ['Nothing new grows']], 'var(--accent)')
-  + '</svg>')
+def _loop_svg(title, quote, nodes, color, aria):
+    return (f'<svg class="narrow" viewBox="0 0 360 318" role="img" aria-label="{aria}">'
+            + _loop_panel(8, title, quote, nodes, color) + '</svg>')
+
+LOOP_CONFIDENCE = _loop_svg('The confidence flywheel', '“One success brought him confidence and courage.”',
+    [['Courage'], ['Attempt an', 'important problem'], ['A success'], ['Confidence']], 'var(--accent-2)',
+    'A loop: courage leads to attempting an important problem, to a success, to confidence, and back to courage.')
+LOOP_KNOWLEDGE = _loop_svg('The knowledge flywheel', '“Knowledge and productivity are like compound interest.”',
+    [['The more you know'], ['the more you can do'], ['the more opportunity', 'finds you']], 'var(--accent-2)',
+    'A loop: the more you know, the more you can do, the more opportunity finds you, and back around.')
+LOOP_TRAP = _loop_svg('The fame trap', '“When you get early recognition it seems to sterilize you.”',
+    [['Recognition'], ['Committees, and only', '“great” problems'], ['No little acorns', 'planted'], ['Nothing new grows']], 'var(--accent)',
+    'A loop running against you: recognition brings committees and only great problems, so no little acorns are planted and nothing new grows.')
 
 QUAD_SVG = '''<svg class="narrow" viewBox="0 0 360 340" role="img" aria-label="Two-by-two chart: consequence if solved versus having a reasonable attack.">
   <line x1="50" y1="288" x2="340" y2="288" class="sline" stroke-width="1.5"/>
@@ -238,11 +242,18 @@ FIG_HTML = {
   <p class="figread" id="dr-read"></p>
   <figcaption>A schematic of the tradeoff he describes (a correlation, he is careful to say, not a proven cause). The closed door works faster on yesterday’s heading; the open door loses time to interruptions and keeps re-aiming. Scrub the years: the closed door leads at first - the price appears later, as what matters drifts.</figcaption>
 </figure>''',
- 'loops': '''<figure class="fig" id="fig-loops">''' + LOOPS_SVG + '''
-  <figcaption>The three loops this talk keeps narrating without ever drawing. Two are flywheels he tells you how to start; the third is the same shape running against you (§4). Each quote is his.</figcaption>
+ 'loop-confidence': '''<figure class="fig" id="fig-loop-confidence">''' + LOOP_CONFIDENCE + '''
+  <figcaption>The loop inside this section’s stories. Pfann and Clogston each got one success, and it began to spin. Schematic; the quote is Hamming’s.</figcaption>
+</figure>''',
+ 'loop-knowledge': '''<figure class="fig" id="fig-loop-knowledge">''' + LOOP_KNOWLEDGE + '''
+  <figcaption>His compound-interest sentence, drawn as the loop it is: each turn multiplies the next. The next figure takes the arithmetic literally.</figcaption>
+</figure>''',
+ 'loop-trap': '''<figure class="fig" id="fig-loop-trap">''' + LOOP_TRAP + '''
+  <figcaption>The same flywheel shape, running against you: what he says did Shannon in. Every stop on the circle is from this section.</figcaption>
 </figure>''',
 }
-FIGURES = {32: 'compound', 39: 'quad', 44: 'door', 76: 'loops'}
+FIGURES = {24: 'loop-confidence', 27: 'loop-trap', 32: 'loop-knowledge',
+           33: 'compound', 39: 'quad', 44: 'door'}
 
 # ---------- the talk: sections; pulls keyed by the paragraph they follow ----------
 SECTIONS = [
