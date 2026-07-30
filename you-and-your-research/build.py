@@ -8,10 +8,14 @@
 #   HIGHLIGHTS - marker-underlined phrases inside paragraphs (verbatim)
 #   NOTES      - numbered margin notes (right margin >=1220px, inline below)
 #   TERMS      - click-to-open ELI5 popovers on jargon terms
-import json, html, re, os
+import json, html, re, os, base64
 
 paras = json.load(open('paras.json'))
 OUT = 'index.html'
+
+# hero photo, inlined as a data URI so the page stays a single file
+with open('hamming-nps-office.jpg', 'rb') as f:
+    HERO_URI = 'data:image/jpeg;base64,' + base64.b64encode(f.read()).decode()
 
 # ---------- text rendering ----------
 def render(text):
@@ -437,6 +441,9 @@ CSS = """
   .qa-q{color:var(--fg);font-style:italic;margin-top:1.6em}
   .qa-q .spk{font-style:normal}
   /* figures */
+  .hero{margin:1.6rem 0 0}
+  .hero img{display:block;width:100%;height:auto;border-radius:14px}
+  .hero figcaption{font-family:var(--sans);font-size:.78rem;color:var(--muted);margin-top:.5rem}
   .fig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1rem 1.15rem;margin:1.8em 0}
   .fig figcaption{font-family:var(--sans);font-size:.82rem;color:var(--muted);line-height:1.45;margin-top:.7rem}
   .fig svg{display:block;width:100%;height:auto}
@@ -703,6 +710,10 @@ page = f"""<!DOCTYPE html>
     <p class="byline">Bell Communications Research Colloquium · March 7, 1986</p>
     <h1>You and Your Research</h1>
     <p class="dek">Richard Hamming’s talk on why so few scientists do work that matters, and how to be one of the ones who do. The complete transcript, set for reading.</p>
+    <figure class="hero">
+      <img src="{HERO_URI}" alt="Richard Hamming in his office at the Naval Postgraduate School: white-haired, in a red plaid jacket and tie, beside a typewriter and stacks of papers." width="800" height="480">
+      <figcaption>Richard Hamming in his office at the Naval Postgraduate School, Monterey, 1980s. U.S. Navy photo.</figcaption>
+    </figure>
     <p class="ednote">Hamming’s words are verbatim from the J. F. Kaiser transcription. The section headings, pull quotes, highlights, and numbered notes are editorial additions of this edition. Dotted-underlined terms open a short plain-language explanation.</p>
   </header>
 
@@ -746,6 +757,7 @@ page = f"""<!DOCTYPE html>
     <p>“You and Your Research,” a talk by Richard W. Hamming at the Bell Communications Research Colloquium, Morristown, New Jersey, March 7, 1986. Transcribed from tape by J. F. Kaiser, Bell Communications Research. Text reproduced in full from the <a href="https://www.cs.virginia.edu/~robins/YouAndYourResearch.html">copy hosted by Gabriel Robins</a> at the University of Virginia.</p>
     <p>{ack} —{ack_sig}</p>
     <p>This reading edition adds section headings, pull quotes and highlights (all verbatim from the surrounding text), numbered margin notes, and plain-language popovers on a few technical terms. Notes sit in the right margin on wide screens and inline on small ones.</p>
+    <p>Photo: Richard Hamming in his NPS office, circa 1980s. <a href="https://nps.edu/-/iconic-researcher-teacher-richard-hamming-maintains-lasting-legacy-on-campus">Naval Postgraduate School</a>; public domain as a work of the U.S. federal government.</p>
   </footer>
 </main>
 
