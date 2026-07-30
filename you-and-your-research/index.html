@@ -72,6 +72,18 @@
   .drawer a:hover{color:var(--accent)}
   .drawer a.cur{border-left-color:var(--accent);background:var(--shade);font-weight:600}
   .drawer .dnum{color:var(--muted);font-size:.72em;padding-right:.55em;text-transform:uppercase;letter-spacing:.05em}
+  /* wide screens: the drawer becomes an always-visible left rail */
+  @media (min-width:1220px){
+    .tocbtn{display:none}
+    .scrim{display:none!important}
+    .drawer{transform:none;transition:none;top:5.5rem;bottom:auto;max-height:calc(100vh - 7rem);
+      left:calc(50vw - 35.5rem);width:13.5rem;background:transparent;border:none;padding:0;overflow-y:auto}
+    .drawer h2{margin-bottom:.6em}
+    .drawer ol{font-size:.8rem;line-height:1.55}
+    .drawer a{padding:.22rem .5rem;color:var(--muted)}
+    .drawer a:hover{color:var(--accent)}
+    .drawer a.cur{color:var(--fg)}
+  }
   /* front matter */
   details.frontmatter{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 1.15rem;margin:1em 0}
   details.frontmatter summary{font-family:var(--sans);font-size:.92rem;font-weight:600;padding:.8rem 0;cursor:pointer;color:var(--fg)}
@@ -100,7 +112,7 @@
 <button class="tocbtn" id="tocbtn" aria-expanded="false" aria-controls="drawer">§ Contents</button>
 <div class="scrim" id="scrim"></div>
 <nav class="drawer" id="drawer" aria-label="Section index">
-  <h2>You and Your Research</h2>
+  <h2>Contents</h2>
   <ol>
 <li><a href="#s1"><span class="dnum">1</span>Why this talk</a></li>
 <li><a href="#s2"><span class="dnum">2</span>Luck, and the prepared mind</a></li>
