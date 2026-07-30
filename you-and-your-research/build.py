@@ -237,15 +237,6 @@ FIG_HTML = {
  'quad': '''<figure class="fig" id="fig-quad">''' + QUAD_SVG + '''
   <figcaption>His definition of “important,” drawn as a plane. The examples are his own, from this section: importance needs both axes, and consequence alone puts nothing in the upper right.</figcaption>
 </figure>''',
- 'door': '''<figure class="fig" id="fig-door">
-  <div class="control">
-    <label for="dr-t"><span>Years pass</span><span class="val" id="dr-t-val">10</span></label>
-    <input type="range" id="dr-t" min="0" max="10" value="10" step="1">
-  </div>
-  <svg id="dr-svg" viewBox="0 0 680 440" role="img" aria-label="Two research paths over ten years: a closed door moving fast on a fixed heading, an open door re-aiming as the field drifts."></svg>
-  <p class="figread" id="dr-read"></p>
-  <figcaption>A schematic of the tradeoff he describes (a correlation, he is careful to say, not a proven cause). The closed door works faster on yesterday’s heading; the open door loses time to interruptions and keeps re-aiming. Scrub the years: the closed door leads at first - the price appears later, as what matters drifts.</figcaption>
-</figure>''',
  'loop-confidence': '''<figure class="fig" id="fig-loop-confidence">''' + LOOP_CONFIDENCE + '''
   <figcaption>The loop inside this section’s stories. Pfann and Clogston each got one success, and it began to spin. Schematic; the quote is Hamming’s.</figcaption>
 </figure>''',
@@ -257,7 +248,7 @@ FIG_HTML = {
 </figure>''',
 }
 FIGURES = {24: 'loop-confidence', 27: 'loop-trap', 32: 'loop-knowledge',
-           33: 'compound', 39: 'quad', 44: 'door'}
+           33: 'compound', 39: 'quad'}
 
 # ---------- the talk: sections; pulls keyed by the paragraph they follow ----------
 SECTIONS = [
@@ -612,68 +603,6 @@ SCRIPT = """
     slider.addEventListener("input", draw); draw();
   })();
 
-  /* ---------- the open door (§9) ---------- */
-  (function(){
-    var svg=document.getElementById("dr-svg"); if(!svg) return;
-    var slider=document.getElementById("dr-t"), val=document.getElementById("dr-t-val"),
-        read=document.getElementById("dr-read");
-    var OX=140, OY=400, S=30, DRIFT=6, SPEED_OPEN=0.85, N=10;
-    function heading(t){ return (90 - DRIFT*t) * Math.PI/180; }   // field direction at year t
-    var open=[[0,0]], closed=[[0,0]], i;
-    for(i=0;i<N;i++){
-      var th=heading(i), o=open[i];
-      open.push([o[0]+SPEED_OPEN*Math.cos(th), o[1]+SPEED_OPEN*Math.sin(th)]);
-      closed.push([0, i+1]);
-    }
-    function px(p){ return [OX+p[0]*S, OY-p[1]*S]; }
-    function proj(p, th){ return p[0]*Math.cos(th)+p[1]*Math.sin(th); }
-    function pathD(arr, T){
-      var s=""; for(var j=0;j<=T;j++){ var q=px(arr[j]); s+=(j?" L ":"M ")+q[0].toFixed(1)+" "+q[1].toFixed(1); }
-      return s;
-    }
-    function draw(){
-      var T=+slider.value; val.textContent=T;
-      clearNode(svg);
-      var th=heading(T), ux=Math.cos(th), uy=Math.sin(th), L=345;
-      // shaded ray: the direction that matters as of year T
-      var rx=OX+ux*L, ry=OY-uy*L, w=0.06;
-      svg.appendChild(svgEl("path",{d:"M "+OX+" "+OY+" L "+(OX+(ux-w*uy)*L).toFixed(1)+" "+(OY-(uy+w*ux)*L).toFixed(1)+
-        " L "+(OX+(ux+w*uy)*L).toFixed(1)+" "+(OY-(uy-w*ux)*L).toFixed(1)+" Z", fill:"var(--shade2)"}));
-      svg.appendChild(svgEl("line",{x1:OX,y1:OY,x2:rx,y2:ry,style:"stroke:var(--accent-2)","stroke-width":1.5,"stroke-dasharray":"6 5"}));
-      svg.appendChild(txt(rx+6, ry+2, "what matters, as of year "+T, "svgtick", "start", "fill:var(--accent-2);font-weight:600"));
-      // the two paths
-      if(T>0){
-        svg.appendChild(svgEl("path",{d:pathD(closed,T),fill:"none",style:"stroke:var(--muted)","stroke-width":3,"stroke-linecap":"round"}));
-        svg.appendChild(svgEl("path",{d:pathD(open,T),fill:"none",style:"stroke:var(--accent)","stroke-width":3,"stroke-linecap":"round"}));
-      }
-      for(var j=1;j<=T;j++){
-        var pc=px(closed[j]), po=px(open[j]);
-        svg.appendChild(svgEl("circle",{cx:pc[0],cy:pc[1],r:2.5,style:"fill:var(--muted)"}));
-        svg.appendChild(svgEl("circle",{cx:po[0],cy:po[1],r:2.5,style:"fill:var(--accent)"}));
-      }
-      var ec=px(closed[T]), eo=px(open[T]);
-      svg.appendChild(svgEl("circle",{cx:ec[0],cy:ec[1],r:5.5,style:"fill:var(--muted)"}));
-      svg.appendChild(svgEl("circle",{cx:eo[0],cy:eo[1],r:5.5,style:"fill:var(--accent)"}));
-      svg.appendChild(txt(ec[0]-10, ec[1]-2, "door closed", "svgtick", "end", "font-weight:600"));
-      if(T>0) svg.appendChild(txt(eo[0]+12, eo[1]+4, "door open", "svgtick", "start", "fill:var(--accent);font-weight:600"));
-      // projections onto the current judgment
-      var dc=proj(closed[T],th), dz=proj(open[T],th);
-      if(T>0){
-        var fc=px([dc*ux, dc*uy]), fo=px([dz*ux, dz*uy]);
-        svg.appendChild(svgEl("line",{x1:ec[0],y1:ec[1],x2:fc[0],y2:fc[1],"class":"sline","stroke-dasharray":"3 4"}));
-        svg.appendChild(svgEl("line",{x1:eo[0],y1:eo[1],x2:fo[0],y2:fo[1],"class":"sline","stroke-dasharray":"3 4"}));
-        svg.appendChild(svgEl("circle",{cx:fc[0],cy:fc[1],r:3,style:"fill:var(--muted)"}));
-        svg.appendChild(svgEl("circle",{cx:fo[0],cy:fo[1],r:3,style:"fill:var(--accent)"}));
-      }
-      svg.appendChild(txt(OX-14, OY+24, "1 dot = 1 year of work", "svgtick", "start"));
-      var lead = dz>dc ? "open leads" : (dc>dz ? "closed leads" : "even");
-      read.textContent = T===0 ? "Drag the years forward." :
-        "Year "+T+": useful work, measured along what now matters - door open "+dz.toFixed(1)+
-        ", door closed "+dc.toFixed(1)+" ("+lead+"). The closed door has walked farther: "+
-        T.toFixed(0)+" vs "+(SPEED_OPEN*T).toFixed(1)+" years of effort.";
-    }
-    slider.addEventListener("input", draw); draw();
-  })();
 })();
 """
 
