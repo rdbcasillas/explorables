@@ -153,6 +153,97 @@ def pull(text, after_para):
     assert probe_core[2:] in src, f'pull not verbatim (para {after_para}): {text}'
     return f'<p class="pull">{render(text)}</p>'
 
+# ---------- figures: editorial visuals inserted after a paragraph (and its pull) ----------
+# Static SVGs are generated here in Python; the two interactive figures are drawn
+# by the widget JS in SCRIPT below. All are schematics of Hamming's own claims,
+# labeled as such in their captions.
+import math
+
+def _loop_panel(y0, title, quote, nodes, color):
+    """One flywheel/trap panel: a dashed circle, arrowheads, nodes on the rim."""
+    cx, cy, r = 180, y0 + 190, 80
+    k = len(nodes)
+    parts = [
+        f'<text x="180" y="{y0+18}" text-anchor="middle" class="svgtitle" style="fill:{color}">{title}</text>',
+        f'<text x="180" y="{y0+38}" text-anchor="middle" class="svgquote">{quote}</text>',
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" class="sline" stroke-width="1.5" stroke-dasharray="3 4"/>',
+    ]
+    for j in range(k):  # arrowheads at midpoints between nodes, clockwise
+        th = math.radians(-90 + (j + 0.5) * 360 / k)
+        x, y = cx + r * math.cos(th), cy + r * math.sin(th)
+        rot = math.degrees(math.atan2(math.cos(th), -math.sin(th)))
+        parts.append(f'<polygon points="7,0 -5,5 -5,-5" transform="translate({x:.1f},{y:.1f}) rotate({rot:.1f})" style="fill:{color}"/>')
+    for j, lines in enumerate(nodes):
+        th = math.radians(-90 + j * 360 / k)
+        x, y = cx + r * math.cos(th), cy + r * math.sin(th)
+        h = 24 + 15 * len(lines)
+        parts.append(f'<rect x="{x-68:.1f}" y="{y-h/2:.1f}" width="136" height="{h}" rx="10" class="svgnode"/>')
+        ty = y - (len(lines) - 1) * 7.5 + 4
+        for li, line in enumerate(lines):
+            parts.append(f'<text x="{x:.1f}" y="{ty + li*15:.1f}" text-anchor="middle" class="svgnodetext">{line}</text>')
+    return ''.join(parts)
+
+LOOPS_SVG = (
+  '<svg class="narrow" viewBox="0 0 360 950" role="img" aria-label="Three loops: the confidence flywheel, the knowledge flywheel, and the fame trap.">'
+  + _loop_panel(8, 'The confidence flywheel', '“One success brought him confidence and courage.”',
+      [['Courage'], ['Attempt an', 'important problem'], ['A success'], ['Confidence']], 'var(--accent-2)')
+  + _loop_panel(322, 'The knowledge flywheel', '“Knowledge and productivity are like compound interest.”',
+      [['The more you know'], ['the more you can do'], ['the more opportunity', 'finds you']], 'var(--accent-2)')
+  + _loop_panel(636, 'The fame trap', '“When you get early recognition it seems to sterilize you.”',
+      [['Recognition'], ['Committees, and only', '“great” problems'], ['No little acorns', 'planted'], ['Nothing new grows']], 'var(--accent)')
+  + '</svg>')
+
+QUAD_SVG = '''<svg class="narrow" viewBox="0 0 360 340" role="img" aria-label="Two-by-two chart: consequence if solved versus having a reasonable attack.">
+  <line x1="50" y1="288" x2="340" y2="288" class="sline" stroke-width="1.5"/>
+  <polygon points="340,288 331,284 331,292" class="smutedfill"/>
+  <line x1="50" y1="288" x2="50" y2="28" class="sline" stroke-width="1.5"/>
+  <polygon points="50,28 46,37 54,37" class="smutedfill"/>
+  <line x1="195" y1="284" x2="195" y2="32" class="sline" stroke-dasharray="2 5"/>
+  <line x1="54" y1="158" x2="336" y2="158" class="sline" stroke-dasharray="2 5"/>
+  <text x="195" y="316" text-anchor="middle" class="svgaxis">a reasonable attack →</text>
+  <text x="26" y="158" text-anchor="middle" class="svgaxis" transform="rotate(-90 26 158)">consequence if solved →</text>
+  <text x="122" y="80" text-anchor="middle" class="svgnodetext">Time travel, teleportation,</text>
+  <text x="122" y="96" text-anchor="middle" class="svgnodetext">antigravity</text>
+  <text x="122" y="114" text-anchor="middle" class="svgsub">“not important problems,</text>
+  <text x="122" y="127" text-anchor="middle" class="svgsub">because we do not have an attack”</text>
+  <circle cx="268" cy="72" r="5" style="fill:var(--accent)"/>
+  <text x="268" y="94" text-anchor="middle" class="svgnodetext" style="fill:var(--accent);font-weight:700">Important problems</text>
+  <text x="268" y="110" text-anchor="middle" class="svgsub">consequence, and</text>
+  <text x="268" y="123" text-anchor="middle" class="svgsub">a way to attack it</text>
+  <text x="268" y="212" text-anchor="middle" class="svgnodetext">Safe little problems</text>
+  <text x="268" y="230" text-anchor="middle" class="svgsub">where the average scientist</text>
+  <text x="268" y="243" text-anchor="middle" class="svgsub">“spends almost all his time”</text>
+  <text x="122" y="222" text-anchor="middle" class="svgsub">(nothing for you here)</text>
+</svg>'''
+
+FIG_HTML = {
+ 'compound': '''<figure class="fig" id="fig-compound">
+  <div class="control">
+    <label for="ci-e"><span>Extra effort, day in and day out</span><span class="val" id="ci-e-val">+10%</span></label>
+    <input type="range" id="ci-e" min="2" max="20" value="10">
+  </div>
+  <svg id="ci-svg" viewBox="0 0 680 320" role="img" aria-label="Compounding capability versus the flat intuition, over a forty-year career."></svg>
+  <p class="figread" id="ci-read"></p>
+  <figcaption>Hamming’s compound-interest claim, drawn literally: capability that multiplies each year, against the flat “10% in, 10% out” intuition. A schematic of his metaphor, not a measurement.</figcaption>
+</figure>''',
+ 'quad': '''<figure class="fig" id="fig-quad">''' + QUAD_SVG + '''
+  <figcaption>His definition of “important,” drawn as a plane. The examples are his own, from this section: importance needs both axes, and consequence alone puts nothing in the upper right.</figcaption>
+</figure>''',
+ 'door': '''<figure class="fig" id="fig-door">
+  <div class="control">
+    <label for="dr-t"><span>Years pass</span><span class="val" id="dr-t-val">10</span></label>
+    <input type="range" id="dr-t" min="0" max="10" value="10" step="1">
+  </div>
+  <svg id="dr-svg" viewBox="0 0 680 440" role="img" aria-label="Two research paths over ten years: a closed door moving fast on a fixed heading, an open door re-aiming as the field drifts."></svg>
+  <p class="figread" id="dr-read"></p>
+  <figcaption>A schematic of the tradeoff he describes (a correlation, he is careful to say, not a proven cause). The closed door works faster on yesterday’s heading; the open door loses time to interruptions and keeps re-aiming. Scrub the years: the closed door leads at first - the price appears later, as what matters drifts.</figcaption>
+</figure>''',
+ 'loops': '''<figure class="fig" id="fig-loops">''' + LOOPS_SVG + '''
+  <figcaption>The three loops this talk keeps narrating without ever drawing. Two are flywheels he tells you how to start; the third is the same shape running against you (§4). Each quote is his.</figcaption>
+</figure>''',
+}
+FIGURES = {32: 'compound', 39: 'quad', 44: 'door', 76: 'loops'}
+
 # ---------- the talk: sections; pulls keyed by the paragraph they follow ----------
 SECTIONS = [
  ("Why this talk", [12,13,14,15,16,17], {
@@ -201,6 +292,8 @@ for si, (title, idxs, pulls) in enumerate(SECTIONS, 1):
         talk.append(para_html(i, 'dropcap' if i == 12 else None))
         if i in pulls:
             talk.append(pull(pulls[i], i))
+        if i in FIGURES:
+            talk.append(FIG_HTML[FIGURES[i]])
     talk.append('</section>')
 talk_html = '\n'.join(talk)
 
@@ -252,11 +345,12 @@ CSS = """
   :root{
     --bg:#f7f3ec; --surface:#fffdf9; --fg:#26221c; --muted:#7a7264;
     --line:#e4dccd; --accent:#c8492e; --accent-2:#2e6ec8; --shade:rgba(200,73,46,.12);
+    --shade2:rgba(46,110,200,.10);
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
-  :root[data-theme="dark"]{--bg:#151310;--surface:#1e1b16;--fg:#ece5da;--muted:#9c9284;--line:#332e26;--accent:#f0704f;--accent-2:#6ea3f0;--shade:rgba(240,112,79,.14)}
-  :root[data-theme="light"]{--bg:#f7f3ec;--surface:#fffdf9;--fg:#26221c;--muted:#7a7264;--line:#e4dccd;--accent:#c8492e;--accent-2:#2e6ec8;--shade:rgba(200,73,46,.12)}
+  :root[data-theme="dark"]{--bg:#151310;--surface:#1e1b16;--fg:#ece5da;--muted:#9c9284;--line:#332e26;--accent:#f0704f;--accent-2:#6ea3f0;--shade:rgba(240,112,79,.14);--shade2:rgba(110,163,240,.14)}
+  :root[data-theme="light"]{--bg:#f7f3ec;--surface:#fffdf9;--fg:#26221c;--muted:#7a7264;--line:#e4dccd;--accent:#c8492e;--accent-2:#2e6ec8;--shade:rgba(200,73,46,.12);--shade2:rgba(46,110,200,.10)}
   *{box-sizing:border-box} html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:19px;line-height:1.62;-webkit-font-smoothing:antialiased}
   main{max-width:40rem;margin:0 auto;padding:1.25rem 1.15rem 5rem}
@@ -331,6 +425,32 @@ CSS = """
   .spk-h{color:var(--accent)} .spk-q{color:var(--accent-2)}
   .qa-q{color:var(--fg);font-style:italic;margin-top:1.6em}
   .qa-q .spk{font-style:normal}
+  /* figures */
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1rem 1.15rem;margin:1.8em 0}
+  .fig figcaption{font-family:var(--sans);font-size:.82rem;color:var(--muted);line-height:1.45;margin-top:.7rem}
+  .fig svg{display:block;width:100%;height:auto}
+  .fig svg.narrow{max-width:23rem;margin:0 auto}
+  .figread{font-family:var(--sans);font-size:.9rem;line-height:1.45;margin:.6rem 0 0;font-variant-numeric:tabular-nums}
+  .control{font-family:var(--sans);margin:.2rem 0 .8rem}
+  .control label{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+  .control .val{font-variant-numeric:tabular-nums;font-size:1.05rem;text-transform:none;letter-spacing:0;color:var(--fg);font-weight:600}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:34px;margin:0;background:transparent;cursor:pointer}
+  input[type=range]:focus{outline:none}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:var(--line)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--shade)}
+  /* svg building blocks (theme-aware via CSS vars) */
+  .sline{stroke:var(--line)} .smutedfill{fill:var(--muted)}
+  .svgtitle{font-family:var(--sans);font-size:14.5px;font-weight:700}
+  .svgquote{font-family:var(--serif);font-style:italic;font-size:11.5px;fill:var(--muted)}
+  .svgnode{fill:var(--bg);stroke:var(--line)}
+  .svgnodetext{font-family:var(--sans);font-size:12px;fill:var(--fg)}
+  .svgsub{font-family:var(--sans);font-size:10.5px;fill:var(--muted)}
+  .svgaxis{font-family:var(--sans);font-size:11.5px;fill:var(--muted)}
+  .svgtick{font-family:var(--sans);font-size:15px;fill:var(--muted)}
+  .svglab{font-family:var(--sans);font-size:16.5px;fill:var(--muted)}
   .endmark{font-family:var(--sans);font-size:.8rem;color:var(--muted);text-align:center;margin:2.5em 0}
   .closing{font-size:1.55rem;line-height:1.3;text-align:center;font-style:italic;margin:2em 0 1em}
   .bio p{font-size:.95rem;color:var(--muted)}
@@ -412,6 +532,130 @@ SCRIPT = """
     if(e.key==="Escape"){ closePop(); setDrawer(false); }
   });
   addEventListener("scroll", function(){ if(pop) closePop(); }, {passive:true});
+
+  /* ---------- figure toolkit ---------- */
+  function svgEl(tag, attrs){
+    var el=document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for(var k in (attrs||{})) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+  function clearNode(n){ while(n.firstChild) n.removeChild(n.firstChild); }
+  function txt(x, y, s, cls, anchor, style){
+    var t=svgEl("text", {x:x, y:y, "class":cls||"svglab"});
+    if(anchor) t.setAttribute("text-anchor", anchor);
+    if(style) t.setAttribute("style", style);
+    t.textContent=s; return t;
+  }
+
+  /* ---------- compound interest (§6) ---------- */
+  (function(){
+    var svg=document.getElementById("ci-svg"); if(!svg) return;
+    var slider=document.getElementById("ci-e"), val=document.getElementById("ci-e-val"),
+        read=document.getElementById("ci-read");
+    var X0=64, X1=660, Y0=282, Y1=36, YMAX=4;   // plot area; y covers 1x..4x
+    function X(t){ return X0+(X1-X0)*t/40; }
+    function Y(v){ return Y0-(Y0-Y1)*(v-1)/(YMAX-1); }
+    function draw(){
+      var e=(+slider.value)/100;
+      val.textContent="+"+slider.value+"%";
+      clearNode(svg);
+      var g=1+e, i, t, v;
+      for(i=1;i<=YMAX;i++){
+        svg.appendChild(svgEl("line",{x1:X0,y1:Y(i),x2:X1,y2:Y(i),"class":"sline","stroke-width":i===1?1.5:1,"stroke-dasharray":i===1?"":"2 5"}));
+        svg.appendChild(txt(X0-8, Y(i)+5, i+"\\u00d7", "svgtick", "end"));
+      }
+      for(i=0;i<=40;i+=10) svg.appendChild(txt(X(i), Y0+22, i?("year "+i):"0", "svgtick", "middle"));
+      // compound curve + shaded gap vs the flat intuition
+      var pts=[], gap=["M"+X(0)+" "+Y(g).toFixed(1)];
+      for(t=0;t<=40.01;t+=0.5){
+        v=Math.pow(g,t); if(v>YMAX){ pts.push([X(t),Y(YMAX)]); break; }
+        pts.push([X(t),Y(v)]);
+      }
+      var tEnd=(pts[pts.length-1][0]-X0)/(X1-X0)*40;
+      var d="M"+pts.map(function(p){return p[0].toFixed(1)+" "+p[1].toFixed(1);}).join(" L ");
+      svg.appendChild(svgEl("path",{d:d+" L "+X(tEnd).toFixed(1)+" "+Y(Math.min(g,YMAX)).toFixed(1)+" L "+X0+" "+Y(g).toFixed(1)+" Z",
+        fill:"var(--shade)",stroke:"none"}));
+      svg.appendChild(svgEl("line",{x1:X0,y1:Y(g),x2:X1,y2:Y(g),style:"stroke:var(--muted)","stroke-width":2,"stroke-dasharray":"7 5"}));
+      svg.appendChild(svgEl("path",{d:d,fill:"none",style:"stroke:var(--accent)","stroke-width":3,"stroke-linecap":"round"}));
+      svg.appendChild(txt(X1, Y(g)-8, "the intuition: +"+slider.value+"%", "svgtick", "end"));
+      svg.appendChild(txt(X0+8, Y1+16, "capability, compounding", "svgtick", "start", "fill:var(--accent);font-weight:600"));
+      // doubling marker
+      var t2=Math.log(2)/Math.log(g);
+      if(t2<=40){
+        svg.appendChild(svgEl("line",{x1:X(t2),y1:Y(2),x2:X(t2),y2:Y0,style:"stroke:var(--accent)","stroke-width":1.5,"stroke-dasharray":"3 4"}));
+        svg.appendChild(svgEl("circle",{cx:X(t2),cy:Y(2),r:5,style:"fill:var(--accent)"}));
+        svg.appendChild(txt(X(t2)+8, Y(2)-10, "2\\u00d7 by year "+Math.round(t2), "svgtick", "start", "fill:var(--fg);font-weight:600"));
+      }
+      var v40=Math.pow(g,40);
+      read.textContent="At +"+slider.value+"% a day, capability doubles by year "+Math.round(t2)+
+        " - and taken literally the metaphor gives "+(v40>=100?"hundreds of times":"about "+Math.round(v40)+"\\u00d7")+
+        " by year 40. The flat intuition expected 1."+(slider.value<10?"0":"")+slider.value+"\\u00d7, forever.";
+    }
+    slider.addEventListener("input", draw); draw();
+  })();
+
+  /* ---------- the open door (§9) ---------- */
+  (function(){
+    var svg=document.getElementById("dr-svg"); if(!svg) return;
+    var slider=document.getElementById("dr-t"), val=document.getElementById("dr-t-val"),
+        read=document.getElementById("dr-read");
+    var OX=140, OY=400, S=30, DRIFT=6, SPEED_OPEN=0.85, N=10;
+    function heading(t){ return (90 - DRIFT*t) * Math.PI/180; }   // field direction at year t
+    var open=[[0,0]], closed=[[0,0]], i;
+    for(i=0;i<N;i++){
+      var th=heading(i), o=open[i];
+      open.push([o[0]+SPEED_OPEN*Math.cos(th), o[1]+SPEED_OPEN*Math.sin(th)]);
+      closed.push([0, i+1]);
+    }
+    function px(p){ return [OX+p[0]*S, OY-p[1]*S]; }
+    function proj(p, th){ return p[0]*Math.cos(th)+p[1]*Math.sin(th); }
+    function pathD(arr, T){
+      var s=""; for(var j=0;j<=T;j++){ var q=px(arr[j]); s+=(j?" L ":"M ")+q[0].toFixed(1)+" "+q[1].toFixed(1); }
+      return s;
+    }
+    function draw(){
+      var T=+slider.value; val.textContent=T;
+      clearNode(svg);
+      var th=heading(T), ux=Math.cos(th), uy=Math.sin(th), L=345;
+      // shaded ray: the direction that matters as of year T
+      var rx=OX+ux*L, ry=OY-uy*L, w=0.06;
+      svg.appendChild(svgEl("path",{d:"M "+OX+" "+OY+" L "+(OX+(ux-w*uy)*L).toFixed(1)+" "+(OY-(uy+w*ux)*L).toFixed(1)+
+        " L "+(OX+(ux+w*uy)*L).toFixed(1)+" "+(OY-(uy-w*ux)*L).toFixed(1)+" Z", fill:"var(--shade2)"}));
+      svg.appendChild(svgEl("line",{x1:OX,y1:OY,x2:rx,y2:ry,style:"stroke:var(--accent-2)","stroke-width":1.5,"stroke-dasharray":"6 5"}));
+      svg.appendChild(txt(rx+6, ry+2, "what matters, as of year "+T, "svgtick", "start", "fill:var(--accent-2);font-weight:600"));
+      // the two paths
+      if(T>0){
+        svg.appendChild(svgEl("path",{d:pathD(closed,T),fill:"none",style:"stroke:var(--muted)","stroke-width":3,"stroke-linecap":"round"}));
+        svg.appendChild(svgEl("path",{d:pathD(open,T),fill:"none",style:"stroke:var(--accent)","stroke-width":3,"stroke-linecap":"round"}));
+      }
+      for(var j=1;j<=T;j++){
+        var pc=px(closed[j]), po=px(open[j]);
+        svg.appendChild(svgEl("circle",{cx:pc[0],cy:pc[1],r:2.5,style:"fill:var(--muted)"}));
+        svg.appendChild(svgEl("circle",{cx:po[0],cy:po[1],r:2.5,style:"fill:var(--accent)"}));
+      }
+      var ec=px(closed[T]), eo=px(open[T]);
+      svg.appendChild(svgEl("circle",{cx:ec[0],cy:ec[1],r:5.5,style:"fill:var(--muted)"}));
+      svg.appendChild(svgEl("circle",{cx:eo[0],cy:eo[1],r:5.5,style:"fill:var(--accent)"}));
+      svg.appendChild(txt(ec[0]-10, ec[1]-2, "door closed", "svgtick", "end", "font-weight:600"));
+      if(T>0) svg.appendChild(txt(eo[0]+12, eo[1]+4, "door open", "svgtick", "start", "fill:var(--accent);font-weight:600"));
+      // projections onto the current judgment
+      var dc=proj(closed[T],th), dz=proj(open[T],th);
+      if(T>0){
+        var fc=px([dc*ux, dc*uy]), fo=px([dz*ux, dz*uy]);
+        svg.appendChild(svgEl("line",{x1:ec[0],y1:ec[1],x2:fc[0],y2:fc[1],"class":"sline","stroke-dasharray":"3 4"}));
+        svg.appendChild(svgEl("line",{x1:eo[0],y1:eo[1],x2:fo[0],y2:fo[1],"class":"sline","stroke-dasharray":"3 4"}));
+        svg.appendChild(svgEl("circle",{cx:fc[0],cy:fc[1],r:3,style:"fill:var(--muted)"}));
+        svg.appendChild(svgEl("circle",{cx:fo[0],cy:fo[1],r:3,style:"fill:var(--accent)"}));
+      }
+      svg.appendChild(txt(OX-14, OY+24, "1 dot = 1 year of work", "svgtick", "start"));
+      var lead = dz>dc ? "open leads" : (dc>dz ? "closed leads" : "even");
+      read.textContent = T===0 ? "Drag the years forward." :
+        "Year "+T+": useful work, measured along what now matters - door open "+dz.toFixed(1)+
+        ", door closed "+dc.toFixed(1)+" ("+lead+"). The closed door has walked farther: "+
+        T.toFixed(0)+" vs "+(SPEED_OPEN*T).toFixed(1)+" years of effort.";
+    }
+    slider.addEventListener("input", draw); draw();
+  })();
 })();
 """
 
