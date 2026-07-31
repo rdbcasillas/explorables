@@ -147,7 +147,7 @@ def para_html(i, cls=None, label=None):
         body = body.replace(anchor_r, f'{anchor_r}<sup class="mnref">{n}</sup>', 1)
         body += f'<span class="mn" role="note"><b>{n}</b> {render(note)}</span>'
     c = f' class="{cls}"' if cls else ''
-    return f'<p{c}>{body}</p>'
+    return f'<p data-p="{i}"{c}>{body}</p>'
 
 def pull(text, after_para):
     # every pull quote must be verbatim from the paragraph it follows
@@ -197,9 +197,32 @@ LOOP_CONFIDENCE = _loop_svg('The confidence flywheel', '“One success brought h
 LOOP_KNOWLEDGE = _loop_svg('The knowledge flywheel', '“Knowledge and productivity are like compound interest.”',
     [['The more you know'], ['the more you can do'], ['the more opportunity', 'finds you']], 'var(--accent-2)',
     'A loop: the more you know, the more you can do, the more opportunity finds you, and back around.')
-LOOP_TRAP = _loop_svg('The fame trap', '“When you get early recognition it seems to sterilize you.”',
-    [['Recognition'], ['Committees, and only', '“great” problems'], ['No little acorns', 'planted'], ['Nothing new grows']], 'var(--accent)',
-    'A loop running against you: recognition brings committees and only great problems, so no little acorns are planted and nothing new grows.')
+def _chain_svg(title, quote, nodes, color, aria):
+    """A one-way vertical cascade: node, arrow down, node... last node dashed."""
+    parts = [
+        f'<text x="180" y="18" text-anchor="middle" class="svgtitle" style="fill:{color}">{title}</text>',
+        f'<text x="180" y="38" text-anchor="middle" class="svgquote">{quote}</text>',
+    ]
+    y = 58
+    for j, lines in enumerate(nodes):
+        h = 24 + 15 * len(lines)
+        last = j == len(nodes) - 1
+        style = f'fill:none;stroke:{color};stroke-dasharray:5 4' if last else ''
+        parts.append(f'<rect x="55" y="{y}" width="250" height="{h}" rx="10" class="svgnode"{f" style={chr(34)}{style}{chr(34)}" if style else ""}/>')
+        ty = y + h / 2 - (len(lines) - 1) * 7.5 + 4
+        for li, line in enumerate(lines):
+            parts.append(f'<text x="180" y="{ty + li*15:.1f}" text-anchor="middle" class="svgnodetext">{line}</text>')
+        y += h
+        if not last:
+            parts.append(f'<line x1="180" y1="{y+3}" x2="180" y2="{y+19}" style="stroke:{color}" stroke-width="1.5"/>')
+            parts.append(f'<polygon points="180,{y+24} 175,{y+16} 185,{y+16}" style="fill:{color}"/>')
+            y += 26
+    return (f'<svg class="narrow" viewBox="0 0 360 {y+10}" role="img" aria-label="{aria}">'
+            + ''.join(parts) + '</svg>')
+
+CHAIN_TRAP = _chain_svg('The fame trap', '“When you get early recognition it seems to sterilize you.”',
+    [['Do good work'], ['Recognition'], ['Committees, and only', '“great” problems'], ['No little acorns', 'planted'], ['Nothing new grows']], 'var(--accent)',
+    'A one-way cascade: good work brings recognition, which brings committees and only great problems, so no little acorns are planted and nothing new grows.')
 
 QUAD_SVG = '''<svg class="narrow" viewBox="0 0 360 340" role="img" aria-label="Two-by-two chart: consequence if solved versus having a reasonable attack.">
   <line x1="50" y1="288" x2="340" y2="288" class="sline" stroke-width="1.5"/>
@@ -227,8 +250,9 @@ QUAD_SVG = '''<svg class="narrow" viewBox="0 0 360 340" role="img" aria-label="T
 FIG_HTML = {
  'compound': '''<figure class="fig" id="fig-compound">
   <div class="control">
-    <label for="ci-e"><span>Extra effort, day in and day out</span><span class="val" id="ci-e-val">+10%</span></label>
-    <input type="range" id="ci-e" min="2" max="20" value="10">
+    <label for="ci-e"><span>Extra effort, day in and day out</span><span class="val" id="ci-e-val">+2%</span></label>
+    <input type="range" id="ci-e" min="2" max="20" value="2">
+    <p class="fighint" id="ci-hint">→ Drag the slider: add a little more daily effort and watch the gap open.</p>
   </div>
   <svg id="ci-svg" viewBox="0 0 680 320" role="img" aria-label="Compounding capability versus the flat intuition, over a forty-year career."></svg>
   <p class="figread" id="ci-read"></p>
@@ -241,14 +265,14 @@ FIG_HTML = {
   <figcaption>The loop inside this section’s stories. Pfann and Clogston each got one success, and it began to spin. Schematic; the quote is Hamming’s.</figcaption>
 </figure>''',
  'loop-knowledge': '''<figure class="fig" id="fig-loop-knowledge">''' + LOOP_KNOWLEDGE + '''
-  <figcaption>His compound-interest sentence, drawn as the loop it is: each turn multiplies the next. The next figure takes the arithmetic literally.</figcaption>
+  <figcaption>The sentence behind the chart above, drawn as the loop it is: each turn multiplies the next.</figcaption>
 </figure>''',
- 'loop-trap': '''<figure class="fig" id="fig-loop-trap">''' + LOOP_TRAP + '''
-  <figcaption>The same flywheel shape, running against you: what he says did Shannon in. Every stop on the circle is from this section.</figcaption>
+ 'loop-trap': '''<figure class="fig" id="fig-loop-trap">''' + CHAIN_TRAP + '''
+  <figcaption>Not a flywheel: a one-way slide, redrawn from his description in this section. The recognition stays; the new work stops. What he says did Shannon in.</figcaption>
 </figure>''',
 }
-FIGURES = {24: 'loop-confidence', 27: 'loop-trap', 32: 'loop-knowledge',
-           33: 'compound', 39: 'quad'}
+FIGURES = {24: 'loop-confidence', 27: 'loop-trap', 32: 'compound',
+           33: 'loop-knowledge', 39: 'quad'}
 
 # ---------- the talk: sections; pulls keyed by the paragraph they follow ----------
 SECTIONS = [
@@ -352,11 +376,13 @@ CSS = """
     --bg:#f7f3ec; --surface:#fffdf9; --fg:#26221c; --muted:#7a7264;
     --line:#e4dccd; --accent:#c8492e; --accent-2:#2e6ec8; --shade:rgba(200,73,46,.12);
     --shade2:rgba(46,110,200,.10);
+    --umark:rgba(255,213,79,.45); --umark-line:rgba(197,155,20,.8);
+    --sticky:#fdf6cd; --sticky-line:#e8dc9e;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
-  :root[data-theme="dark"]{--bg:#151310;--surface:#1e1b16;--fg:#ece5da;--muted:#9c9284;--line:#332e26;--accent:#f0704f;--accent-2:#6ea3f0;--shade:rgba(240,112,79,.14);--shade2:rgba(110,163,240,.14)}
-  :root[data-theme="light"]{--bg:#f7f3ec;--surface:#fffdf9;--fg:#26221c;--muted:#7a7264;--line:#e4dccd;--accent:#c8492e;--accent-2:#2e6ec8;--shade:rgba(200,73,46,.12);--shade2:rgba(46,110,200,.10)}
+  :root[data-theme="dark"]{--bg:#151310;--surface:#1e1b16;--fg:#ece5da;--muted:#9c9284;--line:#332e26;--accent:#f0704f;--accent-2:#6ea3f0;--shade:rgba(240,112,79,.14);--shade2:rgba(110,163,240,.14);--umark:rgba(255,213,79,.24);--umark-line:rgba(224,190,80,.55);--sticky:#37311c;--sticky-line:#4d4527}
+  :root[data-theme="light"]{--bg:#f7f3ec;--surface:#fffdf9;--fg:#26221c;--muted:#7a7264;--line:#e4dccd;--accent:#c8492e;--accent-2:#2e6ec8;--shade:rgba(200,73,46,.12);--shade2:rgba(46,110,200,.10);--umark:rgba(255,213,79,.45);--umark-line:rgba(197,155,20,.8);--sticky:#fdf6cd;--sticky-line:#e8dc9e}
   *{box-sizing:border-box} html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:19px;line-height:1.62;-webkit-font-smoothing:antialiased}
   main{max-width:40rem;margin:0 auto;padding:1.25rem 1.15rem 5rem}
@@ -450,6 +476,30 @@ CSS = """
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
   input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
   input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--shade)}
+  .fighint{font-family:var(--sans);font-size:.85rem;color:var(--accent);margin:.1rem 0 .4rem;transition:opacity .4s}
+  .fighint.done{opacity:0}
+  /* reader annotations */
+  .uline{background:var(--umark);border-bottom:2px solid var(--umark-line);cursor:pointer}
+  .unote{display:block;font-family:var(--sans);font-size:.85rem;line-height:1.5;color:var(--fg);background:var(--sticky);border:1px solid var(--sticky-line);border-radius:3px 12px 12px 12px;padding:.55rem .7rem;margin:.8em 0 .2em;white-space:pre-wrap}
+  .unote .ux{float:right;font-family:var(--sans);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.05rem;line-height:1;padding:0 0 .2rem .5rem}
+  .unote .ux:hover{color:var(--accent)}
+  .seltool{position:fixed;z-index:60;display:flex;gap:.15rem;background:var(--fg);border-radius:10px;padding:.28rem .3rem;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+  .seltool button{font-family:var(--sans);font-size:.85rem;background:none;border:none;color:var(--bg);padding:.3rem .6rem;cursor:pointer;border-radius:7px;white-space:nowrap}
+  .seltool button:hover{background:rgba(255,255,255,.18)}
+  .noteedit{position:absolute;z-index:60;width:min(19rem,calc(100vw - 1.6rem));background:var(--sticky);border:1px solid var(--sticky-line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:.7rem;font-family:var(--sans)}
+  .noteedit textarea{width:100%;min-height:4.2rem;border:1px solid var(--sticky-line);border-radius:8px;background:var(--surface);color:var(--fg);font-family:var(--sans);font-size:.9rem;padding:.5rem;resize:vertical}
+  .noteedit .row{display:flex;justify-content:flex-end;gap:.4rem;margin-top:.45rem}
+  .noteedit button{font-family:var(--sans);font-size:.85rem;border-radius:8px;padding:.35rem .7rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+  .noteedit button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+  .marksbtn{position:fixed;bottom:1rem;right:1rem;z-index:30;font-family:var(--sans);font-size:.88rem;background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.55rem .9rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .marksbtn:hover{color:var(--accent)}
+  .notepanel{position:fixed;bottom:3.7rem;right:1rem;z-index:45;width:min(20rem,calc(100vw - 2rem));background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.18);padding:1rem 1.1rem;font-family:var(--sans);display:none}
+  .notepanel.open{display:block}
+  .notepanel h2{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .5em}
+  .notepanel p{font-size:.85rem;line-height:1.5;color:var(--muted);margin:.4em 0}
+  .notepanel .row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem}
+  .notepanel button{font-family:var(--sans);font-size:.85rem;border-radius:8px;padding:.4rem .7rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+  .notepanel button:hover{border-color:var(--accent);color:var(--accent)}
   /* svg building blocks (theme-aware via CSS vars) */
   .sline{stroke:var(--line)} .smutedfill{fill:var(--muted)}
   .svgtitle{font-family:var(--sans);font-size:14.5px;font-weight:700}
@@ -601,8 +651,219 @@ SCRIPT = """
         " by year 40. The flat intuition expected 1."+(slider.value<10?"0":"")+slider.value+"\\u00d7, forever.";
     }
     slider.addEventListener("input", draw); draw();
+    var hint=document.getElementById("ci-hint"), hinted=false;
+    slider.addEventListener("input", function(){
+      if(!hinted && hint){ hinted=true; hint.classList.add("done"); }
+    });
   })();
 
+  /* ---------- reader marks: underline + sticky notes, saved locally ---------- */
+  (function(){
+    var KEY="yayr-marks-v1";
+    var marks=[];
+    try{ var st=JSON.parse(localStorage.getItem(KEY)||"[]"); if(Array.isArray(st)) marks=st; }catch(err){}
+    var btn=document.getElementById("marksbtn"), panel=document.getElementById("notepanel"),
+        fileIn=document.getElementById("marksfile");
+    function badge(){ btn.textContent="✎ "+marks.length; }
+    function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(marks)); }catch(err){} badge(); }
+    function newId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+    function pEl(pid){ return document.querySelector('p[data-p="'+pid+'"]'); }
+    function textNodes(root){
+      var w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n, out=[];
+      while((n=w.nextNode())) out.push(n);
+      return out;
+    }
+    function offsetOf(p, node, off){
+      if(node.nodeType!==3) return -1;
+      var nodes=textNodes(p), sum=0;
+      for(var i=0;i<nodes.length;i++){
+        if(nodes[i]===node) return sum+off;
+        sum+=nodes[i].nodeValue.length;
+      }
+      return -1;
+    }
+    function unwrap(el){
+      var par=el.parentNode;
+      while(el.firstChild) par.insertBefore(el.firstChild, el);
+      par.removeChild(el);
+    }
+    function renderP(pid){
+      var p=pEl(pid); if(!p) return;
+      [].slice.call(p.querySelectorAll(".uline")).forEach(unwrap);
+      [].slice.call(p.querySelectorAll(".unote")).forEach(function(n){ n.parentNode.removeChild(n); });
+      p.normalize();
+      var list=marks.filter(function(m){ return m.p===pid; });
+      list.forEach(function(m){
+        var guard=0;
+        while(guard++<300){
+          var nodes=textNodes(p), sum=0, wrapped=false;
+          for(var i=0;i<nodes.length;i++){
+            var n=nodes[i], len=n.nodeValue.length, ns=sum; sum+=len;
+            if(!len) continue;
+            if(n.parentNode.closest(".unote")) continue;
+            if(n.parentNode.closest('[data-aid="'+m.id+'"]')) continue;
+            var s=Math.max(m.s, ns), e=Math.min(m.e, ns+len);
+            if(s>=e) continue;
+            var r=document.createRange();
+            r.setStart(n, s-ns); r.setEnd(n, e-ns);
+            var span=document.createElement("span");
+            span.className="uline"; span.setAttribute("data-aid", m.id);
+            try{ r.surroundContents(span); }catch(err){ return; }
+            wrapped=true; break;
+          }
+          if(!wrapped) break;
+        }
+      });
+      list.forEach(function(m){
+        if(!m.note) return;
+        var card=document.createElement("span"); card.className="unote";
+        var x=document.createElement("button"); x.className="ux"; x.textContent="×";
+        x.setAttribute("aria-label","Remove this mark"); x.setAttribute("data-aid", m.id);
+        card.appendChild(x);
+        card.appendChild(document.createTextNode(m.note));
+        p.appendChild(card);
+      });
+    }
+    function renderAll(){
+      var seen={};
+      marks.forEach(function(m){ if(!seen[m.p]){ seen[m.p]=1; renderP(m.p); } });
+    }
+    function removeMark(id){
+      var hit=null;
+      marks=marks.filter(function(m){ if(m.id===id){ hit=m; return false; } return true; });
+      persist(); if(hit) renderP(hit.p);
+    }
+
+    /* selection toolbar */
+    var tool=document.createElement("div"); tool.className="seltool"; tool.style.display="none";
+    var bU=document.createElement("button"); bU.textContent="Underline";
+    var bN=document.createElement("button"); bN.textContent="Add note";
+    tool.appendChild(bU); tool.appendChild(bN); document.body.appendChild(tool);
+    var pending=null, selTimer=null;
+    function hideTool(){ tool.style.display="none"; pending=null; }
+    function checkSelection(){
+      var sel=window.getSelection();
+      if(!sel || sel.isCollapsed || !sel.rangeCount){ hideTool(); return; }
+      var r=sel.getRangeAt(0);
+      function host(node){ var el=node.nodeType===3?node.parentNode:node; return el && el.closest ? el.closest("p[data-p]") : null; }
+      var pa=host(r.startContainer), pb=host(r.endContainer);
+      if(!pa || pa!==pb){ hideTool(); return; }
+      var s=offsetOf(pa, r.startContainer, r.startOffset), e=offsetOf(pa, r.endContainer, r.endOffset);
+      if(s<0||e<0){ hideTool(); return; }
+      if(e<s){ var t=s; s=e; e=t; }
+      if(e-s<1){ hideTool(); return; }
+      pending={p:+pa.getAttribute("data-p"), s:s, e:e};
+      tool.style.display="flex";
+      var rect=r.getBoundingClientRect(), tw=tool.offsetWidth;
+      var x=Math.min(Math.max(8, rect.left+rect.width/2-tw/2), innerWidth-tw-8);
+      var y=rect.top-tool.offsetHeight-10;
+      if(y<8) y=rect.bottom+10;
+      tool.style.left=x+"px"; tool.style.top=y+"px";
+    }
+    document.addEventListener("selectionchange", function(){
+      clearTimeout(selTimer); selTimer=setTimeout(checkSelection, 200);
+    });
+    addEventListener("scroll", function(){ tool.style.display="none"; }, {passive:true});
+    function commit(note){
+      if(!pending) return;
+      var m={id:newId(), p:pending.p, s:pending.s, e:pending.e};
+      if(note) m.note=note;
+      marks.push(m); persist(); renderP(m.p);
+      var sel=window.getSelection(); if(sel) sel.removeAllRanges();
+      hideTool();
+    }
+    bU.addEventListener("pointerdown", function(ev){ ev.preventDefault(); commit(null); });
+    bN.addEventListener("pointerdown", function(ev){
+      ev.preventDefault();
+      if(!pending) return;
+      var keep=pending;
+      tool.style.display="none";
+      var sel=window.getSelection(); if(sel) sel.removeAllRanges();
+      openEditor(keep);
+    });
+
+    /* sticky-note editor */
+    var editor=null;
+    function closeEditor(){ if(editor){ editor.remove(); editor=null; } }
+    function openEditor(target){
+      closeEditor();
+      editor=document.createElement("div"); editor.className="noteedit";
+      var ta=document.createElement("textarea"); ta.placeholder="Your note…";
+      var row=document.createElement("div"); row.className="row";
+      var bc=document.createElement("button"); bc.textContent="Cancel";
+      var bs=document.createElement("button"); bs.textContent="Save note"; bs.className="pri";
+      row.appendChild(bc); row.appendChild(bs);
+      editor.appendChild(ta); editor.appendChild(row);
+      document.body.appendChild(editor);
+      var rect=pEl(target.p).getBoundingClientRect();
+      editor.style.left=(rect.left+window.scrollX)+"px";
+      editor.style.top=(rect.bottom+window.scrollY+6)+"px";
+      ta.focus();
+      bc.addEventListener("click", closeEditor);
+      bs.addEventListener("click", function(){
+        var v=ta.value.trim();
+        if(v){ pending=target; commit(v); }
+        closeEditor();
+      });
+    }
+
+    /* click an underline or a note's x */
+    document.addEventListener("click", function(ev){
+      var x=ev.target.closest(".unote .ux");
+      if(x){ removeMark(x.getAttribute("data-aid")); return; }
+      var u=ev.target.closest(".uline");
+      if(u){
+        var id=u.getAttribute("data-aid"), m=null;
+        marks.forEach(function(mm){ if(mm.id===id) m=mm; });
+        if(m && confirm(m.note ? "Remove this underline and its note?" : "Remove this underline?")) removeMark(id);
+      }
+    });
+
+    /* manager panel */
+    btn.addEventListener("click", function(){ panel.classList.toggle("open"); });
+    document.getElementById("marks-dl").addEventListener("click", function(){
+      var blob=new Blob([JSON.stringify({v:1, piece:"you-and-your-research", marks:marks}, null, 1)], {type:"application/json"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob); a.download="you-and-your-research-marks.json";
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+    document.getElementById("marks-restore").addEventListener("click", function(){ fileIn.click(); });
+    fileIn.addEventListener("change", function(){
+      var f=fileIn.files && fileIn.files[0]; if(!f) return;
+      var rd=new FileReader();
+      rd.onload=function(){
+        try{
+          var data=JSON.parse(rd.result);
+          var list=Array.isArray(data)?data:(data && Array.isArray(data.marks)?data.marks:null);
+          if(!list) throw new Error("bad file");
+          var touched={}; marks.forEach(function(m){ touched[m.p]=1; });
+          marks=list.filter(function(m){ return m && typeof m.p==="number" && typeof m.s==="number" && typeof m.e==="number" && m.e>m.s; })
+                    .map(function(m){ return {id:String(m.id||newId()), p:m.p, s:m.s, e:m.e,
+                                              note:(typeof m.note==="string" && m.note) ? m.note : undefined}; });
+          marks.forEach(function(m){ touched[m.p]=1; });
+          persist();
+          Object.keys(touched).forEach(function(pid){ renderP(+pid); });
+          panel.classList.remove("open");
+        }catch(err){ alert("Could not read that file - it doesn't look like a marks file from this page."); }
+        fileIn.value="";
+      };
+      rd.readAsText(f);
+    });
+    document.getElementById("marks-clear").addEventListener("click", function(){
+      if(!marks.length) return;
+      if(confirm("Remove all "+marks.length+" of your marks from this browser?")){
+        var pids={}; marks.forEach(function(m){ pids[m.p]=1; });
+        marks=[]; persist();
+        Object.keys(pids).forEach(function(pid){ renderP(+pid); });
+        panel.classList.remove("open");
+      }
+    });
+    addEventListener("keydown", function(ev){
+      if(ev.key==="Escape"){ hideTool(); closeEditor(); panel.classList.remove("open"); }
+    });
+    badge(); renderAll();
+  })();
 })();
 """
 
@@ -634,6 +895,18 @@ page = f"""<!DOCTYPE html>
 {drawer_rows}
   </ol>
 </nav>
+<button class="marksbtn" id="marksbtn" aria-controls="notepanel">✎ 0</button>
+<div class="notepanel" id="notepanel">
+  <h2>Your marks</h2>
+  <p>Select any passage to underline it or attach a note. Your marks live only in this browser.</p>
+  <p>Download them to keep a copy; restore the file later to bring them back.</p>
+  <div class="row">
+    <button id="marks-dl">Download</button>
+    <button id="marks-restore">Restore from file</button>
+    <button id="marks-clear">Clear all</button>
+  </div>
+</div>
+<input type="file" id="marksfile" accept="application/json,.json" style="display:none">
 <main>
   <header>
     <p class="byline">Bell Communications Research Colloquium · March 7, 1986</p>
