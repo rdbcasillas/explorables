@@ -268,7 +268,7 @@ FIG_HTML = {
   <figcaption>The sentence behind the chart above, drawn as the loop it is: each turn multiplies the next.</figcaption>
 </figure>''',
  'loop-trap': '''<figure class="fig" id="fig-loop-trap">''' + CHAIN_TRAP + '''
-  <figcaption>Not a flywheel: a one-way slide, redrawn from his description in this section. The recognition stays; the new work stops. What he says did Shannon in.</figcaption>
+  <figcaption>Good work brings recognition; recognition brings committees and only “great” problems; the little acorns stop getting planted. The recognition stays - the new work stops.</figcaption>
 </figure>''',
 }
 FIGURES = {24: 'loop-confidence', 27: 'loop-trap', 32: 'compound',
@@ -378,6 +378,7 @@ CSS = """
     --shade2:rgba(46,110,200,.10);
     --umark:rgba(255,213,79,.45); --umark-line:rgba(197,155,20,.8);
     --sticky:#fdf6cd; --sticky-line:#e8dc9e;
+    --hand:"Bradley Hand","Segoe Print","Marker Felt","Comic Sans MS",cursive;
     --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
@@ -480,14 +481,17 @@ CSS = """
   .fighint.done{opacity:0}
   /* reader annotations */
   .uline{background:var(--umark);border-bottom:2px solid var(--umark-line);cursor:pointer}
-  .unote{display:block;font-family:var(--sans);font-size:.85rem;line-height:1.5;color:var(--fg);background:var(--sticky);border:1px solid var(--sticky-line);border-radius:3px 12px 12px 12px;padding:.55rem .7rem;margin:.8em 0 .2em;white-space:pre-wrap}
+  .unote{display:block;font-family:var(--hand);font-size:.95rem;line-height:1.4;color:var(--fg);background:var(--sticky);border:1px solid var(--sticky-line);border-radius:3px 12px 12px 12px;padding:.55rem .7rem;margin:.8em 0 .2em;white-space:pre-wrap;box-shadow:1px 2px 6px rgba(0,0,0,.07)}
   .unote .ux{float:right;font-family:var(--sans);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.05rem;line-height:1;padding:0 0 .2rem .5rem}
   .unote .ux:hover{color:var(--accent)}
+  @media (min-width:1220px){
+    .unote{position:absolute;top:0;left:100%;margin:0 0 0 2.6rem;width:15.5rem}
+  }
   .seltool{position:fixed;z-index:60;display:flex;gap:.15rem;background:var(--fg);border-radius:10px;padding:.28rem .3rem;box-shadow:0 6px 20px rgba(0,0,0,.3)}
   .seltool button{font-family:var(--sans);font-size:.85rem;background:none;border:none;color:var(--bg);padding:.3rem .6rem;cursor:pointer;border-radius:7px;white-space:nowrap}
   .seltool button:hover{background:rgba(255,255,255,.18)}
   .noteedit{position:absolute;z-index:60;width:min(19rem,calc(100vw - 1.6rem));background:var(--sticky);border:1px solid var(--sticky-line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:.7rem;font-family:var(--sans)}
-  .noteedit textarea{width:100%;min-height:4.2rem;border:1px solid var(--sticky-line);border-radius:8px;background:var(--surface);color:var(--fg);font-family:var(--sans);font-size:.9rem;padding:.5rem;resize:vertical}
+  .noteedit textarea{width:100%;min-height:4.2rem;border:1px solid var(--sticky-line);border-radius:8px;background:var(--surface);color:var(--fg);font-family:var(--hand);font-size:.95rem;padding:.5rem;resize:vertical}
   .noteedit .row{display:flex;justify-content:flex-end;gap:.4rem;margin-top:.45rem}
   .noteedit button{font-family:var(--sans);font-size:.85rem;border-radius:8px;padding:.35rem .7rem;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
   .noteedit button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -724,7 +728,36 @@ SCRIPT = """
         card.appendChild(document.createTextNode(m.note));
         p.appendChild(card);
       });
+      layoutNotes(p);
     }
+    /* on wide screens, stack margin notes below the editorial note, hand-tilted */
+    var mqDesk=matchMedia("(min-width:1220px)");
+    function layoutNotes(p){
+      var notes=[].slice.call(p.querySelectorAll(".unote"));
+      if(!notes.length) return;
+      if(!mqDesk.matches){
+        notes.forEach(function(nn){ nn.style.top=""; nn.style.transform=""; });
+        return;
+      }
+      var y=0, mn=p.querySelector(".mn");
+      if(mn) y=mn.offsetHeight+14;
+      notes.forEach(function(nn, i){
+        nn.style.top=y+"px";
+        nn.style.transform="rotate("+(i%2 ? "0.8" : "-1.1")+"deg)";
+        y+=nn.offsetHeight+12;
+      });
+    }
+    var rlTimer=null;
+    function relayoutAll(){
+      var seen={};
+      marks.forEach(function(m){
+        if(!m.note || seen[m.p]) return;
+        seen[m.p]=1;
+        var p=pEl(m.p); if(p) layoutNotes(p);
+      });
+    }
+    addEventListener("resize", function(){ clearTimeout(rlTimer); rlTimer=setTimeout(relayoutAll, 150); });
+    if(mqDesk.addEventListener) mqDesk.addEventListener("change", relayoutAll);
     function renderAll(){
       var seen={};
       marks.forEach(function(m){ if(!seen[m.p]){ seen[m.p]=1; renderP(m.p); } });
@@ -797,8 +830,14 @@ SCRIPT = """
       editor.appendChild(ta); editor.appendChild(row);
       document.body.appendChild(editor);
       var rect=pEl(target.p).getBoundingClientRect();
-      editor.style.left=(rect.left+window.scrollX)+"px";
-      editor.style.top=(rect.bottom+window.scrollY+6)+"px";
+      if(mqDesk.matches){
+        editor.style.left=(rect.right+window.scrollX+42)+"px";
+        editor.style.top=(rect.top+window.scrollY)+"px";
+        editor.style.width="16rem";
+      }else{
+        editor.style.left=(rect.left+window.scrollX)+"px";
+        editor.style.top=(rect.bottom+window.scrollY+6)+"px";
+      }
       ta.focus();
       bc.addEventListener("click", closeEditor);
       bs.addEventListener("click", function(){
