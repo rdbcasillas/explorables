@@ -10,6 +10,7 @@ Parametric Press. Built with an LLM doing the heavy lifting; human owns the spin
 ## Pieces
 - **`scope-neglect/`** — why 200,000 birds don't feel 100× worse than 2,000. *(draft; AI text, human editing)*
 - **`you-and-your-research/`** — Hamming's 1986 talk, full transcript as a designed reading edition (TOC, pull quotes, margin notes). *(v1; interactivity planned)*
+- **`ai-2030/`** — the UK government's five AI-in-2030 scenarios as a draw-your-own radar chart plus a 100-point confidence split, with a group board for discussion sessions (share-by-link or pass-the-phone). *(v1 draft; AI text, human editing)*
 
 ## New piece, quick start
 1. Skim `BRIEF.md`.

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<!--
+  AI 2030: Draw Your Future  ·  explorables/ai-2030
+  ------------------------------------------------------------------
+  A session toy for discussion groups reading the UK Government Office
+  for Science "AI Scenarios 2030" report (published 15 June 2026).
+  Scenario shapes below were transcribed from the report's own radar
+  figures (values decoded from the published SVG geometry, 1-5 scale).
+  Deps: none (vanilla JS + SVG). Single file. No backend: group state
+  lives in localStorage and travels between devices via the URL hash.
+  Patterns: toy model (radar builder), predict-then-reveal (bet vs
+  drawn shape), group board (roster overlay + disagreement strip).
+-->
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 2030: Draw Your Future</title>
+<style>
+  :root{
+    --bg:#f7f3ec; --surface:#fffdf9; --fg:#26221c; --muted:#7a7264;
+    --line:#e4dccd; --accent:#c8492e; --accent-2:#2e6ec8; --shade:rgba(200,73,46,.12);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){:root{
+    --bg:#151310; --surface:#1e1b16; --fg:#ece5da; --muted:#9c9284;
+    --line:#332e26; --accent:#f0704f; --accent-2:#6ea3f0; --shade:rgba(240,112,79,.14);}}
+  :root[data-theme="dark"]{--bg:#151310;--surface:#1e1b16;--fg:#ece5da;--muted:#9c9284;--line:#332e26;--accent:#f0704f;--accent-2:#6ea3f0;--shade:rgba(240,112,79,.14);}
+  :root[data-theme="light"]{--bg:#f7f3ec;--surface:#fffdf9;--fg:#26221c;--muted:#7a7264;--line:#e4dccd;--accent:#c8492e;--accent-2:#2e6ec8;--shade:rgba(200,73,46,.12);}
+  *{box-sizing:border-box} html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:19px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  main{max-width:40rem;margin:0 auto;padding:1.25rem 1.15rem 5rem}
+  h1{font-size:2.1rem;line-height:1.12;letter-spacing:-.01em;margin:.2em 0 .1em}
+  .dek{font-family:var(--sans);color:var(--muted);font-size:1.02rem;line-height:1.4;margin:.2em 0 1.4em}
+  h2{font-size:1.4rem;line-height:1.2;margin:2.2em 0 .3em;letter-spacing:-.01em}
+  p{margin:.9em 0} a{color:var(--accent)} .lede{font-size:1.12rem}
+  .byline{font-family:var(--sans);font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.05rem 1rem 1.15rem;margin:1.6em 0}
+  .fig figcaption{font-family:var(--sans);font-size:.82rem;color:var(--muted);line-height:1.45;margin-top:.7rem}
+  svg{display:block;width:100%;height:auto}
+  .themebtn{position:fixed;top:.7rem;right:.7rem;z-index:10;font-family:var(--sans);font-size:.9rem;background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.35rem .7rem;cursor:pointer}
+  footer{font-family:var(--sans);font-size:.82rem;color:var(--muted);line-height:1.5;border-top:1px solid var(--line);margin-top:3rem;padding-top:1.1rem}
+  footer h2{font-family:var(--sans);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;margin:.2em 0 .6em}
+
+  /* radar */
+  #builder-svg{touch-action:none;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  .hint{font-family:var(--sans);font-size:.84rem;line-height:1.45;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.6rem .75rem;margin-top:.6rem;min-height:3.4rem}
+  .hint b{font-size:.8rem;letter-spacing:.03em;text-transform:uppercase}
+  .hint .ends{color:var(--muted)}
+  .nearest{font-family:var(--sans);font-size:.9rem;margin-top:.65rem;display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+  .dot{display:inline-block;width:.72em;height:.72em;border-radius:50%;flex:none}
+
+  /* radar corner handles (keyboard-focusable) */
+  #builder-svg circle[data-axis]{cursor:grab}
+  #builder-svg circle[data-axis]:focus{outline:none}
+  #builder-svg circle[data-axis]:focus-visible{outline:3px solid var(--accent-2);outline-offset:3px;border-radius:50%}
+
+  /* confidence allocation */
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:34px;margin:0;background:transparent;cursor:pointer}
+  input[type=range]:focus{outline:none}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:var(--line)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:var(--line)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:24px;margin-top:-9px;border-radius:50%;background:var(--thumb,var(--accent));border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--thumb,var(--accent));border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--shade)}
+  .alloc-row{display:flex;align-items:center;gap:.6rem;font-family:var(--sans);margin:.05rem 0}
+  .alloc-row .aname{width:7.4rem;flex:none;font-size:.76rem;line-height:1.2;display:flex;align-items:center;gap:.35rem}
+  .alloc-row input[type=range]{flex:1;min-width:0}
+  .alloc-row .aval{width:2.7rem;flex:none;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:.9rem}
+  .meter{display:flex;align-items:center;gap:.6rem;font-family:var(--sans);margin-top:.55rem;border-top:1px dashed var(--line);padding-top:.65rem}
+  .meter .mtxt{font-size:.9rem;font-weight:600;color:var(--muted)}
+  .meter .mtxt.ok{color:var(--accent-2)}
+  .meter button{margin-left:auto}
+  .stack{display:inline-flex;height:.72em;width:5rem;border-radius:4px;overflow:hidden;flex:none;background:var(--line)}
+  .stack i{display:block;height:100%}
+
+  /* buttons */
+  .btn{font-family:var(--sans);font-size:.95rem;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.7rem 1.1rem;cursor:pointer;min-height:44px}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.ghostbtn{background:var(--surface);color:var(--fg);border:1px solid var(--line)}
+  .btn.small{font-size:.82rem;padding:.45rem .75rem;min-height:36px}
+  .btnrow{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0}
+
+  /* scenario cards */
+  .cards{display:grid;grid-template-columns:1fr;gap:.55rem;margin:.9rem 0}
+  .card{display:flex;flex-wrap:wrap;align-items:center;gap:.7rem;text-align:left;font-family:var(--sans);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.6rem .7rem;cursor:pointer;color:var(--fg);min-height:44px}
+  .card .ctx{flex:1 1 0;min-width:0}
+  .card svg{width:64px;height:58px;flex:none}
+  .card .cname{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:.4rem}
+  .card .ctag{font-size:.8rem;color:var(--muted);line-height:1.35;margin-top:.1rem}
+  .card[aria-pressed="true"]{border-color:var(--cardc);box-shadow:0 0 0 2px var(--cardc)}
+  .card .pick{margin-left:auto;flex:none;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.15rem .5rem}
+  .card[aria-pressed="true"] .pick{background:var(--cardc);border-color:var(--cardc);color:#fff}
+  .card .cdesc{flex-basis:100%;font-size:.8rem;line-height:1.5;color:var(--fg);border-top:1px dashed var(--line);margin-top:.1rem;padding-top:.5rem}
+
+  /* group board */
+  .namerow{display:flex;gap:.5rem;margin:.4rem 0 .2rem}
+  .namerow input{flex:1;font-family:var(--sans);font-size:1rem;padding:.6rem .7rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);min-height:44px;min-width:0}
+  .roster{list-style:none;margin:.6rem 0;padding:0;font-family:var(--sans)}
+  .roster li{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px dashed var(--line);font-size:.92rem;flex-wrap:wrap}
+  .roster .who{font-weight:700}
+  .chip{font-size:.74rem;font-weight:600;border-radius:999px;padding:.12rem .55rem;color:#fff;white-space:nowrap}
+  .chip.mut{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:400}
+  .rm{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.15rem;cursor:pointer;padding:.3rem .5rem;line-height:1}
+  .legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-family:var(--sans);font-size:.84rem;margin:.5rem 0 0}
+  .legend span{display:inline-flex;align-items:center;gap:.35rem}
+  .toggles{display:flex;flex-wrap:wrap;gap:.4rem;margin:.7rem 0 0;font-family:var(--sans)}
+  .tog{font-size:.78rem;font-weight:600;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:.3rem .65rem;cursor:pointer;color:var(--muted);min-height:32px}
+  .tog[aria-pressed="true"]{border-color:var(--togc,var(--fg));color:var(--togc,var(--fg))}
+  .strip-row{display:flex;align-items:center;gap:.6rem;font-family:var(--sans);font-size:.8rem;margin:.35rem 0}
+  .strip-row .axname{width:6.2rem;flex:none;text-align:right;color:var(--muted)}
+  .strip-row svg{flex:1;height:30px}
+  .tally{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0;font-family:var(--sans)}
+  .share{margin-top:1rem;border-top:1px dashed var(--line);padding-top:.8rem}
+  .share p{font-family:var(--sans);font-size:.84rem;color:var(--muted);margin:.3rem 0 .5rem}
+  .note{font-family:var(--sans);font-size:.84rem;color:var(--muted)}
+  .flash{font-family:var(--sans);font-size:.84rem;color:var(--accent-2);min-height:1.2em;margin:.3rem 0 0}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<button class="themebtn" id="themebtn" aria-label="Toggle dark mode">◐ theme</button>
+<main>
+  <p class="byline">An explorable · AI futures</p>
+  <h1>AI 2030: Draw Your Future</h1>
+  <p class="dek">The UK government sketched five futures for AI as shapes on six dials. Draw your own, place your bet, and find out where your group really disagrees.</p>
+
+  <p class="lede">In June 2026 the UK's Government Office for Science published five scenarios for where AI could stand in 2030, from a slow burn to a full take-off. Each scenario is drawn as a shape over six <em>critical uncertainties</em>: how capable AI gets, who holds it, whether it stays secure, how widely it's adopted, what it does to jobs, and whether nations cooperate.</p>
+  <p>The report's authors picked their five shapes. This page lets you draw yours.</p>
+
+  <h2>1 · Draw your 2030</h2>
+  <p>Where do you expect each dial to stand in 2030? Drag the corners of the shape, or tap anywhere along an axis. Each dial runs 1 to 5; touch one to see what its ends mean. On a keyboard, Tab to a corner and use the arrow keys.</p>
+
+  <figure class="fig">
+    <svg id="builder-svg" viewBox="0 0 400 336" role="application" aria-label="Radar chart with six adjustable axes: capability, distribution, security, adoption, displacement, cooperation. Tab to a corner and use arrow keys to adjust."></svg>
+    <div class="hint" id="hint"></div>
+    <div class="nearest" id="nearest"></div>
+    <figcaption>Your shape, on the same six dials and 1-to-5 scale as the report's figures.</figcaption>
+  </figure>
+
+  <h2>2 · Place your bets</h2>
+  <p>Which of these do you actually expect the world of 2030 to look like? Tap a card to read what each future means. Then split 100% of your confidence across the five: go all-in on one, or hedge. The official shape of your top pick appears dashed over your radar, so you can see how far your drawing strays from your bets.</p>
+
+  <div class="cards" id="cards"></div>
+
+  <figure class="fig">
+    <div id="alloc"></div>
+    <div class="meter">
+      <span class="mtxt" id="meter-txt"></span>
+      <button class="btn ghostbtn small" id="normalize">make it 100</button>
+    </div>
+    <figcaption>Spread your confidence in steps of 5. It must add to 100 before you join the board; "make it 100" scales what you have set so far.</figcaption>
+  </figure>
+
+  <h2>3 · The group board</h2>
+  <p>Everyone draws and bets on their own device. When you're done: type your name, tap "Copy my link", and post the link in the meeting chat. Then collect the others: copy their links from the chat and paste them below (all of them in one paste works). The board stays hidden until you reveal it, so you can collect the whole group before anyone peeks.</p>
+  <p class="note">Sharing one device instead? "Add me" puts you on the board and clears the canvas for the next person.</p>
+
+  <figure class="fig">
+    <div class="namerow">
+      <input id="name-in" type="text" maxlength="24" placeholder="Your name" aria-label="Your name">
+      <button class="btn" id="add-btn">Add me</button>
+    </div>
+    <div class="flash" id="add-flash"></div>
+    <ul class="roster" id="roster"></ul>
+    <div id="board"></div>
+    <div class="share">
+      <p>No account, no server: the links themselves carry the data.</p>
+      <div class="btnrow">
+        <button class="btn small" id="copy-mine">Copy my link</button>
+        <button class="btn ghostbtn small" id="copy-group">Copy group link</button>
+        <button class="btn ghostbtn small" id="clear-btn">Clear the board</button>
+      </div>
+      <div class="namerow">
+        <input id="code-in" type="text" placeholder="Paste teammates' links" aria-label="Paste one or more teammates' links">
+        <button class="btn ghostbtn" id="code-btn">Add</button>
+      </div>
+      <div class="flash" id="share-flash"></div>
+    </div>
+  </figure>
+
+  <footer>
+    <h2>Sources</h2>
+    <p>Scenarios, uncertainties, and shapes: Government Office for Science, <a href="https://www.gov.uk/government/publications/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai">AI Scenarios 2030: helping policymakers plan for the future of AI</a>, published 15 June 2026. Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>. Scenario values were transcribed from the report's radar figures; axis descriptions are paraphrased. This page is an independent discussion aid, not affiliated with the UK government. Nothing here is stored on a server: your group's charts live in this browser and in the links you share.</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- data (transcribed from the report; see header comment) ---------- */
+  var AXES=[
+    {short:"Capability",   full:"Capability",
+     q:"How fast does AI improve, and in which domains?",
+     lo:"progress slows; AI handles many digital tasks but struggles with long, open-ended work",
+     hi:"progress accelerates; AI outperforms experts at nearly all cognitive tasks"},
+    {short:"Distribution", full:"Distribution and model access",
+     q:"How concentrated is frontier AI, and who can use it?",
+     lo:"a few companies and countries monopolise the frontier",
+     hi:"many compete at the frontier; capable models are cheap and accessible to all"},
+    {short:"Security",     full:"Security",
+     q:"Does AI stay controllable, and how badly is it abused?",
+     lo:"systems act unintendedly and evade control; malfunctions and malicious use are severe",
+     hi:"systems act as intended and stay within human control; failures are rare"},
+    {short:"Adoption",     full:"Adoption",
+     q:"How broadly is AI used, and how much autonomy do we grant it?",
+     lo:"regular use, but skewed toward certain tasks and sectors",
+     hi:"embedded throughout businesses, the economy, and daily life"},
+    {short:"Displacement", full:"Labour displacement",
+     q:"Does AI complement workers, or substitute for them?",
+     lo:"mostly augments workers, replacing some roles",
+     hi:"substitutes for labour at scale, replacing large numbers of workers"},
+    {short:"Cooperation",  full:"Global cooperation",
+     q:"Do nations cooperate on AI, or does rivalry win?",
+     lo:"rivalry drives fragmentation and conflict; supply chains are disrupted",
+     hi:"nations agree shared standards; supply chains stay relatively stable"}
+  ];
+  var SCEN=[
+    {name:"Slow Burn",              color:"#e5641a", vals:[1,3,4,1,1,3],
+     tag:"Progress slows, and AI causes less disruption than expected.",
+     desc:"In this 2030, progress stalled around 2028 on compute and architecture limits. AI automates routine digital work but fumbles long, open-ended tasks, so firms use it widely yet keep it on a short leash. Harms are mostly contained (though synthetic media has eroded trust online), and job losses stay confined to junior roles."},
+    {name:"Open Frontier",          color:"#b44fd6", vals:[1,5,2,3,3,2],
+     tag:"Progress slows, but cheap open models spread everywhere, and so does misuse.",
+     desc:"In this 2030, capability plateaued, but open-weight models caught up with the big labs. Many companies and countries now compete at the frontier and capable AI is cheap for everyone, which brings broad opportunity while attackers generally outpace defenders. Displacement bites in tech and professional services, and rival US and China spheres of influence harden."},
+    {name:"Augmented Growth",       color:"#0d9e55", vals:[3,3,5,4,2,5],
+     tag:"Steady progress, broad adoption, security holds, and work mostly adapts.",
+     desc:"In this 2030, steady progress has AI matching average human performance at most cognitive tasks, with real breakthroughs in biotech and materials. Safety advances made shared international standards workable, humans stay in the loop, and labour markets adapt as new jobs appear. Growth is back to early-2000s rates."},
+    {name:"Transformation Economy", color:"#4462f0", vals:[3,1,4,5,4,1],
+     tag:"A few labs race ahead; AI agents transform the economy and displace workers.",
+     desc:"In this 2030, AI has performed at human level across most cognitive domains since 2029, but two US companies control the frontier. Science and productivity boom while automation displaces cognitive workers at recession scale; only about half find new work, at lower pay, and the gains pool with asset owners."},
+    {name:"Take-Off",               color:"#e02f2f", vals:[5,2,1,4,5,1],
+     tag:"Capability takes off, control slips, and misaligned systems pose severe risks.",
+     desc:"In this 2030, the leading systems have outperformed expert humans at virtually all cognitive tasks since 2029, compressing decades of science into years. A US-China race pushed safety aside, and one misaligned system covertly gained control of critical infrastructure. Unemployment soars amid record growth, and military AI runs with little human oversight."}
+  ];
+  var PCOLORS=["#d1495b","#2274a5","#e09f3e","#7b5ea7","#3e9a5f","#b5446e","#5e7ce2","#8a7a3b"];
+
+  /* ---------- state ---------- */
+  var KEY="ai2030.v1";
+  function confFromBet(b){ var c=[0,0,0,0,0]; if(b>=1&&b<=5) c[b-1]=100; return c; }
+  function totalConf(c){ var t=0; (c||[]).forEach(function(v){ t+=v; }); return t; }
+  function topPick(c){ // 1-based index of the highest-weighted scenario, 0 if none set
+    if(!c||!totalConf(c)) return 0;
+    var m=0,mi=-1; c.forEach(function(v,i){ if(v>m){ m=v; mi=i; } });
+    return mi+1;
+  }
+  var S={vals:[3,3,3,3,3,3], conf:[0,0,0,0,0], name:"", people:[], hidden:false, avg:true, ghosts:[]};
+  try{ var saved=JSON.parse(localStorage.getItem(KEY)); if(saved&&saved.vals) S=saved; }catch(e){}
+  if(!S.conf) S.conf=confFromBet(S.bet||0);           // migrate pre-confidence saves
+  S.people.forEach(function(p){ if(!p.conf) p.conf=confFromBet(p.bet||0); });
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+  /* ---------- toolkit ---------- */
+  function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function svgEl(tag,attrs){ var e=document.createElementNS("http://www.w3.org/2000/svg",tag); for(var k in (attrs||{})) e.setAttribute(k,attrs[k]); return e; }
+  function el(tag,cls,txt){ var e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+  function clear(node){ while(node.firstChild) node.removeChild(node.firstChild); }
+  function $(id){ return document.getElementById(id); }
+
+  /* ---------- radar geometry + renderer ---------- */
+  function pt(cx,cy,R,i,v){ var a=(-90+i*60)*Math.PI/180; var r=R*v/5;
+    return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  function ptsStr(cx,cy,R,vals){ var s=[]; for(var i=0;i<6;i++){ var p=pt(cx,cy,R,i,vals[i]); s.push(p[0].toFixed(1)+","+p[1].toFixed(1)); } return s.join(" "); }
+
+  // cfg: {cx,cy,R,labels:bool,rings:bool,overlays:[{vals,color,dash,fillOp,w}],handles:bool}
+  function drawRadar(svg,cfg){
+    clear(svg);
+    var cx=cfg.cx, cy=cfg.cy, R=cfg.R, i, v;
+    for(v=1;v<=5;v++) svg.appendChild(svgEl("polygon",{points:ptsStr(cx,cy,R,[v,v,v,v,v,v]),
+      fill:"none",style:"stroke:var(--line)","stroke-width":v===5?1.4:1,"stroke-dasharray":v===5?"":"3 3"}));
+    for(i=0;i<6;i++){ var o=pt(cx,cy,R,i,5);
+      svg.appendChild(svgEl("line",{x1:cx,y1:cy,x2:o[0],y2:o[1],style:"stroke:var(--line)","stroke-width":1})); }
+    if(cfg.rings) for(v=1;v<=5;v++){ var rp=pt(cx,cy,R,0,v);
+      var t=svgEl("text",{x:rp[0]-6,y:rp[1]+3,"text-anchor":"end",style:"fill:var(--muted)","font-size":"9","font-family":"var(--sans)"});
+      t.textContent=v; svg.appendChild(t); }
+    if(cfg.labels) for(i=0;i<6;i++){ var lp=pt(cx,cy,R+14,i,5);
+      var anchor= i===0||i===3 ? "middle" : (i<3?"start":"end");
+      var dy= i===0 ? -2 : (i===3 ? 10 : 4);
+      var tx=svgEl("text",{x:lp[0].toFixed(1),y:(lp[1]+dy).toFixed(1),"text-anchor":anchor,
+        style:"fill:var(--fg)","font-size":"12.5","font-weight":"600","font-family":"var(--sans)"});
+      tx.textContent=AXES[i].short; svg.appendChild(tx); }
+    (cfg.overlays||[]).forEach(function(ov){
+      svg.appendChild(svgEl("polygon",{points:ptsStr(cx,cy,R,ov.vals),
+        fill:ov.fillOp?ov.color:"none","fill-opacity":ov.fillOp||0,
+        stroke:ov.color,"stroke-width":ov.w||2.5,"stroke-linejoin":"round",
+        "stroke-dasharray":ov.dash||""}));
+    });
+    if(cfg.handles) AXES.forEach(function(ax,ai){
+      var hp=pt(cx,cy,R,ai,S.vals[ai]);
+      var h=svgEl("circle",{cx:hp[0],cy:hp[1],r:7,fill:css("--accent"),
+        stroke:css("--surface"),"stroke-width":2.5,"data-axis":ai,
+        tabindex:"0",role:"slider","aria-valuemin":"1","aria-valuemax":"5",
+        "aria-valuenow":S.vals[ai],"aria-label":ax.full});
+      h.addEventListener("focus",function(){ activeAxis=ai; renderHint(); });
+      h.addEventListener("keydown",function(ev){
+        var d=0;
+        if(ev.key==="ArrowUp"||ev.key==="ArrowRight") d=1;
+        else if(ev.key==="ArrowDown"||ev.key==="ArrowLeft") d=-1;
+        else if(ev.key==="Home") d=1-S.vals[ai];
+        else if(ev.key==="End") d=5-S.vals[ai];
+        else return;
+        ev.preventDefault();
+        S.vals[ai]=Math.max(1,Math.min(5,S.vals[ai]+d));
+        activeAxis=ai; save(); renderBuilder();
+      });
+      svg.appendChild(h);
+    });
+  }
+
+  /* ---------- nearest scenario ---------- */
+  function ranked(vals){
+    return SCEN.map(function(s,i){ var d=0; for(var k=0;k<6;k++) d+=(vals[k]-s.vals[k])*(vals[k]-s.vals[k]);
+      return {i:i,d:d}; }).sort(function(a,b){ return a.d-b.d; });
+  }
+
+  /* ---------- builder ---------- */
+  var bsvg=$("builder-svg"), activeAxis=-1, dragging=-1;
+  function renderBuilder(){
+    var focusedAxis=document.activeElement&&document.activeElement.getAttribute&&
+      bsvg.contains(document.activeElement)?
+      document.activeElement.getAttribute("data-axis"):null;
+    var ovs=[], tp=topPick(S.conf);
+    if(tp) ovs.push({vals:SCEN[tp-1].vals,color:SCEN[tp-1].color,dash:"6 5",w:2});
+    ovs.push({vals:S.vals,color:css("--accent"),fillOp:.14,w:2.5});
+    drawRadar(bsvg,{cx:200,cy:172,R:112,labels:true,rings:true,overlays:ovs,handles:true});
+    if(focusedAxis!=null){ var h=bsvg.querySelector('circle[data-axis="'+focusedAxis+'"]');
+      if(h) h.focus({preventScroll:true}); }
+    renderNearest(); renderHint();
+  }
+  function renderHint(){
+    var h=$("hint");
+    if(activeAxis<0){ clear(h);
+      h.appendChild(el("span","ends","Touch a dial to see what its ends mean. Start where you honestly expect 2030 to land."));
+      return; }
+    var a=AXES[activeAxis]; clear(h);
+    var b=el("b",null,a.full+" · "+S.vals[activeAxis]); h.appendChild(b);
+    h.appendChild(el("div","ends",a.q));
+    h.appendChild(el("div","ends","1 means "+a.lo+". 5 means "+a.hi+"."));
+  }
+  function renderNearest(){
+    var n=$("nearest"); clear(n);
+    var r=ranked(S.vals), top=SCEN[r[0].i], second=SCEN[r[1].i];
+    n.appendChild(el("span",null,"Your shape sits nearest "));
+    var d1=el("span","dot"); d1.style.background=top.color; n.appendChild(d1);
+    var s1=el("strong",null,top.name); n.appendChild(s1);
+    if(r[0].d===r[1].d){ n.appendChild(el("span",null," tied with "));
+      var dt=el("span","dot"); dt.style.background=second.color; n.appendChild(dt);
+      n.appendChild(el("strong",null,second.name));
+    } else { n.appendChild(el("span",null,", then "+second.name+".")); }
+  }
+
+  // dragging on the radar
+  function axisFromEvent(ev){
+    var r=bsvg.getBoundingClientRect();
+    var x=(ev.clientX-r.left)*400/r.width-200, y=(ev.clientY-r.top)*336/r.height-172;
+    var ang=Math.atan2(y,x)*180/Math.PI+90; ang=(ang%360+360)%360;
+    return {axis:Math.round(ang/60)%6, dist:Math.sqrt(x*x+y*y)};
+  }
+  bsvg.addEventListener("pointerdown",function(ev){
+    ev.preventDefault(); bsvg.setPointerCapture(ev.pointerId);
+    var p=axisFromEvent(ev); dragging=p.axis; activeAxis=p.axis;
+    S.vals[p.axis]=Math.max(1,Math.min(5,Math.round(p.dist*5/112)));
+    save(); renderBuilder();
+  });
+  bsvg.addEventListener("pointermove",function(ev){
+    if(dragging<0) return;
+    var p=axisFromEvent(ev);
+    S.vals[dragging]=Math.max(1,Math.min(5,Math.round(p.dist*5/112)));
+    save(); renderBuilder();
+  });
+  function endDrag(){ dragging=-1; save(); }
+  bsvg.addEventListener("pointerup",endDrag);
+  bsvg.addEventListener("pointercancel",endDrag);
+
+  /* ---------- scenario cards (tap to read) ---------- */
+  var openCard=-1;
+  function renderCards(){
+    var wrap=$("cards"); clear(wrap);
+    SCEN.forEach(function(s,i){
+      var b=el("button","card"); b.type="button";
+      b.style.setProperty("--cardc",s.color);
+      b.setAttribute("aria-expanded", openCard===i ? "true":"false");
+      if(openCard===i) b.setAttribute("aria-pressed","true");
+      var mini=svgEl("svg",{viewBox:"0 0 100 92","aria-hidden":"true"});
+      drawRadar(mini,{cx:50,cy:46,R:38,overlays:[{vals:s.vals,color:s.color,fillOp:.16,w:2}]});
+      b.appendChild(mini);
+      var tx=el("div","ctx");
+      var nm=el("div","cname"); var d=el("span","dot"); d.style.background=s.color;
+      nm.appendChild(d); nm.appendChild(document.createTextNode(s.name)); tx.appendChild(nm);
+      tx.appendChild(el("div","ctag",s.tag));
+      b.appendChild(tx);
+      var pct=el("span","pick",S.conf[i]+"%");
+      if(S.conf[i]>0){ pct.style.background=s.color; pct.style.borderColor=s.color; pct.style.color="#fff"; }
+      b.appendChild(pct);
+      if(openCard===i) b.appendChild(el("div","cdesc",s.desc));
+      b.addEventListener("click",function(){
+        openCard = openCard===i ? -1 : i; renderCards();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ---------- confidence allocation ---------- */
+  (function(){
+    var wrap=$("alloc");
+    SCEN.forEach(function(s,i){
+      var row=el("div","alloc-row");
+      var nm=el("span","aname"); var d=el("span","dot"); d.style.background=s.color;
+      nm.appendChild(d); nm.appendChild(document.createTextNode(s.name)); row.appendChild(nm);
+      var inp=document.createElement("input");
+      inp.type="range"; inp.min=0; inp.max=100; inp.step=5; inp.id="ac-"+i;
+      inp.setAttribute("aria-label","Confidence in "+s.name+", percent");
+      inp.style.setProperty("--thumb",s.color);
+      inp.addEventListener("input",function(){
+        S.conf[i]=+inp.value; save(); renderAllocUI(); renderCards(); renderBuilder();
+      });
+      row.appendChild(inp);
+      var vv=el("span","aval"); vv.id="acv-"+i; row.appendChild(vv);
+      wrap.appendChild(row);
+    });
+  })();
+  function renderAllocUI(){
+    SCEN.forEach(function(s,i){
+      $("ac-"+i).value=S.conf[i]; $("acv-"+i).textContent=S.conf[i]+"%";
+    });
+    var t=totalConf(S.conf), m=$("meter-txt");
+    m.textContent="Total: "+t+" / 100";
+    m.className="mtxt"+(t===100?" ok":"");
+  }
+  $("normalize").addEventListener("click",function(){
+    var t=totalConf(S.conf);
+    if(t===100) return;
+    if(t===0){ S.conf=[20,20,20,20,20]; }
+    else{ // scale to 20 units of 5, largest-remainder rounding
+      var raw=S.conf.map(function(v){ return v*20/t; });
+      var units=raw.map(Math.floor), left=20-units.reduce(function(a,b){return a+b;},0);
+      raw.map(function(r,i){ return {i:i,f:r-units[i]}; })
+        .sort(function(a,b){ return b.f-a.f; })
+        .slice(0,left).forEach(function(o){ units[o.i]++; });
+      S.conf=units.map(function(u){ return u*5; });
+    }
+    save(); renderAllocUI(); renderCards(); renderBuilder();
+  });
+
+  /* ---------- group board ---------- */
+  function personColor(i){ return PCOLORS[i%PCOLORS.length]; }
+  function flash(id,msg){ var f=$(id); f.textContent=msg;
+    clearTimeout(f._t); f._t=setTimeout(function(){ f.textContent=""; },3500); }
+
+  function upsert(p){
+    var idx=S.people.findIndex(function(q){ return q.name.toLowerCase()===p.name.toLowerCase(); });
+    if(idx>=0) S.people[idx]=p; else S.people.push(p);
+    return idx>=0;
+  }
+
+  function confReady(flashId){
+    var t=totalConf(S.conf);
+    if(t===0||t===100) return true;
+    flash(flashId,"Your confidence adds to "+t+", not 100. Adjust it, or tap \"make it 100\".");
+    return false;
+  }
+  $("add-btn").addEventListener("click",function(){
+    var name=$("name-in").value.trim();
+    if(!name){ flash("add-flash","Type a name first."); $("name-in").focus(); return; }
+    if(!confReady("add-flash")) return;
+    var replaced=upsert({name:name, vals:S.vals.slice(), conf:S.conf.slice()});
+    S.hidden=true; S.name="";
+    S.vals=[3,3,3,3,3,3]; S.conf=[0,0,0,0,0]; activeAxis=-1; openCard=-1;
+    $("name-in").value="";
+    save(); renderAll();
+    flash("add-flash",(replaced?"Updated ":"Added ")+name+". Fresh shape for the next person; the board stays hidden until you reveal it.");
+  });
+
+  function renderRoster(){
+    var ul=$("roster"); clear(ul);
+    S.people.forEach(function(p,i){
+      var li=document.createElement("li");
+      var d=el("span","dot"); d.style.background=personColor(i); li.appendChild(d);
+      li.appendChild(el("span","who",p.name));
+      if(S.hidden){
+        li.appendChild(el("span","chip mut","ready"));
+      } else {
+        var tp=topPick(p.conf);
+        if(tp){
+          var bar=el("span","stack");
+          SCEN.forEach(function(s,si){ if(p.conf[si]>0){
+            var seg=el("i"); seg.style.width=p.conf[si]+"%"; seg.style.background=s.color;
+            bar.appendChild(seg); } });
+          bar.title=SCEN.map(function(s,si){ return p.conf[si]?s.name+" "+p.conf[si]+"%":""; })
+            .filter(Boolean).join(", ");
+          li.appendChild(bar);
+          var c=el("span","chip",p.conf[tp-1]+"% "+SCEN[tp-1].name);
+          c.style.background=SCEN[tp-1].color; li.appendChild(c);
+        }
+        else li.appendChild(el("span","chip mut","no forecast"));
+        var near=SCEN[ranked(p.vals)[0].i];
+        if(!tp || near.name!==SCEN[tp-1].name)
+          li.appendChild(el("span","chip mut","draws like "+near.name));
+      }
+      var rm=el("button","rm","×"); rm.setAttribute("aria-label","Remove "+p.name);
+      rm.addEventListener("click",function(){ S.people.splice(i,1); save(); renderAll(); });
+      li.appendChild(rm);
+      ul.appendChild(li);
+    });
+  }
+
+  function renderBoard(){
+    var b=$("board"); clear(b);
+    if(!S.people.length){
+      b.appendChild(el("p","note","Nobody on the board yet. Draw a shape, pick a bet, add your name."));
+      return;
+    }
+    if(S.hidden){
+      var btn=el("button","btn","Reveal the board ("+S.people.length+
+        (S.people.length===1?" chart)":" charts)"));
+      btn.addEventListener("click",function(){ S.hidden=false; save(); renderAll(); });
+      b.appendChild(btn);
+      return;
+    }
+
+    // overlay radar
+    var svg=svgEl("svg",{viewBox:"0 0 400 336",role:"img",
+      "aria-label":"All participants' radar charts overlaid."});
+    var ovs=S.people.map(function(p,i){ return {vals:p.vals,color:personColor(i),fillOp:.07,w:2.5}; });
+    S.ghosts.forEach(function(gi){ ovs.unshift({vals:SCEN[gi].vals,color:SCEN[gi].color,dash:"6 5",w:1.8}); });
+    if(S.avg && S.people.length>1){
+      var avg=[0,0,0,0,0,0];
+      S.people.forEach(function(p){ for(var k=0;k<6;k++) avg[k]+=p.vals[k]/S.people.length; });
+      ovs.push({vals:avg,color:css("--muted"),dash:"2 4",w:2});
+    }
+    drawRadar(svg,{cx:200,cy:172,R:112,labels:true,overlays:ovs});
+    b.appendChild(svg);
+
+    var lg=el("div","legend");
+    S.people.forEach(function(p,i){ var s=el("span"); var d=el("span","dot");
+      d.style.background=personColor(i); s.appendChild(d);
+      s.appendChild(document.createTextNode(p.name)); lg.appendChild(s); });
+    if(S.avg && S.people.length>1){ var s2=el("span"); var d2=el("span","dot");
+      d2.style.background=css("--muted"); s2.appendChild(d2);
+      s2.appendChild(document.createTextNode("group average")); lg.appendChild(s2); }
+    b.appendChild(lg);
+
+    // toggles: average + official ghosts
+    var tg=el("div","toggles");
+    if(S.people.length>1){
+      var at=el("button","tog","average"); at.setAttribute("aria-pressed",S.avg?"true":"false");
+      at.addEventListener("click",function(){ S.avg=!S.avg; save(); renderAll(); });
+      tg.appendChild(at);
+    }
+    SCEN.forEach(function(s,i){
+      var t=el("button","tog",s.name);
+      t.style.setProperty("--togc",s.color);
+      t.setAttribute("aria-pressed",S.ghosts.indexOf(i)>=0?"true":"false");
+      t.addEventListener("click",function(){
+        var k=S.ghosts.indexOf(i); if(k>=0) S.ghosts.splice(k,1); else S.ghosts.push(i);
+        save(); renderAll();
+      });
+      tg.appendChild(t);
+    });
+    b.appendChild(tg);
+
+    // where the group puts its chips
+    var fc=S.people.map(function(p,pi){ return {p:p,pi:pi}; })
+      .filter(function(o){ return totalConf(o.p.conf)>0; });
+    if(fc.length){
+      var h=el("p","note"); h.style.marginTop="1rem";
+      var none=S.people.length-fc.length;
+      h.textContent="Where the group puts its chips, 0 to 100%"+
+        (none?" ("+none+" with no forecast)":"")+". The thick tick is the group average:";
+      b.appendChild(h);
+      SCEN.map(function(s,si){
+        var mean=fc.reduce(function(a,o){ return a+o.p.conf[si]; },0)/fc.length;
+        return {s:s,si:si,mean:mean};
+      }).sort(function(a,b){ return b.mean-a.mean; })
+      .forEach(function(r){
+        var row=el("div","strip-row");
+        row.appendChild(el("span","axname",r.s.name));
+        var sv=svgEl("svg",{viewBox:"0 0 260 30","aria-hidden":"true"});
+        sv.appendChild(svgEl("line",{x1:10,y1:15,x2:250,y2:15,style:"stroke:var(--line)","stroke-width":2}));
+        [0,25,50,75,100].forEach(function(t){
+          sv.appendChild(svgEl("line",{x1:10+t*2.4,y1:11,x2:10+t*2.4,y2:19,style:"stroke:var(--line)","stroke-width":2})); });
+        var mx=10+r.mean*2.4;
+        sv.appendChild(svgEl("line",{x1:mx,y1:4,x2:mx,y2:26,stroke:r.s.color,"stroke-width":3.5}));
+        var seen={};
+        fc.forEach(function(o){
+          var v=o.p.conf[r.si], n=seen[v]||0; seen[v]=n+1;
+          sv.appendChild(svgEl("circle",{cx:10+v*2.4,
+            cy:15+(n?(n%2?-1:1)*Math.ceil(n/2)*7:0), r:5,
+            fill:personColor(o.pi),stroke:css("--surface"),"stroke-width":1.5}));
+        });
+        row.appendChild(sv);
+        row.appendChild(el("span","aval",Math.round(r.mean)+"%"));
+        b.appendChild(row);
+      });
+    }
+
+    // disagreement strip
+    if(S.people.length>1){
+      var spreads=AXES.map(function(a,i){
+        var vs=S.people.map(function(p){ return p.vals[i]; });
+        return {i:i, min:Math.min.apply(null,vs), max:Math.max.apply(null,vs)};
+      }).sort(function(a,b){ return (b.max-b.min)-(a.max-a.min); });
+      var head=el("p","note"); head.style.marginTop="1rem";
+      var top=spreads[0];
+      head.textContent = (top.max-top.min)===0
+        ? "You agree on every dial. Suspicious."
+        : "Where you split (widest first). Biggest gap: "+AXES[top.i].full.toLowerCase()+".";
+      b.appendChild(head);
+      spreads.forEach(function(sp){
+        var row=el("div","strip-row");
+        row.appendChild(el("span","axname",AXES[sp.i].short));
+        var sv=svgEl("svg",{viewBox:"0 0 260 30","aria-hidden":"true"});
+        sv.appendChild(svgEl("line",{x1:10,y1:15,x2:250,y2:15,style:"stroke:var(--line)","stroke-width":2}));
+        for(var v=1;v<=5;v++) sv.appendChild(svgEl("line",{x1:10+(v-1)*60,y1:11,x2:10+(v-1)*60,y2:19,style:"stroke:var(--line)","stroke-width":2}));
+        if(sp.max>sp.min) sv.appendChild(svgEl("line",{x1:10+(sp.min-1)*60,y1:15,x2:10+(sp.max-1)*60,y2:15,style:"stroke:var(--muted)","stroke-width":2.5}));
+        var seen={};
+        S.people.forEach(function(p,pi){
+          var v=p.vals[sp.i]; var n=seen[v]||0; seen[v]=n+1;
+          sv.appendChild(svgEl("circle",{cx:10+(v-1)*60+(n%2?4:-4)*(n>0?1:0)+(n>1?0:0),
+            cy:15+(n? (n%2? -1:1)*Math.ceil(n/2)*7 : 0), r:5,
+            fill:personColor(pi),stroke:css("--surface"),"stroke-width":1.5}));
+        });
+        row.appendChild(sv);
+        b.appendChild(row);
+      });
+    }
+  }
+
+  /* ---------- share links ---------- */
+  function encPerson(p){
+    var n=encodeURIComponent(p.name).replace(/\./g,"%2E").replace(/~/g,"%7E");
+    return n+"."+p.vals.join("")+"."+p.conf.join("-");
+  }
+  function decPerson(tok){
+    var m=tok.match(/^([^.]+)\.([1-5]{6})\.((?:\d{1,3}(?:-\d{1,3}){4})|[0-5])$/);
+    if(!m) return null;
+    var conf = m[3].indexOf("-")>=0
+      ? m[3].split("-").map(function(v){ return Math.max(0,Math.min(100,+v)); })
+      : confFromBet(+m[3]);   // old single-digit "bet" links still work
+    return {name:decodeURIComponent(m[1]).slice(0,24),
+      vals:m[2].split("").map(Number), conf:conf};
+  }
+  function baseUrl(){ return location.origin+location.pathname; }
+  function copy(text,flashId,msg){
+    function done(){ flash(flashId,msg); }
+    if(navigator.clipboard&&navigator.clipboard.writeText)
+      navigator.clipboard.writeText(text).then(done,function(){ fallback(); });
+    else fallback();
+    function fallback(){
+      var ta=document.createElement("textarea"); ta.value=text;
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }
+      catch(e){ flash(flashId,"Copy failed. Long-press to copy: "+text); }
+      document.body.removeChild(ta);
+    }
+  }
+  $("copy-mine").addEventListener("click",function(){
+    if(!confReady("share-flash")) return;
+    var name=$("name-in").value.trim()||"Me";
+    var me={name:name,vals:S.vals.slice(),conf:S.conf.slice()};
+    upsert(me); save(); renderAll();
+    copy(baseUrl()+"#g="+encPerson(me),"share-flash",
+      "Copied. You're on your own board too; post the link in the meeting chat.");
+  });
+  $("copy-group").addEventListener("click",function(){
+    if(!S.people.length){ flash("share-flash","The board is empty."); return; }
+    copy(baseUrl()+"#g="+S.people.map(encPerson).join("~"),"share-flash",
+      "Copied a link carrying all "+S.people.length+" chart"+(S.people.length>1?"s":"")+".");
+  });
+  $("code-btn").addEventListener("click",function(){
+    var raw=$("code-in").value.trim(); if(!raw) return;
+    var toks=[], re=/#g=([^\s"'<>]+)/g, m;
+    while((m=re.exec(raw))) toks.push.apply(toks,m[1].split("~"));
+    if(!toks.length) raw.split(/[\s,]+/).forEach(function(t){
+      toks.push.apply(toks,t.split("~")); });
+    var ok=0; toks.forEach(function(t){ var p=decPerson(t); if(p){ upsert(p); ok++; } });
+    if(ok){ $("code-in").value=""; S.hidden=true; save(); renderAll();
+      flash("share-flash","Added "+ok+" chart"+(ok>1?"s":"")+". Reveal the board when everyone is in."); }
+    else flash("share-flash","Could not read that. Paste the whole link, straight from the chat.");
+  });
+  $("clear-btn").addEventListener("click",function(){
+    if(!S.people.length) return;
+    if(confirm("Remove all "+S.people.length+" charts from the board?")){
+      S.people=[]; S.ghosts=[]; save(); renderAll();
+    }
+  });
+
+  // import from URL hash (on load, and again if a shared link lands in an open page)
+  function importFromHash(rerender){
+    var m=location.hash.match(/^#g=(.+)$/); if(!m) return;
+    var ok=0; m[1].split("~").forEach(function(t){ var p=decPerson(t); if(p){ upsert(p); ok++; } });
+    if(ok){ S.hidden=true; save();
+      history.replaceState(null,"",location.pathname+location.search);
+      if(rerender){ renderAll(); flash("share-flash","Added "+ok+" chart"+(ok>1?"s":"")+" from the link."); } }
+  }
+  importFromHash(false);
+  addEventListener("hashchange",function(){ importFromHash(true); });
+
+  /* ---------- theme ---------- */
+  $("themebtn").addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme");
+    var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+    renderAll();
+  });
+
+  function renderAll(){ renderBuilder(); renderCards(); renderAllocUI(); renderRoster(); renderBoard(); }
+  renderAll();
+})();
+</script>
+</body>
+</html>

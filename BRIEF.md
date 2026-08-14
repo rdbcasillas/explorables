@@ -187,6 +187,18 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
     default); below ~1220px it collapses to a fixed "§ Contents" button opening
     a slide-in drawer.
 
+- **Group board** — a session tool for N participants: each person builds their own
+  answer (e.g. a radar shape plus a 100-point confidence split over named outcomes)
+  and joins a roster under a name + color. The board stays hidden while people take
+  turns (anti-anchoring; roster shows neutral "ready" chips), then one tap reveals
+  the overlay, each person's distribution as a stacked bar, a per-outcome dot strip
+  with the group mean, and a per-axis "where you split" strip sorted by
+  disagreement. No backend: state persists in localStorage and travels between
+  devices as compact URL-hash tokens (`#g=Name.314113.50-10-20-15-5~...`) that
+  merge into the local roster on open (handle both fresh load and `hashchange`;
+  escape `.` and `~` in names; a paste box accepts a whole chat thread of links at
+  once). Works via links in a group chat or pass-the-phone on one device.
+
 _(Add new patterns here as we invent them.)_
 
 ## 8. Build checklist (run before calling a piece done)
@@ -204,3 +216,4 @@ _(Add new patterns here as we invent them.)_
 |-------|--------|-----------------|--------|
 | Scope Neglect | `scope-neglect/` | hero photo, explainer diagram, predict-then-reveal, data table, gap chart, pictogram grid | v5 draft (AI text, awaiting human edit) |
 | You and Your Research | `you-and-your-research/` | reading edition (contents rail, pull quotes, highlights, margin notes, ELI5 popovers, progress bar), hero photo, loop diagrams ×3, compound-interest slider, importance 2×2 | v3, live on Netlify |
+| AI 2030: Draw Your Future | `ai-2030/` | toy model (draggable radar builder), predict-then-reveal (confidence split vs drawn shape), group board | v1 draft (AI text, awaiting human edit) |
