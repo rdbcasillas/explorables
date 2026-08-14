@@ -188,16 +188,19 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
     a slide-in drawer.
 
 - **Group board** — a session tool for N participants: each person builds their own
-  answer (e.g. a radar shape plus a 100-point confidence split over named outcomes)
-  and joins a roster under a name + color. The board stays hidden while people take
-  turns (anti-anchoring; roster shows neutral "ready" chips), then one tap reveals
-  the overlay, each person's distribution as a stacked bar, a per-outcome dot strip
-  with the group mean, and a per-axis "where you split" strip sorted by
-  disagreement. No backend: state persists in localStorage and travels between
-  devices as compact URL-hash tokens (`#g=Name.314113.50-10-20-15-5~...`) that
-  merge into the local roster on open (handle both fresh load and `hashchange`;
-  escape `.` and `~` in names; a paste box accepts a whole chat thread of links at
-  once). Works via links in a group chat or pass-the-phone on one device.
+  answer (e.g. a radar shape plus a 100-point confidence split over named outcomes),
+  types a name, and submits; everyone who submits appears on everyone's board within
+  seconds. The roster shows neutral "ready" chips until someone taps reveal
+  (anti-anchoring), then shows the overlay, each person's distribution as a stacked
+  bar, a per-outcome dot strip with the group mean, and a per-axis "where you split"
+  strip sorted by disagreement. Resubmitting under the same name updates your entry.
+  Backend: one tiny Netlify Function backed by Netlify Blobs
+  (`netlify/functions/board.mjs`, routed to `/api/board`, one JSON blob per person
+  keyed `room/name`); an optional `?room=` URL param isolates simultaneous groups.
+  The client polls every ~6s, requires a name (no anonymous "Me" collisions), and
+  degrades to a clear "board not reachable" note on static-only servers. We tried
+  URL-hash link-sharing first; it failed user testing (silent imports, name
+  collisions that overwrite people, too much copy-paste choreography).
 
 _(Add new patterns here as we invent them.)_
 

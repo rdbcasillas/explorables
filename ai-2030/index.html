@@ -6,10 +6,13 @@
   for Science "AI Scenarios 2030" report (published 15 June 2026).
   Scenario shapes below were transcribed from the report's own radar
   figures (values decoded from the published SVG geometry, 1-5 scale).
-  Deps: none (vanilla JS + SVG). Single file. No backend: group state
-  lives in localStorage and travels between devices via the URL hash.
-  Patterns: toy model (radar builder), predict-then-reveal (bet vs
-  drawn shape), group board (roster overlay + disagreement strip).
+  Deps: none client-side (vanilla JS + SVG). Your own draft lives in
+  localStorage; the group board is shared via a tiny Netlify function
+  backed by Netlify Blobs (netlify/functions/board.mjs, /api/board),
+  so it only works on the deployed site (or `netlify dev`).
+  Patterns: toy model (radar builder), predict-then-reveal (confidence
+  split vs drawn shape), group board (roster overlay + chips strip +
+  disagreement strip).
 -->
 <html lang="en" data-theme="light">
 <head>
@@ -102,7 +105,6 @@
   .roster .who{font-weight:700}
   .chip{font-size:.74rem;font-weight:600;border-radius:999px;padding:.12rem .55rem;color:#fff;white-space:nowrap}
   .chip.mut{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:400}
-  .rm{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.15rem;cursor:pointer;padding:.3rem .5rem;line-height:1}
   .legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-family:var(--sans);font-size:.84rem;margin:.5rem 0 0}
   .legend span{display:inline-flex;align-items:center;gap:.35rem}
   .toggles{display:flex;flex-wrap:wrap;gap:.4rem;margin:.7rem 0 0;font-family:var(--sans)}
@@ -154,27 +156,20 @@
   </figure>
 
   <h2>3 · The group board</h2>
-  <p>Everyone draws and bets on their own device. When you're done: type your name, tap "Copy my link", and post the link in the meeting chat. Then collect the others: copy their links from the chat and paste them below (all of them in one paste works). The board stays hidden until you reveal it, so you can collect the whole group before anyone peeks.</p>
-  <p class="note">Sharing one device instead? "Add me" puts you on the board and clears the canvas for the next person.</p>
+  <p>Everyone opens this same page on their own device. Draw, place your bets, then type your name and submit. The board below is shared: everyone who submits shows up for the whole group, usually within a few seconds. Wait until everyone is in, then reveal. Made a mistake? Draw again and submit under the same name to update your entry.</p>
+  <p class="note">One device for the whole group? Same thing: take turns drawing and submitting under your own names.</p>
 
   <figure class="fig">
     <div class="namerow">
       <input id="name-in" type="text" maxlength="24" placeholder="Your name" aria-label="Your name">
-      <button class="btn" id="add-btn">Add me</button>
+      <button class="btn" id="add-btn">Submit to the board</button>
     </div>
     <div class="flash" id="add-flash"></div>
     <ul class="roster" id="roster"></ul>
     <div id="board"></div>
     <div class="share">
-      <p>No account, no server: the links themselves carry the data.</p>
       <div class="btnrow">
-        <button class="btn small" id="copy-mine">Copy my link</button>
-        <button class="btn ghostbtn small" id="copy-group">Copy group link</button>
         <button class="btn ghostbtn small" id="clear-btn">Clear the board</button>
-      </div>
-      <div class="namerow">
-        <input id="code-in" type="text" placeholder="Paste teammates' links" aria-label="Paste one or more teammates' links">
-        <button class="btn ghostbtn" id="code-btn">Add</button>
       </div>
       <div class="flash" id="share-flash"></div>
     </div>
@@ -182,7 +177,7 @@
 
   <footer>
     <h2>Sources</h2>
-    <p>Scenarios, uncertainties, and shapes: Government Office for Science, <a href="https://www.gov.uk/government/publications/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai">AI Scenarios 2030: helping policymakers plan for the future of AI</a>, published 15 June 2026. Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>. Scenario values were transcribed from the report's radar figures; axis descriptions are paraphrased. This page is an independent discussion aid, not affiliated with the UK government. Nothing here is stored on a server: your group's charts live in this browser and in the links you share.</p>
+    <p>Scenarios, uncertainties, and shapes: Government Office for Science, <a href="https://www.gov.uk/government/publications/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai/ai-scenarios-2030-helping-policymakers-plan-for-the-future-of-ai">AI Scenarios 2030: helping policymakers plan for the future of AI</a>, published 15 June 2026. Contains public sector information licensed under the <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>. Scenario values were transcribed from the report's radar figures; axis descriptions are paraphrased. This page is an independent discussion aid, not affiliated with the UK government. Your drawing stays in your browser until you submit it; submitted charts sit in a small shared store on this site so the group can see each other, and "Clear the board" wipes them for everyone.</p>
   </footer>
 </main>
 
@@ -245,11 +240,25 @@
     var m=0,mi=-1; c.forEach(function(v,i){ if(v>m){ m=v; mi=i; } });
     return mi+1;
   }
-  var S={vals:[3,3,3,3,3,3], conf:[0,0,0,0,0], name:"", people:[], hidden:false, avg:true, ghosts:[]};
+  var S={vals:[3,3,3,3,3,3], conf:[0,0,0,0,0], name:"", avg:false, ghosts:[]};
   try{ var saved=JSON.parse(localStorage.getItem(KEY)); if(saved&&saved.vals) S=saved; }catch(e){}
   if(!S.conf) S.conf=confFromBet(S.bet||0);           // migrate pre-confidence saves
-  S.people.forEach(function(p){ if(!p.conf) p.conf=confFromBet(p.bet||0); });
+  if(!S.ghosts) S.ghosts=[];
   function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+  /* ---------- the shared board (Netlify function + Blobs; see netlify/functions/board.mjs) ---------- */
+  var ROOM=(new URLSearchParams(location.search).get("room")||"main");
+  var API="/api/board?room="+encodeURIComponent(ROOM);
+  var board={people:[], revealed:false, error:false, loaded:false};
+  function fetchBoard(){
+    fetch(API,{cache:"no-store"})
+      .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(d){ board.people=d.people||[]; board.error=false; board.loaded=true;
+        renderRoster(); renderBoard(); })
+      .catch(function(){ board.error=true; board.loaded=true; renderRoster(); renderBoard(); });
+  }
+  setInterval(function(){ if(!document.hidden) fetchBoard(); }, 6000);
+  document.addEventListener("visibilitychange",function(){ if(!document.hidden) fetchBoard(); });
 
   /* ---------- toolkit ---------- */
   function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
@@ -448,12 +457,6 @@
   function flash(id,msg){ var f=$(id); f.textContent=msg;
     clearTimeout(f._t); f._t=setTimeout(function(){ f.textContent=""; },3500); }
 
-  function upsert(p){
-    var idx=S.people.findIndex(function(q){ return q.name.toLowerCase()===p.name.toLowerCase(); });
-    if(idx>=0) S.people[idx]=p; else S.people.push(p);
-    return idx>=0;
-  }
-
   function confReady(flashId){
     var t=totalConf(S.conf);
     if(t===0||t===100) return true;
@@ -464,21 +467,30 @@
     var name=$("name-in").value.trim();
     if(!name){ flash("add-flash","Type a name first."); $("name-in").focus(); return; }
     if(!confReady("add-flash")) return;
-    var replaced=upsert({name:name, vals:S.vals.slice(), conf:S.conf.slice()});
-    S.hidden=true; S.name="";
-    S.vals=[3,3,3,3,3,3]; S.conf=[0,0,0,0,0]; activeAxis=-1; openCard=-1;
-    $("name-in").value="";
-    save(); renderAll();
-    flash("add-flash",(replaced?"Updated ":"Added ")+name+". Fresh shape for the next person; the board stays hidden until you reveal it.");
+    var btn=$("add-btn"); btn.disabled=true;
+    fetch(API,{method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({name:name, vals:S.vals, conf:S.conf})})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        btn.disabled=false;
+        if(d&&d.ok){
+          S.name=name; save(); fetchBoard();
+          flash("add-flash","You're on the board as "+name+". Draw and submit again any time to update your entry.");
+        } else flash("add-flash","The board said no: "+((d&&d.error)||"unknown error")+".");
+      })
+      .catch(function(){ btn.disabled=false;
+        flash("add-flash","Could not reach the shared board. It only runs on the live site."); });
   });
 
   function renderRoster(){
     var ul=$("roster"); clear(ul);
-    S.people.forEach(function(p,i){
+    board.people.forEach(function(p,i){
       var li=document.createElement("li");
       var d=el("span","dot"); d.style.background=personColor(i); li.appendChild(d);
       li.appendChild(el("span","who",p.name));
-      if(S.hidden){
+      if(S.name && p.name.toLowerCase()===S.name.toLowerCase())
+        li.appendChild(el("span","chip mut","you"));
+      if(!board.revealed){
         li.appendChild(el("span","chip mut","ready"));
       } else {
         var tp=topPick(p.conf);
@@ -498,23 +510,28 @@
         if(!tp || near.name!==SCEN[tp-1].name)
           li.appendChild(el("span","chip mut","draws like "+near.name));
       }
-      var rm=el("button","rm","×"); rm.setAttribute("aria-label","Remove "+p.name);
-      rm.addEventListener("click",function(){ S.people.splice(i,1); save(); renderAll(); });
-      li.appendChild(rm);
       ul.appendChild(li);
     });
   }
 
   function renderBoard(){
     var b=$("board"); clear(b);
-    if(!S.people.length){
-      b.appendChild(el("p","note","Nobody on the board yet. Draw a shape, pick a bet, add your name."));
+    if(board.error){
+      b.appendChild(el("p","note","The shared board is not reachable here. It runs on the live Netlify site; your own drawing above still works."));
       return;
     }
-    if(S.hidden){
-      var btn=el("button","btn","Reveal the board ("+S.people.length+
-        (S.people.length===1?" chart)":" charts)"));
-      btn.addEventListener("click",function(){ S.hidden=false; save(); renderAll(); });
+    if(!board.loaded){
+      b.appendChild(el("p","note","Checking the board..."));
+      return;
+    }
+    if(!board.people.length){
+      b.appendChild(el("p","note","Nobody on the board yet. Draw a shape, spread your chips, and submit your name."));
+      return;
+    }
+    if(!board.revealed){
+      var btn=el("button","btn","Reveal the board ("+board.people.length+
+        (board.people.length===1?" chart so far)":" charts so far)"));
+      btn.addEventListener("click",function(){ board.revealed=true; renderRoster(); renderBoard(); });
       b.appendChild(btn);
       return;
     }
@@ -522,28 +539,28 @@
     // overlay radar
     var svg=svgEl("svg",{viewBox:"0 0 400 336",role:"img",
       "aria-label":"All participants' radar charts overlaid."});
-    var ovs=S.people.map(function(p,i){ return {vals:p.vals,color:personColor(i),fillOp:.07,w:2.5}; });
+    var ovs=board.people.map(function(p,i){ return {vals:p.vals,color:personColor(i),fillOp:.07,w:2.5}; });
     S.ghosts.forEach(function(gi){ ovs.unshift({vals:SCEN[gi].vals,color:SCEN[gi].color,dash:"6 5",w:1.8}); });
-    if(S.avg && S.people.length>1){
+    if(S.avg && board.people.length>1){
       var avg=[0,0,0,0,0,0];
-      S.people.forEach(function(p){ for(var k=0;k<6;k++) avg[k]+=p.vals[k]/S.people.length; });
+      board.people.forEach(function(p){ for(var k=0;k<6;k++) avg[k]+=p.vals[k]/board.people.length; });
       ovs.push({vals:avg,color:css("--muted"),dash:"2 4",w:2});
     }
     drawRadar(svg,{cx:200,cy:172,R:112,labels:true,overlays:ovs});
     b.appendChild(svg);
 
     var lg=el("div","legend");
-    S.people.forEach(function(p,i){ var s=el("span"); var d=el("span","dot");
+    board.people.forEach(function(p,i){ var s=el("span"); var d=el("span","dot");
       d.style.background=personColor(i); s.appendChild(d);
       s.appendChild(document.createTextNode(p.name)); lg.appendChild(s); });
-    if(S.avg && S.people.length>1){ var s2=el("span"); var d2=el("span","dot");
+    if(S.avg && board.people.length>1){ var s2=el("span"); var d2=el("span","dot");
       d2.style.background=css("--muted"); s2.appendChild(d2);
       s2.appendChild(document.createTextNode("group average")); lg.appendChild(s2); }
     b.appendChild(lg);
 
     // toggles: average + official ghosts
     var tg=el("div","toggles");
-    if(S.people.length>1){
+    if(board.people.length>1){
       var at=el("button","tog","average"); at.setAttribute("aria-pressed",S.avg?"true":"false");
       at.addEventListener("click",function(){ S.avg=!S.avg; save(); renderAll(); });
       tg.appendChild(at);
@@ -561,11 +578,11 @@
     b.appendChild(tg);
 
     // where the group puts its chips
-    var fc=S.people.map(function(p,pi){ return {p:p,pi:pi}; })
+    var fc=board.people.map(function(p,pi){ return {p:p,pi:pi}; })
       .filter(function(o){ return totalConf(o.p.conf)>0; });
     if(fc.length){
       var h=el("p","note"); h.style.marginTop="1rem";
-      var none=S.people.length-fc.length;
+      var none=board.people.length-fc.length;
       h.textContent="Where the group puts its chips, 0 to 100%"+
         (none?" ("+none+" with no forecast)":"")+". The thick tick is the group average:";
       b.appendChild(h);
@@ -596,9 +613,9 @@
     }
 
     // disagreement strip
-    if(S.people.length>1){
+    if(board.people.length>1){
       var spreads=AXES.map(function(a,i){
-        var vs=S.people.map(function(p){ return p.vals[i]; });
+        var vs=board.people.map(function(p){ return p.vals[i]; });
         return {i:i, min:Math.min.apply(null,vs), max:Math.max.apply(null,vs)};
       }).sort(function(a,b){ return (b.max-b.min)-(a.max-a.min); });
       var head=el("p","note"); head.style.marginTop="1rem";
@@ -615,7 +632,7 @@
         for(var v=1;v<=5;v++) sv.appendChild(svgEl("line",{x1:10+(v-1)*60,y1:11,x2:10+(v-1)*60,y2:19,style:"stroke:var(--line)","stroke-width":2}));
         if(sp.max>sp.min) sv.appendChild(svgEl("line",{x1:10+(sp.min-1)*60,y1:15,x2:10+(sp.max-1)*60,y2:15,style:"stroke:var(--muted)","stroke-width":2.5}));
         var seen={};
-        S.people.forEach(function(p,pi){
+        board.people.forEach(function(p,pi){
           var v=p.vals[sp.i]; var n=seen[v]||0; seen[v]=n+1;
           sv.appendChild(svgEl("circle",{cx:10+(v-1)*60+(n%2?4:-4)*(n>0?1:0)+(n>1?0:0),
             cy:15+(n? (n%2? -1:1)*Math.ceil(n/2)*7 : 0), r:5,
@@ -627,75 +644,16 @@
     }
   }
 
-  /* ---------- share links ---------- */
-  function encPerson(p){
-    var n=encodeURIComponent(p.name).replace(/\./g,"%2E").replace(/~/g,"%7E");
-    return n+"."+p.vals.join("")+"."+p.conf.join("-");
-  }
-  function decPerson(tok){
-    var m=tok.match(/^([^.]+)\.([1-5]{6})\.((?:\d{1,3}(?:-\d{1,3}){4})|[0-5])$/);
-    if(!m) return null;
-    var conf = m[3].indexOf("-")>=0
-      ? m[3].split("-").map(function(v){ return Math.max(0,Math.min(100,+v)); })
-      : confFromBet(+m[3]);   // old single-digit "bet" links still work
-    return {name:decodeURIComponent(m[1]).slice(0,24),
-      vals:m[2].split("").map(Number), conf:conf};
-  }
-  function baseUrl(){ return location.origin+location.pathname; }
-  function copy(text,flashId,msg){
-    function done(){ flash(flashId,msg); }
-    if(navigator.clipboard&&navigator.clipboard.writeText)
-      navigator.clipboard.writeText(text).then(done,function(){ fallback(); });
-    else fallback();
-    function fallback(){
-      var ta=document.createElement("textarea"); ta.value=text;
-      document.body.appendChild(ta); ta.select();
-      try{ document.execCommand("copy"); done(); }
-      catch(e){ flash(flashId,"Copy failed. Long-press to copy: "+text); }
-      document.body.removeChild(ta);
-    }
-  }
-  $("copy-mine").addEventListener("click",function(){
-    if(!confReady("share-flash")) return;
-    var name=$("name-in").value.trim()||"Me";
-    var me={name:name,vals:S.vals.slice(),conf:S.conf.slice()};
-    upsert(me); save(); renderAll();
-    copy(baseUrl()+"#g="+encPerson(me),"share-flash",
-      "Copied. You're on your own board too; post the link in the meeting chat.");
-  });
-  $("copy-group").addEventListener("click",function(){
-    if(!S.people.length){ flash("share-flash","The board is empty."); return; }
-    copy(baseUrl()+"#g="+S.people.map(encPerson).join("~"),"share-flash",
-      "Copied a link carrying all "+S.people.length+" chart"+(S.people.length>1?"s":"")+".");
-  });
-  $("code-btn").addEventListener("click",function(){
-    var raw=$("code-in").value.trim(); if(!raw) return;
-    var toks=[], re=/#g=([^\s"'<>]+)/g, m;
-    while((m=re.exec(raw))) toks.push.apply(toks,m[1].split("~"));
-    if(!toks.length) raw.split(/[\s,]+/).forEach(function(t){
-      toks.push.apply(toks,t.split("~")); });
-    var ok=0; toks.forEach(function(t){ var p=decPerson(t); if(p){ upsert(p); ok++; } });
-    if(ok){ $("code-in").value=""; S.hidden=true; save(); renderAll();
-      flash("share-flash","Added "+ok+" chart"+(ok>1?"s":"")+". Reveal the board when everyone is in."); }
-    else flash("share-flash","Could not read that. Paste the whole link, straight from the chat.");
-  });
+  /* ---------- clear the shared board ---------- */
   $("clear-btn").addEventListener("click",function(){
-    if(!S.people.length) return;
-    if(confirm("Remove all "+S.people.length+" charts from the board?")){
-      S.people=[]; S.ghosts=[]; save(); renderAll();
+    if(!board.people.length) return;
+    if(confirm("Wipe all "+board.people.length+" entries from the shared board, for everyone?")){
+      fetch(API,{method:"DELETE"})
+        .then(function(){ board.revealed=false; fetchBoard();
+          flash("share-flash","Board cleared."); })
+        .catch(function(){ flash("share-flash","Could not reach the shared board."); });
     }
   });
-
-  // import from URL hash (on load, and again if a shared link lands in an open page)
-  function importFromHash(rerender){
-    var m=location.hash.match(/^#g=(.+)$/); if(!m) return;
-    var ok=0; m[1].split("~").forEach(function(t){ var p=decPerson(t); if(p){ upsert(p); ok++; } });
-    if(ok){ S.hidden=true; save();
-      history.replaceState(null,"",location.pathname+location.search);
-      if(rerender){ renderAll(); flash("share-flash","Added "+ok+" chart"+(ok>1?"s":"")+" from the link."); } }
-  }
-  importFromHash(false);
-  addEventListener("hashchange",function(){ importFromHash(true); });
 
   /* ---------- theme ---------- */
   $("themebtn").addEventListener("click",function(){
@@ -707,6 +665,7 @@
 
   function renderAll(){ renderBuilder(); renderCards(); renderAllocUI(); renderRoster(); renderBoard(); }
   renderAll();
+  fetchBoard();
 })();
 </script>
 </body>

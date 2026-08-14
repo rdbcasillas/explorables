@@ -1,4 +1,8 @@
 # Static site: no build step, serve the repo root.
 # Each explorable is a folder: /you-and-your-research/, /scope-neglect/, ...
+# Functions (shared group boards) live in netlify/functions/.
 [build]
   publish = "."
+
+[functions]
+  directory = "netlify/functions"

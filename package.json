@@ -1,0 +1,8 @@
+{
+  "name": "explorables",
+  "private": true,
+  "description": "Static explorables site; package.json exists only for Netlify Functions deps.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
