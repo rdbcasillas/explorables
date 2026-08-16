@@ -148,7 +148,7 @@
   </figure>
 
   <h2>2 · Place your bets</h2>
-  <p>Which of these do you actually expect the world of 2030 to look like? Tap a card to read what each future means. Then split 100% of your confidence across the five: go all-in on one, or hedge. The official shape of your top pick appears dashed over your radar, so you can see how far your drawing strays from your bets.</p>
+  <p>Which of these do you actually expect the world of 2030 to look like? Tap a card to read what each future means. Then split 100% of your confidence across the five: go all-in on one, or hedge.</p>
 
   <div class="cards" id="cards"></div>
 
@@ -338,14 +338,14 @@
   }
 
   /* ---------- builder ---------- */
-  var bsvg=$("builder-svg"), activeAxis=-1, dragging=-1;
+  var bsvg=$("builder-svg"), activeAxis=-1, dragging=-1, showGhost=false;
   function renderBuilder(){
     var focusedAxis=document.activeElement&&document.activeElement.getAttribute&&
       bsvg.contains(document.activeElement)?
       document.activeElement.getAttribute("data-axis"):null;
-    var ovs=[], tp=topPick(S.conf);
-    if(tp) ovs.push({vals:SCEN[tp-1].vals,color:SCEN[tp-1].color,dash:"6 5",w:2});
-    ovs.push({vals:S.vals,color:css("--accent"),fillOp:.14,w:2.5});
+    var ovs=[{vals:S.vals,color:css("--accent"),fillOp:.14,w:2.5}];
+    if(showGhost){ var g=SCEN[ranked(S.vals)[0].i];
+      ovs.unshift({vals:g.vals,color:g.color,dash:"6 5",w:2}); }
     drawRadar(bsvg,{cx:200,cy:172,R:112,labels:true,rings:true,overlays:ovs,handles:true});
     if(focusedAxis!=null){ var h=bsvg.querySelector('circle[data-axis="'+focusedAxis+'"]');
       if(h) h.focus({preventScroll:true}); }
@@ -371,6 +371,11 @@
       var dt=el("span","dot"); dt.style.background=second.color; n.appendChild(dt);
       n.appendChild(el("strong",null,second.name));
     } else { n.appendChild(el("span",null,", then "+second.name+".")); }
+    var tg=el("button","tog",showGhost?"hide official shape":"show official shape");
+    tg.type="button"; tg.setAttribute("aria-pressed",showGhost?"true":"false");
+    if(showGhost) tg.style.setProperty("--togc",top.color);
+    tg.addEventListener("click",function(){ showGhost=!showGhost; renderBuilder(); });
+    n.appendChild(tg);
   }
 
   // dragging on the radar
