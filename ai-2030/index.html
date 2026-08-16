@@ -105,8 +105,14 @@
   .roster .who{font-weight:700}
   .chip{font-size:.74rem;font-weight:600;border-radius:999px;padding:.12rem .55rem;color:#fff;white-space:nowrap}
   .chip.mut{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:400}
-  .legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-family:var(--sans);font-size:.84rem;margin:.5rem 0 0}
+  .legend{display:flex;flex-wrap:wrap;gap:.35rem .55rem;font-family:var(--sans);font-size:.84rem;margin:.5rem 0 0}
   .legend span{display:inline-flex;align-items:center;gap:.35rem}
+  .legend .lgd{display:inline-flex;align-items:center;gap:.35rem;background:none;border:none;padding:.2rem .4rem;font:inherit;color:inherit;cursor:pointer;border-radius:8px;min-height:32px}
+  .legend .lgd.hl{background:var(--shade);font-weight:700}
+  .roster li[data-person]{cursor:pointer}
+  .roster li.dim{opacity:.4}
+  #board polygon[data-person],#board circle[data-person]{cursor:pointer;transition:opacity .15s}
+  #spot-note{margin:.35rem 0 0;font-size:.78rem}
   .toggles{display:flex;flex-wrap:wrap;gap:.4rem;margin:.7rem 0 0;font-family:var(--sans)}
   .tog{font-size:.78rem;font-weight:600;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:.3rem .65rem;cursor:pointer;color:var(--muted);min-height:32px}
   .tog[aria-pressed="true"]{border-color:var(--togc,var(--fg));color:var(--togc,var(--fg))}
@@ -250,12 +256,17 @@
   var ROOM=(new URLSearchParams(location.search).get("room")||"main");
   var API="/api/board?room="+encodeURIComponent(ROOM);
   var board={people:[], revealed:false, error:false, loaded:false};
+  var lastSnap=null;   // skip re-renders when nothing changed (keeps hover stable)
   function fetchBoard(){
     fetch(API,{cache:"no-store"})
       .then(function(r){ if(!r.ok) throw 0; return r.json(); })
-      .then(function(d){ board.people=d.people||[]; board.error=false; board.loaded=true;
-        renderRoster(); renderBoard(); })
-      .catch(function(){ board.error=true; board.loaded=true; renderRoster(); renderBoard(); });
+      .then(function(d){
+        var snap="ok:"+JSON.stringify(d.people||[]);
+        board.people=d.people||[]; board.error=false; board.loaded=true;
+        if(snap!==lastSnap){ lastSnap=snap; renderRoster(); renderBoard(); } })
+      .catch(function(){
+        board.error=true; board.loaded=true;
+        if(lastSnap!=="err"){ lastSnap="err"; renderRoster(); renderBoard(); } });
   }
   setInterval(function(){ if(!document.hidden) fetchBoard(); }, 6000);
   document.addEventListener("visibilitychange",function(){ if(!document.hidden) fetchBoard(); });
@@ -290,10 +301,13 @@
         style:"fill:var(--fg)","font-size":"12.5","font-weight":"600","font-family":"var(--sans)"});
       tx.textContent=AXES[i].short; svg.appendChild(tx); }
     (cfg.overlays||[]).forEach(function(ov){
-      svg.appendChild(svgEl("polygon",{points:ptsStr(cx,cy,R,ov.vals),
+      var po=svgEl("polygon",{points:ptsStr(cx,cy,R,ov.vals),
         fill:ov.fillOp?ov.color:"none","fill-opacity":ov.fillOp||0,
         stroke:ov.color,"stroke-width":ov.w||2.5,"stroke-linejoin":"round",
-        "stroke-dasharray":ov.dash||""}));
+        "stroke-dasharray":ov.dash||""});
+      if(ov.tag) po.setAttribute("data-person",ov.tag);
+      if(ov.aux) po.setAttribute("data-aux","1");
+      svg.appendChild(po);
     });
     if(cfg.handles) AXES.forEach(function(ax,ai){
       var hp=pt(cx,cy,R,ai,S.vals[ai]);
@@ -486,6 +500,7 @@
     var ul=$("roster"); clear(ul);
     board.people.forEach(function(p,i){
       var li=document.createElement("li");
+      li.setAttribute("data-person",p.name);
       var d=el("span","dot"); d.style.background=personColor(i); li.appendChild(d);
       li.appendChild(el("span","who",p.name));
       if(S.name && p.name.toLowerCase()===S.name.toLowerCase())
@@ -539,24 +554,26 @@
     // overlay radar
     var svg=svgEl("svg",{viewBox:"0 0 400 336",role:"img",
       "aria-label":"All participants' radar charts overlaid."});
-    var ovs=board.people.map(function(p,i){ return {vals:p.vals,color:personColor(i),fillOp:.07,w:2.5}; });
-    S.ghosts.forEach(function(gi){ ovs.unshift({vals:SCEN[gi].vals,color:SCEN[gi].color,dash:"6 5",w:1.8}); });
+    var ovs=board.people.map(function(p,i){ return {vals:p.vals,color:personColor(i),fillOp:.07,w:2.5,tag:p.name}; });
+    S.ghosts.forEach(function(gi){ ovs.unshift({vals:SCEN[gi].vals,color:SCEN[gi].color,dash:"6 5",w:1.8,aux:1}); });
     if(S.avg && board.people.length>1){
       var avg=[0,0,0,0,0,0];
       board.people.forEach(function(p){ for(var k=0;k<6;k++) avg[k]+=p.vals[k]/board.people.length; });
-      ovs.push({vals:avg,color:css("--muted"),dash:"2 4",w:2});
+      ovs.push({vals:avg,color:css("--muted"),dash:"2 4",w:2,aux:1});
     }
     drawRadar(svg,{cx:200,cy:172,R:112,labels:true,overlays:ovs});
     b.appendChild(svg);
 
     var lg=el("div","legend");
-    board.people.forEach(function(p,i){ var s=el("span"); var d=el("span","dot");
-      d.style.background=personColor(i); s.appendChild(d);
+    board.people.forEach(function(p,i){
+      var s=el("button","lgd"); s.type="button"; s.setAttribute("data-person",p.name);
+      var d=el("span","dot"); d.style.background=personColor(i); s.appendChild(d);
       s.appendChild(document.createTextNode(p.name)); lg.appendChild(s); });
     if(S.avg && board.people.length>1){ var s2=el("span"); var d2=el("span","dot");
       d2.style.background=css("--muted"); s2.appendChild(d2);
       s2.appendChild(document.createTextNode("group average")); lg.appendChild(s2); }
     b.appendChild(lg);
+    var spot=el("p","note"); spot.id="spot-note"; b.appendChild(spot);
 
     // toggles: average + official ghosts
     var tg=el("div","toggles");
@@ -602,9 +619,12 @@
         var seen={};
         fc.forEach(function(o){
           var v=o.p.conf[r.si], n=seen[v]||0; seen[v]=n+1;
-          sv.appendChild(svgEl("circle",{cx:10+v*2.4,
+          var dot=svgEl("circle",{cx:10+v*2.4,
             cy:15+(n?(n%2?-1:1)*Math.ceil(n/2)*7:0), r:5,
-            fill:personColor(o.pi),stroke:css("--surface"),"stroke-width":1.5}));
+            fill:personColor(o.pi),stroke:css("--surface"),"stroke-width":1.5,
+            "data-person":o.p.name});
+          var tt=svgEl("title"); tt.textContent=o.p.name+" · "+v+"%"; dot.appendChild(tt);
+          sv.appendChild(dot);
         });
         row.appendChild(sv);
         row.appendChild(el("span","aval",Math.round(r.mean)+"%"));
@@ -634,15 +654,71 @@
         var seen={};
         board.people.forEach(function(p,pi){
           var v=p.vals[sp.i]; var n=seen[v]||0; seen[v]=n+1;
-          sv.appendChild(svgEl("circle",{cx:10+(v-1)*60+(n%2?4:-4)*(n>0?1:0)+(n>1?0:0),
+          var dot=svgEl("circle",{cx:10+(v-1)*60+(n%2?4:-4)*(n>0?1:0)+(n>1?0:0),
             cy:15+(n? (n%2? -1:1)*Math.ceil(n/2)*7 : 0), r:5,
-            fill:personColor(pi),stroke:css("--surface"),"stroke-width":1.5}));
+            fill:personColor(pi),stroke:css("--surface"),"stroke-width":1.5,
+            "data-person":p.name});
+          var tt=svgEl("title"); tt.textContent=p.name+" · "+v;
+          dot.appendChild(tt);
+          sv.appendChild(dot);
         });
         row.appendChild(sv);
         b.appendChild(row);
       });
     }
+    applyHighlight();
   }
+
+  /* ---------- spotlight: hover or tap a person to lift them out of the pile ---------- */
+  var hoverP=null, stickyP=null;
+  function applyHighlight(){
+    if(stickyP && !board.people.some(function(p){ return p.name===stickyP; })) stickyP=null;
+    var f=hoverP||stickyP;
+    var brd=$("board");
+    brd.querySelectorAll("polygon[data-person]").forEach(function(po){
+      var mine=f&&po.getAttribute("data-person")===f;
+      po.style.opacity=f?(mine?"1":".14"):"";
+      po.setAttribute("stroke-width",mine?4:2.5);
+      po.setAttribute("fill-opacity",mine?.2:.07);
+      if(mine) po.parentNode.appendChild(po);   // raise to top
+    });
+    brd.querySelectorAll("polygon[data-aux]").forEach(function(po){
+      po.style.opacity=f?".18":"";
+    });
+    brd.querySelectorAll("circle[data-person]").forEach(function(c){
+      var mine=f&&c.getAttribute("data-person")===f;
+      c.style.opacity=f?(mine?"1":".22"):"";
+      c.setAttribute("r",mine?7:5);
+      if(mine) c.parentNode.appendChild(c);
+    });
+    brd.querySelectorAll(".lgd").forEach(function(lg){
+      lg.classList.toggle("hl",!!f&&lg.getAttribute("data-person")===f);
+    });
+    $("roster").querySelectorAll("li[data-person]").forEach(function(li){
+      li.classList.toggle("dim",!!f&&li.getAttribute("data-person")!==f);
+    });
+    var note=$("spot-note");
+    if(note) note.textContent = f
+      ? "Spotlight: "+f+(stickyP===f?" (tap their name again to release)":"")
+      : "Hover or tap a name, or any dot below, to spotlight one person.";
+  }
+  function personFromEvent(ev){
+    var t=ev.target&&ev.target.closest?ev.target.closest("[data-person]"):null;
+    return t?t.getAttribute("data-person"):null;
+  }
+  ["roster","board"].forEach(function(id){
+    var host=$(id);
+    host.addEventListener("pointerover",function(ev){
+      var p=personFromEvent(ev); if(p!==hoverP){ hoverP=p; applyHighlight(); }
+    });
+    host.addEventListener("pointerout",function(ev){
+      if(hoverP){ hoverP=null; applyHighlight(); }
+    });
+    host.addEventListener("click",function(ev){
+      var p=personFromEvent(ev); if(!p) return;
+      stickyP = stickyP===p?null:p; hoverP=null; applyHighlight();
+    });
+  });
 
   /* ---------- clear the shared board ---------- */
   $("clear-btn").addEventListener("click",function(){

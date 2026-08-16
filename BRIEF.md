@@ -198,7 +198,12 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
   (`netlify/functions/board.mjs`, routed to `/api/board`, one JSON blob per person
   keyed `room/name`); an optional `?room=` URL param isolates simultaneous groups.
   The client polls every ~6s, requires a name (no anonymous "Me" collisions), and
-  degrades to a clear "board not reachable" note on static-only servers. We tried
+  degrades to a clear "board not reachable" note on static-only servers. Overlaid
+  marks get a **spotlight**: hover or tap any person's name, row, or dot to raise
+  their marks (full opacity, thicker stroke, on top) while everyone else fades;
+  tap toggles a sticky spotlight for touch screens, a status line names who is
+  spotlighted, and dots carry native name tooltips. Skip re-rendering on poll
+  ticks when data is unchanged, or the rebuild fights the hover. We tried
   URL-hash link-sharing first; it failed user testing (silent imports, name
   collisions that overwrite people, too much copy-paste choreography).
 
