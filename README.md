@@ -11,6 +11,7 @@ Parametric Press. Built with an LLM doing the heavy lifting; human owns the spin
 - **`scope-neglect/`** — why 200,000 birds don't feel 100× worse than 2,000. *(draft; AI text, human editing)*
 - **`you-and-your-research/`** — Hamming's 1986 talk, full transcript as a designed reading edition (TOC, pull quotes, margin notes). *(v1; interactivity planned)*
 - **`ai-2030/`** — the UK government's five AI-in-2030 scenarios as a draw-your-own radar chart plus a 100-point confidence split, with a shared group board for discussion sessions (submit by name; served by a Netlify Function + Blobs at `/api/board`). *(v1 draft; AI text, human editing)*
+- **`climate-bathtub/`** — why CO₂ keeps rising even as emissions fall: a 3D tank of water becomes the atmosphere, with draw-your-prediction charts, a steer-the-emissions game, and IEA/UNEP projections run through a small in-browser climate model (three.js). *(v1; AI text, human editing)*
 
 ## New piece, quick start
 1. Skim `BRIEF.md`.

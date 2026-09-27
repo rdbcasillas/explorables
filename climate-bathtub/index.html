@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Climate Bathtub</title>
+  <meta name="description" content="An interactive explanation of why carbon dioxide keeps building up in the atmosphere even as emissions fall, and what that means for stopping global warming." />
+  <meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#101419" media="(prefers-color-scheme: dark)" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..800,50;1,9..144,300..700,50&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='4' y='8' width='24' height='18' rx='5' fill='none' stroke='%231d2127' stroke-width='2.5'/><rect x='6.5' y='16' width='19' height='7.5' rx='3' fill='%232c63c9'/></svg>" />
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <nav class="progress" aria-label="Chapters">
+    <ol id="toc"></ol>
+  </nav>
+
+  <main class="layout">
+    <aside class="stage-wrap" aria-label="Interactive 3D bathtub model">
+      <div id="stage" class="stage">
+        <button class="stage-toggle" id="tankHide" type="button" aria-controls="stage">Hide tank ✕</button>
+        <div class="stage-status" id="stageStatus" aria-live="polite"></div>
+      </div>
+    </aside>
+    <button class="tank-show" id="tankShow" type="button"><svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true"><rect x="1" y="1" width="16" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="7" width="12" height="4" rx="1.5" fill="var(--water)"/></svg>Show tank</button>
+
+    <div class="story">
+
+      <!-- ───────────── HERO ───────────── -->
+      <header class="chapter hero" data-ch="hero" data-title="Start">
+        <aside class="how-to">
+          <p>This is an <a href="https://explorabl.es/" target="_blank" rel="noopener">explorable explanation</a>. You learn it by working through it: drawing predictions, moving sliders, picking answers and watching what happens. Reading alone won't get you as far.</p>
+          <p>Set aside about 20 minutes somewhere you can concentrate.</p>
+        </aside>
+        <h1>The Climate <em>Bathtub</em></h1>
+        <p class="dek">Carbon dioxide builds up in the atmosphere the way water fills a bathtub. As long as more flows in than drains out, the level keeps rising, even while the tap is being turned down.</p>
+        <p>In a <span class="src" data-ref="1">2007 study</span>, the researchers John Sterman and Linda Booth Sweeney asked 212 graduate students at MIT what would happen to carbon dioxide in the atmosphere under different emissions scenarios. Three in five had backgrounds in engineering, science or math.</p>
+        <p>Most answers broke a basic physical rule. Of the students asked to sketch both emissions and natural removal, 84 percent drew paths that violated conservation of mass, and 63 percent showed CO₂ levels holding steady while more carbon entered the air each year than left it.</p>
+        <p><strong>The researchers traced the error to a common intuition: people expect a total to rise and fall along with the flow that feeds it.</strong> If emissions stop growing, it seems the amount of CO₂ in the air should stop growing too. It doesn't. The total keeps climbing for as long as more is added each year than is removed.</p>
+        <p>The sections below test that intuition, first with a tank of water and then with the atmosphere.</p>
+        <p class="scroll-cue"><span>Scroll to begin</span> <svg width="14" height="20" viewBox="0 0 14 20" aria-hidden="true"><path d="M7 1v17M1 12l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></p>
+      </header>
+
+      <!-- ───────────── 1. TAP ───────────── -->
+      <section class="chapter" data-ch="tap" data-title="Tap and drain">
+        <p class="num">01</p>
+        <h2>A tap and a drain</h2>
+        <p>Water flows into this tank from a <span class="k-in">tap</span> and out through a <span class="k-out">drain</span>. Both start at 50 litres a minute, so the level holds steady. Use the sliders to make the water rise, then fall, then hold still again.</p>
+        <div class="panel">
+          <label class="slider">
+            <span class="slider-head"><span class="k-in">Tap</span><output id="tapOut">50 L/min</output></span>
+            <input type="range" id="tapSlider" min="0" max="100" step="1" value="50" />
+          </label>
+          <label class="slider">
+            <span class="slider-head"><span class="k-out">Drain</span><output id="drainOut">50 L/min</output></span>
+            <input type="range" id="drainSlider" min="0" max="100" step="1" value="50" />
+          </label>
+          <div class="level-readout">
+            <span class="lbl k-stock">Water in the tank</span>
+            <span class="val" id="r1lvl">120 L</span>
+            <span class="trend" id="r1trend">steady</span>
+          </div>
+        </div>
+        <p>The level depends only on the difference between the two flows. When more water comes in than goes out, it rises. When less comes in, it falls. When the two are equal, it stays at whatever height it has reached, whether that is 50 in and 50 out or 80 in and 80 out.</p>
+        <p>The rest of this piece applies that rule.</p>
+      </section>
+
+      <!-- ───────────── 2. PREDICT ───────────── -->
+      <section class="chapter" data-ch="predict" data-title="Predict">
+        <p class="num">02</p>
+        <h2>Predict the level</h2>
+        <p>Over 16 minutes, the tap opens, closes and opens again, as the chart below shows. The drain stays at 50 litres a minute, and the tank starts with 100 litres. Sketch what you think the water level does on the empty chart underneath it.</p>
+        <figure class="fig">
+          <figcaption><span class="k-in">Inflow</span> and <span class="k-out">outflow</span>, litres per minute</figcaption>
+          <div id="c2flows"></div>
+        </figure>
+        <figure class="fig drawable">
+          <figcaption id="c2cap"><span class="k-stock">Water level</span>, litres. Draw with your finger or mouse.</figcaption>
+          <div id="c2level"></div>
+          <p class="draw-hint" id="c2hint">Draw left to right</p>
+        </figure>
+        <div class="actions">
+          <button class="btn primary" id="c2check" disabled>Show the answer</button>
+          <button class="btn ghost" id="c2reset">Clear</button>
+        </div>
+        <div class="reveal" id="c2feedback" hidden aria-live="polite"></div>
+      </section>
+
+      <!-- ───────────── 3. STORIES ───────────── -->
+      <section class="chapter" data-ch="stories" data-title="Elsewhere">
+        <p class="num">03</p>
+        <h2>The same pattern elsewhere</h2>
+        <p>Anything that accumulates behaves this way. In each example below, the <span class="k-in">inflow</span> falls steadily. The <span class="k-stock">stock</span> keeps rising until the inflow drops to the level of the outflow.</p>
+        <div class="seg" role="tablist" id="storyTabs">
+          <button role="tab" aria-selected="true" data-story="tub">Bathtub</button>
+          <button role="tab" aria-selected="false" data-story="debt">Debt</button>
+          <button role="tab" aria-selected="false" data-story="crowd">Crowd</button>
+        </div>
+        <figure class="fig">
+          <figcaption id="c3capFlow"></figcaption>
+          <div id="c3flows"></div>
+          <figcaption id="c3capStock"></figcaption>
+          <div id="c3stock"></div>
+        </figure>
+        <p class="story-text" id="c3text"></p>
+        <p class="aside">In a <span class="src" data-ref="3">2018 study</span>, Medha Kumar and Varun Dutt found that people who practiced stock-and-flow problems in more than one setting were better at solving them in new ones.</p>
+      </section>
+
+      <!-- ───────────── 4. SKY ───────────── -->
+      <section class="chapter" data-ch="sky" data-title="Atmosphere">
+        <p class="num">04</p>
+        <h2>The atmosphere as a tub</h2>
+        <p>The same arithmetic governs carbon dioxide. Think of the atmosphere as the tank, and the amount of CO₂ in it, measured in parts per million, as the water level.</p>
+        <ul class="legend-list">
+          <li><span class="swatch in"></span><span>The <span class="k-in">tap</span> is human emissions, from burning coal, oil and gas and from clearing forests. They total <span class="src" data-ref="4">about 42 billion tonnes of CO₂ a year</span>.</span></li>
+          <li><span class="swatch out"></span><span>The <span class="k-out">drain</span> is the ocean and land plants. Seawater dissolves CO₂, and plants take it in as they grow. Together they <span class="src" data-ref="4">absorb a little over half of what people emit</span>.</span></li>
+          <li><span class="swatch stock"></span><span>The tank itself is the air. Before industrialization the tap and drain were roughly balanced, and the <span class="k-stock">level</span> stayed <span class="src" data-ref="5">near 280 ppm</span> for thousands of years.</span></li>
+        </ul>
+        <div class="panel">
+          <div class="actions">
+            <button class="btn primary" id="c4play">▶ Play 1850 to 2025</button>
+            <label class="year-scrub">
+              <span class="mono" id="c4year">2025</span>
+              <input type="range" id="c4scrub" min="1850" max="2025" step="1" value="2025" aria-label="Year" />
+            </label>
+          </div>
+          <figure class="fig">
+            <figcaption><span class="k-in">Emissions</span> and <span class="k-out">natural uptake</span>, billion tonnes of CO₂ a year</figcaption>
+            <div id="c4flows"></div>
+            <figcaption><span class="k-stock">CO₂ in the atmosphere</span>, ppm. Dots are measurements.</figcaption>
+            <div id="c4stock"></div>
+          </figure>
+        </div>
+        <p>The shaded gap between the two lines is the CO₂ that stays in the air each year. Emissions have exceeded natural uptake in every year since 1850, and the level has risen in every year. It averaged <span class="src" data-ref="5">422.8 ppm in 2024, higher than at any point in human history</span>.</p>
+      </section>
+
+      <!-- ───────────── 5. TEST ───────────── -->
+      <section class="chapter" data-ch="test" data-title="Frozen emissions">
+        <p class="num">05</p>
+        <h2>If emissions stopped growing</h2>
+        <p>This question is adapted from the MIT study. Choose an answer before reading on.</p>
+        <div class="quiz" id="quiz5">
+          <p class="q">Suppose global emissions stopped growing today and stayed at 42 billion tonnes a year until 2100. What would happen to the amount of CO₂ in the atmosphere?</p>
+          <button class="opt" data-a="flat">It would stop rising and stay near today's level</button>
+          <button class="opt" data-a="level">It would rise for a few years, then level off</button>
+          <button class="opt" data-a="rise">It would keep rising through 2100</button>
+          <button class="opt" data-a="fall">It would slowly fall</button>
+        </div>
+        <div id="c5result" hidden>
+          <figure class="fig">
+            <figcaption><span class="k-in">Emissions</span> held flat and <span class="k-out">natural uptake</span>, billion tonnes a year</figcaption>
+            <div id="c5flows"></div>
+            <figcaption><span class="k-stock">CO₂ in the atmosphere</span>, ppm</figcaption>
+            <div id="c5stock"></div>
+          </figure>
+          <div class="reveal" id="c5feedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <!-- ───────────── 6. HOLD THE LINE ───────────── -->
+      <section class="chapter" data-ch="hold" data-title="Holding steady">
+        <p class="num">06</p>
+        <h2>Holding CO₂ steady</h2>
+        <p>How far would emissions have to fall just to keep CO₂ at today's level? Press Start and the years will begin to pass. Use the slider to set global emissions as they do.</p>
+        <p>Your goal is to keep the blue CO₂ line inside the shaded band, between <span id="bandLo">419</span> and <span id="bandHi">435</span> ppm. Today's level, <span id="bandMid">427</span> ppm, sits in the middle. The counter shows how many of the 75 years to 2100 you stay inside.</p>
+        <div class="panel game" id="game">
+          <div class="game-hud">
+            <span class="mono" id="gYear">2025</span>
+            <span class="mono" id="gPpm">427 ppm</span>
+            <span class="mono score" id="gScore">0 / 75 years in band</span>
+          </div>
+          <figure class="fig">
+            <figcaption><span class="k-stock">CO₂ in the atmosphere</span>, ppm, with the target band</figcaption>
+            <div id="c6stock"></div>
+            <figcaption><span class="k-in">Emissions</span> and <span class="k-out">natural uptake</span>, billion tonnes a year</figcaption>
+            <div id="c6flows"></div>
+            <p class="fig-note">Whenever CO₂ holds steady, emissions equal natural uptake, so the two lines sit on top of each other. Where the orange line is above the green one, CO₂ is rising.</p>
+          </figure>
+          <label class="slider big">
+            <span class="slider-head"><span class="k-in">Global emissions</span><output id="gOut">42 Gt/yr</output></span>
+            <input type="range" id="gSlider" min="0" max="60" step="0.5" value="42.2" />
+          </label>
+          <div class="actions">
+            <button class="btn primary" id="gStart">▶ Start</button>
+            <button class="btn ghost" id="gAuto">Show the answer</button>
+          </div>
+        </div>
+        <div class="reveal" id="c6feedback" hidden aria-live="polite"></div>
+      </section>
+
+      <!-- ───────────── 7. DRAIN ───────────── -->
+      <section class="chapter" data-ch="drain" data-title="Sinks">
+        <p class="num">07</p>
+        <h2>Why the drain slows down</h2>
+        <p>Natural uptake does not run at a fixed rate. The ocean and plants absorb more when there is more excess CO₂ in the air, and different parts of the system work on very different timescales.</p>
+        <div class="tiles">
+          <div class="tile"><p class="tile-k">Years</p><p>The surface ocean and growing plants take up CO₂ quickly, but they also reach their limit quickly.</p></div>
+          <div class="tile"><p class="tile-k">Centuries</p><p>The deep ocean absorbs more as surface water slowly mixes downward.</p></div>
+          <div class="tile"><p class="tile-k">Millennia</p><p>The remainder is removed by the slow chemical weathering of rock.</p></div>
+        </div>
+        <p class="aside">These timescales follow the <span class="src" data-ref="8">multi-model analysis by Joos and colleagues</span>.</p>
+        <p>This is why, in the previous section, emissions had to keep falling to hold CO₂ steady: the fast sinks were filling up. The chart below shows what happens when emissions stop altogether.</p>
+        <div class="panel">
+          <div class="seg" role="tablist" id="nzTabs">
+            <button role="tab" aria-selected="true" data-nz="2025">Stop now</button>
+            <button role="tab" aria-selected="false" data-nz="2050">Zero by 2050</button>
+            <button role="tab" aria-selected="false" data-nz="2075">Zero by 2075</button>
+          </div>
+          <figure class="fig">
+            <figcaption><span class="k-stock">CO₂ in the atmosphere</span>, ppm, 1850 to 2400</figcaption>
+            <div id="c7stock"></div>
+          </figure>
+          <p class="stat-line" id="c7stat"></p>
+        </div>
+        <p>Once emissions stop, the level starts to fall, but slowly. Centuries later, much of the added CO₂ is still in the atmosphere.</p>
+      </section>
+
+      <!-- ───────────── 8. HEAT ───────────── -->
+      <section class="chapter" data-ch="heat" data-title="Warming">
+        <p class="num">08</p>
+        <h2>Warming follows the level</h2>
+        <p>The amount of heat the atmosphere traps depends on how much CO₂ it holds, not on the rate of emissions. The ocean also takes up heat slowly, so surface warming lags behind.</p>
+        <p>The result is fairly simple: warming keeps rising until emissions reach roughly zero, and then it stops rising.</p>
+        <p>Why does it stop? When emissions reach zero, two things happen at the same time, and they push the temperature in opposite directions. Step through them one at a time.</p>
+        <div class="panel" id="nzParts">
+          <div class="seg" role="tablist" id="partTabs" aria-label="Steps">
+            <button role="tab" aria-selected="true" data-step="1">1 · Ocean catching up</button>
+            <button role="tab" aria-selected="false" data-step="2">2 · CO₂ falling</button>
+            <button role="tab" aria-selected="false" data-step="3">3 · Together</button>
+          </div>
+          <figure class="fig">
+            <figcaption>Change in temperature after emissions stop, °C. Zero is the temperature on the day they stop.</figcaption>
+            <div id="c8parts"></div>
+          </figure>
+          <label class="slider">
+            <span class="slider-head"><span>Years after emissions stop</span><output id="partYearOut">50</output></span>
+            <input type="range" id="partYear" min="1" max="100" step="1" value="50" />
+          </label>
+          <div class="tug" id="tug" aria-live="polite">
+            <div class="tug-row push"><span class="tug-name">Ocean catching up</span><span class="tug-track"><span class="tug-bar"></span></span><span class="tug-val"></span></div>
+            <div class="tug-row pull"><span class="tug-name">CO₂ falling</span><span class="tug-track"><span class="tug-bar"></span></span><span class="tug-val"></span></div>
+            <div class="tug-row net"><span class="tug-name">What actually happens</span><span class="tug-track"><span class="tug-dot"></span></span><span class="tug-val"></span></div>
+          </div>
+          <p class="part-text" id="partText"></p>
+        </div>
+        <p>The two pushes are <span class="src" data-ref="9">roughly equal in size</span>, so they cancel out. The temperature stays about where it was when emissions stopped. It stops rising, but it does not go back down.</p>
+        <p>Use the slider to choose when the world reaches net zero.</p>
+        <div class="panel">
+          <label class="slider">
+            <span class="slider-head"><span>World reaches net zero in</span><output id="nzOut">2050</output></span>
+            <input type="range" id="nzSlider" min="2030" max="2100" step="1" value="2050" />
+          </label>
+          <figure class="fig">
+            <figcaption><span class="k-heat">Warming</span> since 1850–1900, °C</figcaption>
+            <div id="c8temp"></div>
+          </figure>
+          <figure class="fig">
+            <figcaption>The same choice, plotted as a budget: CO₂ emitted before net zero (across), and <span class="k-heat">warming when emissions stop</span> (up)</figcaption>
+            <div id="c8budget"></div>
+          </figure>
+          <p class="stat-line" id="c8stat"></p>
+        </div>
+        <div class="reveal" id="c8reveal">
+          <p class="reveal-title">What this line shows</p>
+          <p>Each point on the line is one possible net-zero year. The later the year, the more CO₂ is emitted on the way, and the warmer the world is when emissions finally stop. The line is straight: every 100 billion tonnes adds about 0.045°C of warming, whenever it is emitted.</p>
+          <p>That straight line is why scientists talk about a carbon budget, a fixed amount of CO₂ that can still be emitted for a given warming limit. The Global Carbon Budget team estimated in late 2025 that about 170 billion tonnes could still be emitted while keeping a 50 percent chance of limiting warming to 1.5°C. That is <span class="src" data-ref="14">about four years</span> of current emissions.</p>
+        </div>
+      </section>
+
+      <!-- ───────────── 9. WAIT ───────────── -->
+      <section class="chapter" data-ch="wait" data-title="Delay">
+        <p class="num">09</p>
+        <h2>The cost of delay</h2>
+        <p>A carbon budget is fixed. Every year that emissions stay high uses up more of it, so a later start requires faster cuts to stay within the same limit.</p>
+        <div class="panel">
+          <p class="slider-head seg-label">Warming limit</p>
+          <div class="seg" role="tablist" id="limitTabs" aria-label="Warming limit">
+            <button role="tab" aria-selected="false" data-limit="1.5">1.5°C</button>
+            <button role="tab" aria-selected="true" data-limit="1.7">1.7°C</button>
+            <button role="tab" aria-selected="false" data-limit="2">2°C</button>
+          </div>
+          <label class="slider">
+            <span class="slider-head"><span>Emissions stay flat until</span><output id="waitOut">2025</output></span>
+            <input type="range" id="waitSlider" min="2025" max="2050" step="1" value="2025" />
+          </label>
+          <figure class="fig">
+            <figcaption><span class="k-in">Emissions</span>, billion tonnes a year. The <span class="ghost-key">dashed path</span> starts cutting now; both use the same budget.</figcaption>
+            <div id="c9flows"></div>
+          </figure>
+          <div class="kpis" id="c9kpis"></div>
+        </div>
+        <p class="aside">The budgets are the <span class="src" data-ref="14">Global Carbon Budget 2025</span> estimates for a 50 percent chance of staying under each limit: 170 billion tonnes for 1.5°C, 525 for 1.7°C and 1,055 for 2°C. In reality, emissions are not yet falling at all, as the next section shows.</p>
+      </section>
+
+      <!-- ───────────── 10. OUTLOOK ───────────── -->
+      <section class="chapter" data-ch="headed" data-title="Outlook">
+        <p class="num">10</p>
+        <h2>Where emissions are actually headed</h2>
+        <p>The scenarios so far have assumed that cuts begin soon. They have not begun. Fossil fuel emissions reached <span class="src" data-ref="14">a record 38.1 billion tonnes of CO₂ in 2025</span>, and total emissions, including land use, have stayed near 42 billion tonnes for several years. Over the past decade they grew by about 0.3 percent a year.</p>
+        <p>The warming is already arriving. 2024 was the <span class="src" data-ref="10">first calendar year more than 1.5°C</span> warmer than the pre-industrial average, at 1.60°C, and 2023 to 2025 was the first three-year period to average above that level. The World Meteorological Organization puts the chance that the 2025–2029 average exceeds 1.5°C at <span class="src" data-ref="15">70 percent</span>.</p>
+        <p>The International Energy Agency models where energy emissions go under different assumptions. Under the policies governments have actually put in place, emissions stay near 40 billion tonnes a year through 2050 and never peak. If governments also carry out the policies they have announced, emissions peak soon and fall <span class="src" data-ref="11">below 30 billion tonnes by 2050</span>. Choose a path to run it through this page's model.</p>
+        <div class="panel">
+          <div class="seg" role="tablist" id="scenTabs">
+            <button role="tab" aria-selected="true" data-scen="cps">Current policies</button>
+            <button role="tab" aria-selected="false" data-scen="steps">Announced policies</button>
+            <button role="tab" aria-selected="false" data-scen="nze">Net zero by 2050</button>
+          </div>
+          <figure class="fig">
+            <figcaption><span class="k-in">Emissions</span>, billion tonnes of CO₂ a year</figcaption>
+            <div id="c10flows"></div>
+            <figcaption><span class="k-heat">Warming</span> since 1850–1900, °C</figcaption>
+            <div id="c10temp"></div>
+          </figure>
+          <div class="kpis" id="c10kpis"></div>
+          <p class="fig-note">The IEA scenarios cover energy emissions to 2050. Here they include about 4 billion tonnes a year from land use. After 2050, current policies are held flat and announced policies continue their 2035–2050 decline. The IEA's own warming estimates include all greenhouse gases.</p>
+        </div>
+
+        <h3 class="subhead">What the major assessments project</h3>
+        <p>Several groups track where today's policies and pledges lead. Their methods differ, but none puts the world on course for 1.5°C. Even if every pledge were met in full, including long-term net-zero targets, warming would reach about 1.9°C.</p>
+        <figure class="fig proj" aria-label="Projected warming in 2100 by assessment">
+          <figcaption>Projected warming by 2100, °C above pre-industrial</figcaption>
+          <div class="proj-rows">
+            <div class="proj-row"><span class="proj-label"><span class="src" data-ref="11">IEA</span>, current policies</span><span class="proj-track"><span class="proj-dot bad" style="--v:2.9"></span></span><span class="proj-val">≈2.9</span></div>
+            <div class="proj-row"><span class="proj-label"><span class="src" data-ref="12">UNEP</span>, current policies</span><span class="proj-track"><span class="proj-dot bad" style="--v:2.8"></span></span><span class="proj-val">2.8</span></div>
+            <div class="proj-row"><span class="proj-label"><span class="src" data-ref="13">Climate Action Tracker</span>, current policies</span><span class="proj-track"><span class="proj-dot bad" style="--v:2.6"></span></span><span class="proj-val">2.6</span></div>
+            <div class="proj-row"><span class="proj-label">IEA, announced policies</span><span class="proj-track"><span class="proj-dot" style="--v:2.5"></span></span><span class="proj-val">2.5</span></div>
+            <div class="proj-row"><span class="proj-label">UNEP, national pledges</span><span class="proj-track"><span class="proj-range" style="--a:2.3;--b:2.5"></span></span><span class="proj-val">2.3–2.5</span></div>
+            <div class="proj-row"><span class="proj-label">Climate Action Tracker, pledges and targets</span><span class="proj-track"><span class="proj-dot" style="--v:2.2"></span></span><span class="proj-val">2.2</span></div>
+            <div class="proj-row"><span class="proj-label">UNEP, pledges plus net-zero targets</span><span class="proj-track"><span class="proj-dot good" style="--v:1.9"></span></span><span class="proj-val">1.9</span></div>
+          </div>
+          <div class="proj-axis" aria-hidden="true"><span style="--v:1.5">1.5°</span><span style="--v:2">2°</span><span style="--v:2.5">2.5°</span><span style="--v:3">3°</span></div>
+          <p class="fig-note">The green band marks the Paris Agreement range, 1.5°C to 2°C.</p>
+        </figure>
+        <p>Under the most optimistic of UNEP's scenarios, the chance of holding warming below 1.5°C is <span class="src" data-ref="16">about 21 percent</span>. In the terms of this piece, the tap is still running as fast as it ever has, the drain takes a little over half, and the tub keeps filling.</p>
+      </section>
+
+      <!-- ───────────── 11. SANDBOX ───────────── -->
+      <section class="chapter" data-ch="sandbox" data-title="Scenarios">
+        <p class="num">11</p>
+        <h2>Draw your own scenario</h2>
+        <p>Draw an emissions path from now to 2100 on the top chart, or start from one of the examples. Values below zero mean removing CO₂ from the air. The charts underneath show the resulting CO₂ level and warming.</p>
+        <div class="seg small" id="presets">
+          <button data-preset="cps">Current policies</button>
+          <button data-preset="steps">Announced policies</button>
+          <button data-preset="nz2050">Net zero by 2050</button>
+          <button data-preset="delay">Delay, then fast cuts</button>
+          <button data-preset="removal">Large-scale removal</button>
+        </div>
+        <figure class="fig drawable">
+          <figcaption><span class="k-in">Emissions</span>, 2025 to 2100, billion tonnes a year. Drag to draw.</figcaption>
+          <div id="c11flows"></div>
+        </figure>
+        <figure class="fig">
+          <figcaption><span class="k-stock">CO₂ in the atmosphere</span>, ppm</figcaption>
+          <div id="c11stock"></div>
+          <figcaption><span class="k-heat">Warming</span>, °C</figcaption>
+          <div id="c11temp"></div>
+        </figure>
+        <div class="kpis" id="c11kpis"></div>
+      </section>
+
+      <!-- ───────────── 12. END ───────────── -->
+      <section class="chapter" data-ch="end" data-title="Summary">
+        <p class="num">12</p>
+        <h2>A final question</h2>
+        <p>This one is new. Choose an answer before reading on.</p>
+        <div class="quiz" id="quiz11">
+          <p class="q">Suppose emissions fall by 30 percent over the next 15 years, then stay at that level. In 2100, the global temperature will be:</p>
+          <button class="opt" data-a="lower">Lower than today</button>
+          <button class="opt" data-a="same">About the same as today</button>
+          <button class="opt" data-a="higher">Higher than today</button>
+        </div>
+        <div class="reveal" id="c11feedback" hidden aria-live="polite"></div>
+
+        <h2 class="takeaways-title">Summary</h2>
+        <ol class="takeaways">
+          <li>The amount of CO₂ in the atmosphere rises whenever emissions exceed what the ocean and land absorb, even while emissions are falling.</li>
+          <li>Holding emissions steady does not hold CO₂ steady. Current emissions are well above the rate of natural uptake.</li>
+          <li>Warming stops increasing at roughly net zero emissions, and the peak depends on the total emitted before then.</li>
+          <li>Delay leaves a smaller budget for the years that follow, so the cuts have to be faster.</li>
+          <li>Emissions have not yet started to fall. Under current policies, the major assessments project 2.6°C to 2.9°C of warming by 2100.</li>
+        </ol>
+        <p><span class="src" data-ref="1">Sterman and Booth Sweeney argued</span> that public support for waiting to see how harmful climate change becomes may stem less from indifference than from this misunderstanding. Waiting works for a kettle, where there is almost no delay between the whistle and taking it off the stove. In the climate there are long delays at every step, from emissions to CO₂ levels to temperature.</p>
+        <p class="share"><button class="btn ghost" id="restart">↺ Start over</button></p>
+
+        <section class="refs" id="sources">
+          <h3>Sources</h3>
+          <ol class="ref-list">
+            <li id="ref-1">Sterman, J. and Booth Sweeney, L. (2007). <a href="http://web.mit.edu/jsterman/www/StermanSweeneyClimaticChangeFinal.pdf" target="_blank" rel="noopener">Understanding public complacency about climate change: adults' mental models of climate change violate conservation of matter.</a> <i>Climatic Change</i> 80, 213–238.</li>
+            <li id="ref-2">Booth Sweeney, L. and Sterman, J. (2000). <a href="https://web.mit.edu/jsterman/www/Bathtub.pdf" target="_blank" rel="noopener">Bathtub dynamics: initial results of a systems thinking inventory.</a> <i>System Dynamics Review</i> 16, 249–286.</li>
+            <li id="ref-3">Kumar, M. and Dutt, V. (2018). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5879122/" target="_blank" rel="noopener">Experience in a climate microworld: influence of surface and structure learning, problem difficulty, and decision aids in reducing stock-flow misconceptions.</a> <i>Frontiers in Psychology</i> 9, 299.</li>
+            <li id="ref-4">Friedlingstein, P. et al. (2026). <a href="https://essd.copernicus.org/articles/18/3211/2026/" target="_blank" rel="noopener">Global Carbon Budget 2025.</a> <i>Earth System Science Data</i> 18.</li>
+            <li id="ref-5">Lindsey, R. <a href="https://www.climate.gov/news-features/understanding-climate/climate-change-atmospheric-carbon-dioxide" target="_blank" rel="noopener">Climate change: atmospheric carbon dioxide.</a> NOAA Climate.gov.</li>
+            <li id="ref-6">University of Leeds (2025). <a href="https://www.eurekalert.org/news-releases/1087578" target="_blank" rel="noopener">Scientists find three years left of remaining carbon budget for 1.5°C.</a> Summary of Forster, P. et al., <a href="https://essd.copernicus.org/articles/18/3889/2026/" target="_blank" rel="noopener">Indicators of Global Climate Change</a>, <i>Earth System Science Data</i>.</li>
+            <li id="ref-7">Friedlingstein, P. et al. (2020). <a href="https://essd.copernicus.org/articles/12/3269/2020/" target="_blank" rel="noopener">Global Carbon Budget 2020.</a> <i>Earth System Science Data</i> 12, 3269–3340.</li>
+            <li id="ref-8">Joos, F. et al. (2013). <a href="https://acp.copernicus.org/articles/13/2793/2013/" target="_blank" rel="noopener">Carbon dioxide and climate impulse response functions for the computation of greenhouse gas metrics: a multi-model analysis.</a> <i>Atmospheric Chemistry and Physics</i> 13, 2793–2825.</li>
+            <li id="ref-9">MacDougall, A. et al. (2020). <a href="https://bg.copernicus.org/articles/17/2987/2020/" target="_blank" rel="noopener">Is there warming in the pipeline? A multi-model analysis of the Zero Emissions Commitment from CO₂.</a> <i>Biogeosciences</i> 17, 2987–3016. See also <a href="https://www.carbonbrief.org/explainer-will-global-warming-stop-as-soon-as-net-zero-emissions-are-reached" target="_blank" rel="noopener">Carbon Brief's explainer</a>.</li>
+            <li id="ref-10">Copernicus Climate Change Service (2026). <a href="https://climate.copernicus.eu/global-climate-highlights-2025" target="_blank" rel="noopener">Global Climate Highlights 2025.</a></li>
+            <li id="ref-11">International Energy Agency (2025). <a href="https://www.iea.org/reports/world-energy-outlook-2025/executive-summary" target="_blank" rel="noopener">World Energy Outlook 2025.</a> See the <a href="https://www.iea.org/reports/world-energy-outlook-2025/current-policies-scenario" target="_blank" rel="noopener">Current Policies</a> and <a href="https://www.iea.org/reports/world-energy-outlook-2025/stated-policies-scenario" target="_blank" rel="noopener">Stated Policies</a> scenarios.</li>
+            <li id="ref-12">UN Environment Programme (2025). <a href="https://www.unep.org/resources/emissions-gap-report-2025" target="_blank" rel="noopener">Emissions Gap Report 2025: Off Target.</a></li>
+            <li id="ref-13">Climate Action Tracker (2025). <a href="https://climateactiontracker.org/publications/warming-projections-global-update-2025/" target="_blank" rel="noopener">Warming projections global update, November 2025.</a></li>
+            <li id="ref-14">Carbon Brief (2025). <a href="https://www.carbonbrief.org/analysis-fossil-fuel-co2-emissions-to-set-new-record-in-2025-as-land-sink-recovers" target="_blank" rel="noopener">Analysis: Fossil-fuel CO₂ emissions to set new record in 2025 as land sink 'recovers'.</a> Summary of the Global Carbon Budget 2025.</li>
+            <li id="ref-15">World Meteorological Organization (2025). <a href="https://wmo.int/resources/publication-series/wmo-global-annual-decadal-climate-update/wmo-global-annual-decadal-climate-update-2025-2029" target="_blank" rel="noopener">Global Annual to Decadal Climate Update 2025–2029.</a></li>
+            <li id="ref-16">Carbon Brief (2025). <a href="https://www.carbonbrief.org/unep-new-country-climate-plans-barely-move-needle-on-expected-warming" target="_blank" rel="noopener">UNEP: New country climate plans 'barely move needle' on expected warming.</a></li>
+          </ol>
+        </section>
+        <details class="sources">
+          <summary>How the model works</summary>
+          <p>The charts on this page come from a small model that runs in your browser. It is meant for teaching, not forecasting.</p>
+          <ul>
+            <li><b>Carbon:</b> the four-timescale response of atmospheric CO₂ to emissions from Joos et al. (2013), with timescales scaled (as in the FaIR model) so that the historical record from 1850 to 2025 is reproduced to within about 10 ppm.</li>
+            <li><b>Heat:</b> a two-layer energy-balance model (surface and deep ocean). Gases other than CO₂ and aerosols are folded in as a fixed fraction of CO₂'s effect. It is calibrated to match human-caused warming of about 1.36°C in 2024 (<a href="#ref-6">ref. 6</a>) and to roughly reproduce the IEA's 2025 scenario projections, and warming levels off at net zero, in line with the models reviewed by MacDougall et al. (2020). It runs slightly cooler than the IEA's estimates, which include all greenhouse gases in detail.</li>
+            <li><b>Emissions history:</b> fossil fuels plus land-use change, approximated from the Global Carbon Budget.</li>
+            <li><b>Not included:</b> tipping points, the weakening of natural sinks as the planet warms, and separate treatment of methane and aerosols. Most of these would make the real problem harder.</li>
+          </ul>
+        </details>
+        <footer class="colophon">Free to use in classrooms.</footer>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
