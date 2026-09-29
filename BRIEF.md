@@ -225,3 +225,4 @@ _(Add new patterns here as we invent them.)_
 | Scope Neglect | `scope-neglect/` | hero photo, explainer diagram, predict-then-reveal, data table, gap chart, pictogram grid | v5 draft (AI text, awaiting human edit) |
 | You and Your Research | `you-and-your-research/` | reading edition (contents rail, pull quotes, highlights, margin notes, ELI5 popovers, progress bar), hero photo, loop diagrams ×3, compound-interest slider, importance 2×2 | v3, live on Netlify |
 | AI 2030: Draw Your Future | `ai-2030/` | toy model (draggable radar builder), predict-then-reveal (confidence split vs drawn shape), group board | v1 draft (AI text, awaiting human edit) |
+| Polycrisis in Brief | `polycrisis/` | entangled-network hero, tap-to-gloss definitions, simple risk lab (3 sliders + live SVG), stage timeline, small multiples, before/after charts, tap-to-build ties with 4 outcome states | v1 (AI text, human-edited) |

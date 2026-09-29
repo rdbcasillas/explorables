@@ -12,6 +12,7 @@ Parametric Press. Built with an LLM doing the heavy lifting; human owns the spin
 - **`you-and-your-research/`** — Hamming's 1986 talk, full transcript as a designed reading edition (TOC, pull quotes, margin notes). *(v1; interactivity planned)*
 - **`ai-2030/`** — the UK government's five AI-in-2030 scenarios as a draw-your-own radar chart plus a 100-point confidence split, with a shared group board for discussion sessions (submit by name; served by a Netlify Function + Blobs at `/api/board`). *(v1 draft; AI text, human editing)*
 - **`climate-bathtub/`** — why CO₂ keeps rising even as emissions fall: a 3D tank of water becomes the atmosphere, with draw-your-prediction charts, a steer-the-emissions game, and IEA/UNEP projections run through a small in-browser climate model (three.js). *(v1; AI text, human editing)*
+- **`polycrisis/`** — a six-chapter visual summary of Mark et al. (2025), *Understanding polycrisis*: what makes crises entangled, why a crisis starts with risk (a small bridge risk lab), planetary boundaries, how disasters combine, and why trust and "polysolutions" help (tap-to-build bridging ties). *(v1; AI text, human-edited)*
 
 ## New piece, quick start
 1. Skim `BRIEF.md`.
