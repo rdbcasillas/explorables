@@ -6,6 +6,7 @@ Parametric Press. Built with an LLM doing the heavy lifting; human owns the spin
 - **`BRIEF.md`** — the standing house style. Read it first, every session. Living doc.
 - **`template/`** — starter skeleton (tokens + interaction toolkit). Copy to start a piece.
 - **`<topic>/`** — one folder per explorable (`index.html`, assets).
+- **`index.html`** (root) — the site's front page: a list of live pieces. Add a card when a piece goes live.
 
 ## Pieces
 - **`scope-neglect/`** — why 200,000 birds don't feel 100× worse than 2,000. *(draft; AI text, human editing)*
@@ -19,3 +20,4 @@ Parametric Press. Built with an LLM doing the heavy lifting; human owns the spin
 2. Copy `template/index.html` into a new `<topic>/` folder (or start single-file).
 3. Human drafts the spine (sections + the knob); AI drafts prose + builds interactions.
 4. Fold any new interaction pattern back into `BRIEF.md` §7 and the catalog.
+5. When it's ready to share, add a card for it to the root `index.html`.

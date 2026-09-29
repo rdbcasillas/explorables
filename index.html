@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+  Site index: the list of explorables served at the root URL.
+  Add a new <li> here (newest first) whenever a piece goes live.
+  Tokens copied from template/index.html so the index matches the pieces.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive essays that explain an idea by letting you play with it.">
+<title>Explorables</title>
+<style>
+  :root{
+    --bg:#f7f3ec; --surface:#fffdf9; --fg:#26221c; --muted:#7a7264;
+    --line:#e4dccd; --accent:#c8492e; --accent-2:#2e6ec8;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){:root{
+    color-scheme:dark;
+    --bg:#151310; --surface:#1e1b16; --fg:#ece5da; --muted:#9c9284;
+    --line:#332e26; --accent:#f0704f; --accent-2:#6ea3f0;}}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  main{max-width:40rem;margin:0 auto;padding:3.5rem 1.15rem 4rem}
+  h1{font-size:clamp(2.4rem,8vw,3.4rem);line-height:1;letter-spacing:-.02em;margin:0 0 .6rem;font-weight:600}
+  .dek{color:var(--muted);font-size:1.1rem;margin:0 0 2.5rem;max-width:32rem}
+  ol{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
+  a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem 1.15rem;transition:border-color .15s,transform .15s}
+  a.card:hover{border-color:var(--accent);transform:translateY(-1px)}
+  a.card:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
+  .kind{font:600 .72rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  h2{font-size:1.4rem;line-height:1.2;margin:.45rem 0 .35rem;font-weight:600}
+  h2::after{content:" →";color:var(--muted);font-weight:400}
+  .card p{margin:0;color:var(--muted);font-size:1rem;line-height:1.5}
+  footer{margin-top:3rem;font:400 .85rem/1.5 var(--sans);color:var(--muted)}
+  footer a{color:inherit}
+  @media (prefers-reduced-motion: reduce){a.card{transition:none}a.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Explorables</h1>
+  <p class="dek">Interactive essays that explain an idea by letting you play with it. Each one works on a phone.</p>
+  <ol>
+    <li><a class="card" href="/polycrisis/">
+      <span class="kind">Visual summary</span>
+      <h2>Polycrisis in Brief</h2>
+      <p>What makes today’s crises tangle together, when a crisis really starts, and what helps. Six short chapters on a 2025 paper.</p>
+    </a></li>
+    <li><a class="card" href="/climate-bathtub/">
+      <span class="kind">Interactive essay</span>
+      <h2>The Climate Bathtub</h2>
+      <p>Why carbon dioxide keeps building up in the atmosphere even as emissions fall, and what that means for stopping global warming.</p>
+    </a></li>
+    <li><a class="card" href="/ai-2030/">
+      <span class="kind">Group activity</span>
+      <h2>AI 2030: Draw Your Future</h2>
+      <p>The UK government’s five scenarios for AI in 2030. Draw the future you expect, see how confident you are, and compare with others.</p>
+    </a></li>
+    <li><a class="card" href="/you-and-your-research/">
+      <span class="kind">Reading edition</span>
+      <h2>You and Your Research</h2>
+      <p>Richard Hamming’s 1986 talk on doing great research: the complete transcript, designed for reading, with margin notes.</p>
+    </a></li>
+    <li><a class="card" href="/scope-neglect/">
+      <span class="kind">Interactive essay</span>
+      <h2>Scope Neglect</h2>
+      <p>Why 200,000 birds in danger don’t feel 100 times worse than 2,000.</p>
+    </a></li>
+  </ol>
+  <footer>Source on <a href="https://github.com/rdbcasillas/explorables">GitHub</a>.</footer>
+</main>
+</body>
+</html>
