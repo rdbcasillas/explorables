@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<!--
+  Explorable: Polycrisis in Brief (v1)
+  Source: Mark, Holder, Hoyer, Schoonover & Aldrich (2025), "Understanding polycrisis:
+          definitions, applications, and responses", Global Sustainability 8, e35 (CC BY-NC-SA 4.0)
+  Pattern(s): entangled-network hero (toggle), tap-to-gloss definitions, simple risk lab
+              (3 sliders + live bridge SVG), crisis-stage timeline, planetary-boundaries radial,
+              small multiples, before/after capacity charts, spectrum cards, loop diagram,
+              tap-to-build bridging ties (4 outcome states), hub diagrams, coded sea-wall section
+  Deps: none (vanilla JS + SVG); Google Fonts (Newsreader, Public Sans, IBM Plex Mono)
+  Packaging: single self-contained file
+  Text status: AI draft, human-edited over several rounds.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A six-chapter visual summary of what 'polycrisis' means, when a crisis starts, and what helps.">
+<title>Polycrisis in Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+[hidden]{display:none!important}
+img{max-width:100%}
+:root{
+  --bg:#F1F3F6; --surface:#FFFFFF; --surface-2:#E8ECF1; --ink:#121A24; --ink-2:#3C4858; --muted:#657184;
+  --line:#D6DCE4; --line-2:#B7C0CC;
+  --stress:#6446C6; --trigger:#DB5419; --risk:#B07B00; --crisis:#CC2F40; --outcome:#8C1F37;
+  --pattern:#9B3F86; --resp:#16835A; --sys:#2765B2; --social:#0C7C87;
+  --serif:'Newsreader',Georgia,'Times New Roman',serif;
+  --sans:'Public Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E1319; --surface:#151C25; --surface-2:#1D2631; --ink:#E6EBF1; --ink-2:#B3BDCA; --muted:#8792A3;
+    --line:#28323E; --line-2:#3A4655;
+    --stress:#A08CF4; --trigger:#FF7F48; --risk:#E7B63C; --crisis:#FF5E6B; --outcome:#EA7F93;
+    --pattern:#DC8BCB; --resp:#3EC58B; --sys:#72AAEF; --social:#3CC3CC;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E1319; --surface:#151C25; --surface-2:#1D2631; --ink:#E6EBF1; --ink-2:#B3BDCA; --muted:#8792A3;
+  --line:#28323E; --line-2:#3A4655;
+  --stress:#A08CF4; --trigger:#FF7F48; --risk:#E7B63C; --crisis:#FF5E6B; --outcome:#EA7F93;
+  --pattern:#DC8BCB; --resp:#3EC58B; --sys:#72AAEF; --social:#3CC3CC;
+}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.64 var(--sans);-webkit-font-smoothing:antialiased;padding-inline:16px;padding-block:0}
+@media (min-width:700px){body{padding-inline:28px}}
+*,*::before,*::after{box-sizing:border-box}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+p{margin:0 0 1em}
+a{color:var(--sys);text-underline-offset:3px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--sys);outline-offset:2px;border-radius:4px}
+.eyebrow{font:500 12px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;margin-inline:-16px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+@media (min-width:700px){.topbar{margin-inline:-28px;padding-inline:28px}}
+.brand{font:600 17px/1 var(--serif);white-space:nowrap;text-decoration:none;color:var(--ink)}
+.brand em{font-style:italic;font-weight:500;color:var(--crisis)}
+.steps{display:flex;gap:4px;margin-left:auto}
+.steps a{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:500 11px/1 var(--mono);color:var(--muted);text-decoration:none;border:1px solid var(--line-2);background:var(--surface)}
+.steps a.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media (max-width:420px){.topbar{gap:8px}.brand{font-size:15px}.steps{gap:3px}.steps a{width:22px;height:22px;font-size:10px}}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;background:var(--ink);width:0}
+
+main{max-width:980px;margin:0 auto}
+.prose{max-width:660px;margin-inline:auto}
+section.ch{padding-block:60px 20px;border-top:1px solid var(--line)}
+.ch-head{max-width:660px;margin:0 auto 22px}
+.ch-head h2{font:500 clamp(1.9rem,4.6vw,2.7rem)/1.08 var(--serif);letter-spacing:-.015em}
+.ch-head .lede{font:400 clamp(1.1rem,2.2vw,1.25rem)/1.5 var(--serif);color:var(--ink-2);margin-top:12px}
+
+.hero{padding-block:44px 48px}
+.hero h1{font:500 clamp(2.9rem,9vw,5.4rem)/.95 var(--serif);letter-spacing:-.03em}
+.hero h1 em{font-style:italic;color:var(--crisis);font-weight:450}
+.hero .dek{font:400 clamp(1.12rem,2.4vw,1.32rem)/1.5 var(--serif);color:var(--ink-2);max-width:600px;margin:20px 0 0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:22px;font:500 13px/1.4 var(--mono);color:var(--muted)}
+.meta a{color:var(--ink-2)}
+.hero-grid{display:grid;gap:28px;align-items:end}
+@media (min-width:900px){.hero-grid{grid-template-columns:1.05fr 1fr}}
+.hero-fig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 14px 16px;margin:0}
+.hero-fig svg{display:block;width:100%}
+.hero-cap{font-size:14px;color:var(--ink-2);margin:6px 4px 0;min-height:3em}
+.h-edge{fill:none;stroke:var(--line-2);stroke-width:1.5;transition:opacity .5s}
+.h-edge.off{opacity:0}
+.h-node{fill:var(--surface);stroke:var(--ink-2);stroke-width:1.5}
+.h-hot,.h-halo,.h-part{fill:var(--crisis)}
+.h-lbl{fill:var(--ink-2);font:600 12.5px var(--sans)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:12px;padding:3px;gap:2px;background:var(--bg)}
+.seg button{border:0;background:none;padding:8px 13px;border-radius:9px;font:600 13.5px/1.1 var(--sans);color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+.t{cursor:help;border-bottom:1.5px dotted var(--kc,var(--ink-2))}
+.t:hover{background:color-mix(in srgb,var(--kc,var(--ink)) 12%,transparent);border-bottom-style:solid}
+
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:clamp(14px,3vw,24px);margin:24px auto 28px}
+.fig.narrow{max-width:660px}
+.fig-title{font:700 16px/1.3 var(--sans);margin:0 0 14px}
+.fig-note{font-size:13px;line-height:1.5;color:var(--muted);margin:12px 0 0}
+.fig svg{display:block;max-width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink-2);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:3px;border-radius:2px;display:inline-block;background:var(--c)}
+.sw.dash{background:repeating-linear-gradient(90deg,var(--c) 0 4px,transparent 4px 7px)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:var(--c);flex:none}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:2px 10px;font:600 12px/1.5 var(--sans);background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c);white-space:nowrap}
+.key{max-width:660px;margin:26px auto;padding:16px 18px;border-radius:14px;background:color-mix(in srgb,var(--kc,var(--sys)) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--kc,var(--sys)) 26%,transparent)}
+.key .eyebrow{color:var(--kc,var(--sys));margin-bottom:6px}
+.key p:last-child{margin-bottom:0}
+.svg-lbl{fill:var(--ink-2);font:500 12px var(--sans)}
+.svg-lbl.b{font-weight:700;fill:var(--ink)}
+.svg-mono{fill:var(--muted);font:500 11px var(--mono)}
+.grid-l{stroke:var(--line);stroke-width:1}
+
+/* definitions */
+.defs{display:grid;gap:14px;margin:24px auto 28px}
+@media (min-width:820px){.defs{grid-template-columns:1fr 1fr}}
+.def{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.def .who{font:600 13px/1.3 var(--sans);color:var(--muted);margin-bottom:10px}
+.def .quote{font:400 1.3rem/1.45 var(--serif);margin:0}
+.def .quote mark{background:none;color:inherit;border-bottom:2px solid var(--c);cursor:pointer;padding:0 1px}
+.def .quote mark:hover,.def .quote mark.on{background:color-mix(in srgb,var(--c) 16%,transparent)}
+.def .gloss{margin-top:14px;font-size:14.5px;color:var(--ink-2);min-height:4.5em;border-top:1px dashed var(--line-2);padding-top:12px}
+
+/* risk equation */
+.eqn{display:grid;gap:10px;align-items:stretch;grid-template-columns:1fr}
+@media (min-width:760px){.eqn{grid-template-columns:1.3fr auto 1fr auto 1fr auto 1fr}}
+.op{display:grid;place-items:center;font:500 1.6rem/1 var(--mono);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:10px;font:600 14px/1.15 var(--sans);cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.readout{margin:12px 0 0;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-size:15px;line-height:1.5}
+.tie-count{font:500 13px var(--mono);color:var(--ink-2)}
+.tie-count b{color:var(--resp)}
+.tie{cursor:pointer;outline:none}
+.tie .hit{stroke:transparent;stroke-width:22}
+.tie .vis{stroke:var(--line-2);stroke-width:1.8;stroke-dasharray:2 5}
+.tie.on .vis{stroke:var(--resp);stroke-width:3;stroke-dasharray:7 5;animation:dash 1.6s linear infinite}
+.tie .h{fill:var(--surface);stroke:var(--line-2);stroke-width:1.5}
+.tie.on .h{stroke:var(--resp)}
+.tie .ht{font:700 14px var(--sans);fill:var(--ink-2);pointer-events:none}
+.tie:hover .vis{stroke:var(--resp)}
+.tie:focus-visible .h{stroke:var(--sys);stroke-width:3}
+@media (prefers-reduced-motion: reduce){.tie.on .vis{animation:none}}
+.pn{fill:var(--surface);stroke:var(--ink-2);stroke-width:1.6;transition:fill .3s}
+.grp.hit .pn{fill:var(--crisis);stroke:var(--crisis)}
+.grp.strong .pn{fill:var(--resp);stroke:var(--resp)}
+.grp.help .pn{fill:color-mix(in srgb,var(--resp) 45%,var(--surface));stroke:var(--resp)}
+.grp.late .pn{fill:color-mix(in srgb,var(--risk) 60%,var(--surface));stroke:var(--risk)}
+.grp.alone .pn{fill:var(--surface-2);stroke:var(--line-2)}
+.grp.hit text.svg-mono{fill:var(--crisis)}
+.grp.strong text.svg-mono,.grp.help text.svg-mono{fill:var(--resp)}
+.grp.late text.svg-mono{fill:var(--risk)}
+.pulse{fill:var(--resp)}
+.pulse.late{fill:var(--risk)}
+svg.bridge{width:100%;max-width:560px;margin:0 auto 10px}
+#b-loc{font-size:13px}
+.bctl{display:grid;gap:10px 24px;grid-template-columns:1fr}
+@media (min-width:700px){.bctl{grid-template-columns:repeat(3,1fr)}}
+.rng{display:grid;font-size:14px;color:var(--ink-2)}
+.rng .top{display:flex;justify-content:space-between;gap:8px}
+.rng b{color:var(--c)}
+.rng output{font:500 13px var(--mono);color:var(--ink)}
+.rng small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.rng input[type=range]{width:100%;accent-color:var(--c);height:28px;margin:0}
+.brisk{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--surface-2)}
+.eqline{font:500 14px/1.6 var(--mono);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.eqline .f{padding:1px 7px;border-radius:6px;background:color-mix(in srgb,var(--c) 15%,transparent);color:var(--c);font-weight:600}
+.meter{position:relative;height:12px;border-radius:6px;margin:10px 0 4px;background:linear-gradient(90deg,color-mix(in srgb,var(--resp) 35%,var(--surface)) 0 10%,color-mix(in srgb,var(--risk) 38%,var(--surface)) 10% 30%,color-mix(in srgb,var(--crisis) 34%,var(--surface)) 30% 100%)}
+.meter i{position:absolute;top:-4px;width:4px;height:20px;border-radius:2px;background:var(--ink);transform:translateX(-2px);transition:left .15s}
+.meter-l{display:grid;grid-template-columns:10% 20% 70%;font:500 11px var(--mono);color:var(--muted)}
+.meter-l span:nth-child(2){text-align:center}
+#e-msg{font-size:15px;margin:8px 0 0}
+.fac{border-radius:12px;padding:14px;background:color-mix(in srgb,var(--c) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 28%,transparent)}
+.fac h4{font:700 14px/1.3 var(--sans);color:var(--c);margin-bottom:4px}
+.fac p{font-size:14px;line-height:1.45;color:var(--ink-2);margin:0}
+.fac .ex{font-size:13px;color:var(--muted);margin-top:8px;font-style:italic}
+.fac.split{display:grid;gap:10px}
+.fac.split>div{border-radius:10px;padding:10px;background:var(--surface)}
+.fac.split h5{font:700 13px/1.3 var(--sans);margin:0 0 2px}
+
+/* crisis stages */
+.stages{display:grid;grid-template-columns:repeat(3,1fr);column-gap:4px;row-gap:10px}
+.stg{grid-row:2;padding:16px;min-height:132px;background:color-mix(in srgb,var(--c) var(--a),var(--surface))}
+.stg:first-of-type{border-radius:12px 0 0 12px}
+.stg.s3{border-radius:0 12px 12px 0}
+.stg .n{font:600 12px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.stg h4{font:700 17px/1.25 var(--sans);margin:8px 0 6px}
+.stg p{font-size:14.5px;line-height:1.45;color:var(--ink-2);margin:0}
+.s1{grid-column:1;--c:var(--risk);--a:8%}
+.s2{grid-column:2;--c:var(--risk);--a:26%}
+.s3{grid-column:3;--c:var(--crisis);--a:24%}
+.mk{grid-row:1;align-self:end;font:700 15px/1.3 var(--sans);color:var(--c);border-left:3px solid var(--c);padding:2px 0 6px 10px}
+.mk span{display:block;font:500 13px/1.3 var(--sans);color:var(--ink-2)}
+.mkA{grid-column:2;--c:var(--crisis)}
+.mkB{grid-column:3;--c:var(--outcome)}
+.win{grid-row:3;grid-column:2;border-top:3px solid var(--resp);padding-top:8px;font:700 15px/1.35 var(--sans);color:var(--resp);text-align:center}
+.win span{display:block;font:500 13.5px/1.35 var(--sans);color:var(--ink-2)}
+.tax{grid-row:4;grid-column:1/-1;display:flex;align-items:center;gap:10px;font:600 14px/1 var(--sans);color:var(--ink-2);margin-top:4px}
+.tax::before{content:"";flex:1;height:2px;background:var(--line-2)}
+@media (max-width:640px){
+  .stages{display:flex;flex-direction:column;gap:8px}
+  .stg{min-height:0;border-radius:12px!important}
+  .mk{padding-block:4px}
+  .win{border-top:0;border-left:3px solid var(--resp);padding:4px 0 4px 10px;text-align:left}
+  .tax{display:none}
+}
+
+/* planetary */
+.pb{display:grid;gap:18px;align-items:center}
+@media (min-width:760px){.pb{grid-template-columns:minmax(0,340px) 1fr}}
+.pb-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.pb-list li{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:6px 10px;border-radius:10px;font-size:14.5px}
+.pb-list li:nth-child(odd){background:var(--surface-2)}
+
+/* small multiples */
+.sm{display:grid;gap:14px}
+@media (min-width:760px){.sm{grid-template-columns:1fr 1fr}}
+.sm-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface)}
+.sm-card.hl{border-color:var(--crisis);box-shadow:inset 0 0 0 1px var(--crisis)}
+.sm-card h4{font:700 15px/1.3 var(--sans);margin-bottom:4px}
+.sm-card p{font-size:14px;line-height:1.45;color:var(--ink-2);margin:8px 0 0}
+.sm-card .ex{font:500 12px/1.4 var(--mono);color:var(--muted);margin-top:6px}
+.sm-card svg{width:100%;display:block;margin-top:6px}
+
+.pair{display:grid;gap:14px}
+@media (min-width:700px){.pair{grid-template-columns:1fr 1fr}}
+.pair h4{font:700 15px/1.3 var(--sans);margin-bottom:6px}
+.pair .cap{font-size:14px;color:var(--ink-2);margin:6px 0 0;line-height:1.45}
+.pair .box{border:1px solid var(--line);border-radius:14px;padding:14px}
+.pair svg{width:100%;display:block}
+.seawall{margin:4px 0 6px;border-radius:10px;background:var(--surface-2)}
+
+/* spectrum */
+.spec{position:relative;margin:18px 0 8px}
+.spec-bar{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--line-2),color-mix(in srgb,var(--risk) 60%,var(--line-2)) 50%,var(--crisis))}
+.spec-m{position:absolute;top:-8px;width:26px;height:26px;border-radius:50%;transform:translateX(-13px);background:var(--surface);border:2px solid var(--ink);font:600 11px/22px var(--mono);text-align:center}
+.spec-ends{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--ink-2);margin-top:12px}
+.spec-ends span:last-child{text-align:right}
+.eras{display:grid;gap:12px;margin-top:20px}
+@media (min-width:760px){.eras{grid-template-columns:repeat(3,1fr)}}
+.era{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--surface)}
+.era h4{font:500 1.2rem/1.2 var(--serif);display:flex;gap:8px;align-items:baseline}
+.era h4 .n{font:600 11px var(--mono);color:var(--muted)}
+.era .when{font:500 12px var(--mono);color:var(--muted);margin:2px 0 8px}
+.era p{font-size:14px;line-height:1.5;color:var(--ink-2);margin:0 0 10px}
+.feats{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.feats li{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink-2)}
+.fm{width:12px;height:12px;border-radius:50%;flex:none;border:1.5px solid var(--line-2)}
+.fm.y{background:var(--crisis);border-color:var(--crisis)}
+.fm.p{background:linear-gradient(90deg,var(--risk) 50%,transparent 50%);border-color:var(--risk)}
+
+.loop-svg text{font:600 12.5px var(--sans);fill:var(--ink)}
+.loop-arc{fill:none;stroke:var(--social);stroke-width:2.2}
+.loop-node{fill:var(--surface);stroke:var(--line-2)}
+.flow-dash{animation:dash 1.6s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+@media (prefers-reduced-motion: reduce){.flow-dash{animation:none}}
+
+.past{display:grid;gap:12px;max-width:660px;margin:22px auto 28px}
+@media (min-width:640px){.past{grid-template-columns:1fr 1fr}}
+.past div{border-radius:14px;padding:14px 16px;background:color-mix(in srgb,var(--resp) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--resp) 25%,transparent)}
+.past h4{font:700 15px/1.3 var(--sans);margin-bottom:4px}
+.past .when{font:500 12px var(--mono);color:var(--muted);margin-bottom:6px}
+.past p{font-size:14.5px;line-height:1.5;color:var(--ink-2);margin:0}
+
+.takeaways{list-style:none;padding:0;margin:0;display:grid;gap:12px;counter-reset:k}
+.takeaways li{counter-increment:k;display:grid;grid-template-columns:30px 1fr;gap:6px;font-size:16px;line-height:1.5}
+.takeaways li::before{content:counter(k);font:500 13px/1.8 var(--mono);color:var(--muted)}
+footer.foot{max-width:980px;margin:40px auto 0;padding-block:28px 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+footer.foot p{margin-bottom:.7em}
+
+#pop{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:var(--surface);border:1px solid var(--line-2);border-radius:14px;padding:16px;box-shadow:0 18px 50px -12px rgba(10,20,30,.35)}
+#pop.sheet{left:12px!important;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto!important;width:auto}
+#pop h4{font:600 1.15rem/1.2 var(--serif);margin:0 30px 8px 0}
+#pop p{font-size:14.5px;color:var(--ink-2);margin:0}
+#pop .x{position:absolute;top:10px;right:10px;border:0;background:var(--surface-2);width:28px;height:28px;border-radius:50%;cursor:pointer;font:600 15px/1 var(--sans);color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top">Polycrisis, <em>in brief</em></a>
+  <nav class="steps" id="steps" aria-label="Chapters"></nav>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">A visual summary of a 2025 review article</p>
+        <h1>Polycrisis, <em>in brief</em></h1>
+        <p class="dek">We’re often told we live in a “polycrisis”. This page walks through one careful paper on what that word should mean. Start with the picture: switch between crises side by side and crises entangled. The gap between those two pictures is what the paper is about.</p>
+        <div class="meta">
+          <span>Mark, Holder, Hoyer, Schoonover &amp; Aldrich</span>
+          <span><i>Global Sustainability</i> 8, e35 (2025)</span>
+          <a href="https://doi.org/10.1017/sus.2025.10018" target="_blank" rel="noopener">Read the paper</a>
+          <span>About 12 minutes</span>
+        </div>
+      </div>
+      <figure class="hero-fig">
+        <div class="seg" role="group" aria-label="Hero view" style="margin-bottom:6px">
+          <button type="button" data-hm="sep" aria-pressed="true">Crises side by side</button>
+          <button type="button" data-hm="ent" aria-pressed="false">Crises entangled</button>
+        </div>
+        <div id="hero-fig"></div>
+        <figcaption class="hero-cap" id="hero-cap"></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section class="ch" id="c1" data-n="1">
+    <div class="ch-head">
+      <p class="eyebrow">1 of 6</p>
+      <h2>Crises that feed each other</h2>
+      <p class="lede">A polycrisis is not just many crises at once. It is crises that are causally tangled together.</p>
+    </div>
+    <div class="prose">
+      <p>After 2019 the word spread quickly, through the UN and the World Economic Forum, and got vaguer as it spread. This paper tries to pin it down. It starts from the most detailed existing definition, from the Cascade Institute, then offers its own. Here they are side by side. Tap an underlined phrase to see what it adds.</p>
+    </div>
+    <div class="defs" id="defs">
+      <div class="def">
+        <div class="who">Cascade Institute · Lawrence et al. 2024</div>
+        <p class="quote">“the <mark data-g="a1" style="--c:var(--crisis)">causal entanglement</mark> of crises in <mark data-g="a2" style="--c:var(--sys)">multiple global systems</mark> in ways that <mark data-g="a3" style="--c:var(--outcome)">significantly degrade humanity’s prospects</mark>”</p>
+        <div class="gloss" aria-live="polite">Tap a phrase.</div>
+      </div>
+      <div class="def">
+        <div class="who">This paper · Mark et al. 2025</div>
+        <p class="quote">“a <mark data-g="b1" style="--c:var(--risk)">state that encompasses a complex set of risks</mark> characterized by multiple, <mark data-g="b2" style="--c:var(--sys)">macroregional</mark>, and often <mark data-g="b3" style="--c:var(--stress)">ecologically embedded</mark> linkages between <mark data-g="b4" style="--c:var(--crisis)">inexorably interconnected systems</mark>”</p>
+        <div class="gloss" aria-live="polite">Tap a phrase.</div>
+      </div>
+    </div>
+    <div class="prose">
+      <p>Both definitions share a core idea: <span class="t" data-t="entangle">causal entanglement</span>. Trouble in one system raises the odds and the damage of trouble in others, as in the entangled picture at the top of the page.</p>
+      <p>They differ on where the crisis sits. The Cascade Institute puts it in the harm that results. This paper puts it earlier, in the <em>risk</em>. The next chapter shows why that matters.</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="ch" id="c2" data-n="2">
+    <div class="ch-head">
+      <p class="eyebrow">2 of 6</p>
+      <h2>A crisis starts with risk</h2>
+      <p class="lede">To say when a crisis begins, the paper first breaks risk into parts.</p>
+    </div>
+    <div class="prose">
+      <p>Risk is the chance that something goes wrong. The paper builds it from three parts that multiply together: a <b>causal factor</b> that could do damage, the system’s <b>vulnerability</b> to it, and its <b>exposure</b> to it. Try it on a bridge. Move the three sliders and watch the bridge and its risk change.</p>
+    </div>
+    <div class="fig" id="blab">
+      <svg class="bridge" viewBox="0 0 420 220" role="img" aria-label="A bridge over water. Wind arrows, deck sag, corrosion and storm clouds change with the sliders below.">
+        <defs><marker id="gm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,1 L9,5 L0,9z" style="fill:var(--trigger)"/></marker></defs>
+        <rect x="0" y="170" width="420" height="50" style="fill:color-mix(in srgb,var(--sys) 16%,var(--surface))"/>
+        <path d="M0,112 L46,112 L66,220 L0,220Z" style="fill:var(--line-2)"/>
+        <path d="M420,112 L374,112 L354,220 L420,220Z" style="fill:var(--line-2)"/>
+        <rect x="124" y="116" width="13" height="104" style="fill:var(--ink-2)"/>
+        <rect x="280" y="116" width="13" height="104" style="fill:var(--ink-2)"/>
+        <g id="b-rust" style="fill:var(--stress)"><rect x="124" y="134" width="13" height="10" rx="2"/><rect x="124" y="152" width="13" height="14" rx="2"/><rect x="280" y="144" width="13" height="12" rx="2"/></g>
+        <g id="b-deck"><path id="b-rail" fill="none" style="stroke:var(--ink-2)" stroke-width="1.5"/><path id="b-deckp"/></g>
+        <g id="b-wind" fill="none" style="stroke:var(--trigger)" stroke-linecap="round" marker-end="url(#gm)">
+          <path d="M16,56 Q50,60 82,94"/><path d="M30,40 Q70,46 106,90"/><path d="M8,74 Q34,80 60,98"/>
+        </g>
+        <g id="b-clouds" style="fill:var(--line-2)">
+          <g><circle cx="352" cy="34" r="14"/><circle cx="370" cy="26" r="17"/><circle cx="390" cy="34" r="13"/><rect x="340" y="34" width="62" height="13" rx="6"/></g>
+          <g><circle cx="282" cy="44" r="11"/><circle cx="296" cy="38" r="13"/><circle cx="311" cy="44" r="10"/><rect x="272" y="44" width="48" height="10" rx="5"/></g>
+          <g><circle cx="218" cy="30" r="10"/><circle cx="231" cy="24" r="12"/><circle cx="244" cy="30" r="9"/><rect x="210" y="30" width="42" height="9" rx="4"/></g>
+        </g>
+        <g id="b-rain" style="stroke:var(--sys)" stroke-width="1.6" stroke-linecap="round">
+          <line x1="352" y1="56" x2="346" y2="68"/><line x1="366" y1="56" x2="360" y2="68"/><line x1="380" y1="56" x2="374" y2="68"/><line x1="394" y1="56" x2="388" y2="68"/>
+          <line x1="286" y1="62" x2="280" y2="72"/><line x1="300" y1="62" x2="294" y2="72"/>
+        </g>
+        <text id="b-loc" x="12" y="208" class="svg-mono"></text>
+      </svg>
+      <div class="bctl">
+        <label class="rng" style="--c:var(--trigger)"><span class="top"><b>Causal factor</b><output id="o-w"></output></span><input id="r-w" type="range" min="0" max="100" value="60"><small>How strong the wind gets</small></label>
+        <label class="rng" style="--c:var(--sys)"><span class="top"><b>Vulnerability</b><output id="o-v"></output></span><input id="r-v" type="range" min="0" max="100" value="50"><small>How weak the bridge is: poor design, corrosion</small></label>
+        <label class="rng" style="--c:var(--sys)"><span class="top"><b>Exposure</b><output id="o-x"></output></span><input id="r-x" type="range" min="0" max="100" value="50"><small>How often storms reach it</small></label>
+      </div>
+      <div class="brisk" aria-live="polite">
+        <div class="eqline"><span>Risk =</span><span class="f" id="e-w" style="--c:var(--trigger)"></span><span>×</span><span class="f" id="e-v" style="--c:var(--sys)"></span><span>×</span><span class="f" id="e-x" style="--c:var(--sys)"></span><span>=</span><span class="f" id="e-r"></span><span class="pill" id="e-z"></span></div>
+        <div class="meter" aria-hidden="true"><i id="e-m"></i></div>
+        <div class="meter-l" aria-hidden="true"><span>low</span><span>elevated</span><span>high</span></div>
+        <p id="e-msg"></p>
+      </div>
+    </div>
+    <div class="prose">
+      <p>Push any one slider close to zero and the risk stays low, because the parts multiply. A flimsy bridge that storms almost never reach is still a low-risk bridge.</p>
+      <p>The paper also splits causal factors into two kinds. <b style="color:var(--stress)">Stresses</b> are slow, like corrosion eating at a support for years. <b style="color:var(--trigger)">Triggers</b> are sudden, like a violent gust. They work together: corrosion raises the bridge’s vulnerability, so the next gust does far more damage. <b>Slow stresses magnify sudden shocks.</b></p>
+      <p>With risk defined, the paper makes its main move. It defines a <span class="t" data-t="crisis">crisis</span> as a period of high and rising risk, when urgent decisions are needed to avoid severe harm. The figure below breaks a crisis into three stages and marks where each definition says it starts.</p>
+    </div>
+    <div class="fig">
+      <div class="stages" role="img" aria-label="Three stages: risk builds, risk is high and rising, a trigger hits and harm happens. This paper says the crisis starts at stage 2. The Cascade Institute says it starts at stage 3. Stage 2 is the window to act.">
+        <div class="stg s1"><div class="n">Stage 1</div><h4>Risk builds</h4><p>Slow stresses pile up. Nothing needs urgent action yet.</p></div>
+        <div class="mk mkA">This paper: crisis starts here<span>Risk is high and still rising</span></div>
+        <div class="stg s2"><div class="n">Stage 2</div><h4>Risk is high and rising</h4><p>Leaders face urgent choices with wide consequences. No harm yet.</p></div>
+        <div class="win">Window to act<span>Disaster can still be prevented</span></div>
+        <div class="mk mkB">Cascade Institute: crisis starts here<span>Harm has arrived</span></div>
+        <div class="stg s3"><div class="n">Stage 3</div><h4>A trigger hits and harm happens</h4><p>The risk becomes a disaster.</p></div>
+        <div class="tax">time</div>
+      </div>
+    </div>
+    <div class="prose">
+      <p>The gap between the two starting points is the <span class="t" data-t="window">window to act</span>. Defining a crisis by its risk keeps attention on that window, and if leaders act in time, stage 3 never arrives.</p>
+      <p>The paper’s example is the Cuban Missile Crisis. The risk of nuclear war was grave but never realized. By this paper’s definition it was a crisis, handled in time. By an outcome-based definition it barely counts.</p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="ch" id="c3" data-n="3">
+    <div class="ch-head">
+      <p class="eyebrow">3 of 6</p>
+      <h2>A different planet</h2>
+      <p class="lede">Pressure on the Earth system now sits under every other crisis.</p>
+    </div>
+    <div class="prose">
+      <p>The authors call human-driven <span class="t" data-t="earth">Earth-system stress</span> a foundation of today’s polycrisis. Their evidence is the planetary boundaries framework, which sets safe limits for nine Earth systems. In the chart below, the green disc is the safe zone. Wedges that reach past it have crossed their boundary.</p>
+    </div>
+    <div class="fig">
+      <div class="pb">
+        <div id="pb-chart"></div>
+        <ul class="pb-list" id="pb-list"></ul>
+      </div>
+      <p class="fig-note">2023 assessment by Richardson et al., as cited in the paper. Wedge length shows only the status, not how far past the boundary each system is.</p>
+    </div>
+    <div class="prose">
+      <p>Six of the nine are past the line, and ocean acidification is close. That makes today different in two ways. First, the risk is unprecedented: even crises 20 years ago happened on a fundamentally different planet. Second, it can’t be avoided: the stress is so large that serious harm is coming whatever policies we choose. The open question, the authors write, is how hard the landing will be.</p>
+    </div>
+    <div class="key" style="--kc:var(--crisis)">
+      <p class="eyebrow">The definition, assembled</p>
+      <p>A polycrisis is continuing feedback between high risk, intense stresses and harmful outcomes, across many interacting systems, at the scale of a continent or the whole globe, usually with the Earth system tangled in.</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="ch" id="c4" data-n="4">
+    <div class="ch-head">
+      <p class="eyebrow">4 of 6</p>
+      <h2>Not a new kind of disaster</h2>
+      <p class="lede">Polycrisis doesn’t invent a new disaster. It makes the familiar ones more common and harder to escape.</p>
+    </div>
+    <div class="prose">
+      <p>Disaster researchers already have names for disasters that combine. Each sketch below shows how the events line up over time, with one real example.</p>
+    </div>
+    <div class="fig">
+      <div class="sm" id="sm"></div>
+    </div>
+    <div class="prose">
+      <p>The first three usually stay in one place for a limited time, and places tend to recover. A polycrisis makes all three happen more often, feed each other and spread across borders and systems, with almost no time to recover in between.</p>
+      <p>Why does recovery get so hard? The paper’s Figure 2 shows the same shock hitting two systems: one with no ongoing stress, and one under constant, growing stress.</p>
+    </div>
+    <div class="fig">
+      <div class="pair">
+        <div><h4>Without ongoing stress</h4><div id="cap-a"></div><p class="cap">Capacity dips after the shock, then climbs back to where it was.</p></div>
+        <div><h4>Under constant, growing stress</h4><div id="cap-b"></div><p class="cap">The shock hits harder, recovery is slower and the ceiling keeps sinking. The system never gets back to where it started.</p></div>
+      </div>
+      <div class="legend">
+        <span><i class="sw" style="--c:var(--ink)"></i>Capacity (how well the system functions)</span>
+        <span><i class="sw dash" style="--c:var(--stress)"></i>Ceiling set by stress</span>
+        <span><i class="dot" style="--c:var(--trigger)"></i>Shock</span>
+      </div>
+    </div>
+    <div class="prose">
+      <p>If you look only at the shock, you expect the left-hand picture. But stresses like climate change are permanent and still growing, so today looks like the right-hand one. The Cascade Institute calls the habit of watching only the shock <span class="t" data-t="fixation">trigger fixation</span>. It leads to underestimating the damage.</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="ch" id="c5" data-n="5">
+    <div class="ch-head">
+      <p class="eyebrow">5 of 6</p>
+      <h2>Has this happened before?</h2>
+      <p class="lede">Partly. The authors place crises on a spectrum instead of labelling them polycrisis or not.</p>
+    </div>
+    <div class="prose">
+      <p>At one end of the spectrum is a crisis that stays in one place and one system. At the other is today’s global entanglement. Below, three eras sit on that line. The dots under each show which features of today’s polycrisis it shared.</p>
+    </div>
+    <div class="fig">
+      <div class="spec" id="spec"><div class="spec-bar"></div></div>
+      <div class="spec-ends"><span>One place, one system</span><span>Global, entangled, irreversible</span></div>
+      <div class="eras" id="eras"></div>
+      <div class="legend">
+        <span><i class="fm y"></i>Shared</span><span><i class="fm p"></i>Partly</span><span><i class="fm"></i>Not shared</span>
+      </div>
+      <p class="fig-note">Ratings summarize the paper’s discussion. Positions on the line are our illustration.</p>
+    </div>
+    <div class="prose">
+      <p>Only today combines global connection with permanent, human-made change to the planet. So the authors say we are in <em>a</em> polycrisis rather than the first and only one. The past still holds lessons about what helps, and the last chapter comes back to them.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="ch" id="c6" data-n="6">
+    <div class="ch-head">
+      <p class="eyebrow">6 of 6</p>
+      <h2>What helps: trust and polysolutions</h2>
+      <p class="lede">The paper ends on responses, and on the piece it thinks others overlook: the social fabric.</p>
+    </div>
+    <div class="prose">
+      <p>Every response to a crisis depends on people and institutions coordinating, and coordination runs on <span class="t" data-t="trust">trust</span>. Trust in institutions, science and politics has been falling for decades. The authors argue this is part of the polycrisis itself, because lost trust feeds a loop. Here is how COVID-19 went round it:</p>
+    </div>
+    <div class="fig narrow">
+      <svg class="loop-svg" viewBox="0 0 360 290" role="img" aria-label="A loop: trust erodes, coordination fails, health impacts worsen, economic disruption follows, which erodes trust further." style="width:100%;max-width:500px;margin:0 auto;display:block">
+        <defs><marker id="lm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9z" style="fill:var(--social)"/></marker></defs>
+        <path class="loop-arc" d="M180 42 A112 104 0 0 1 292 146" marker-end="url(#lm)"/>
+        <path class="loop-arc" d="M292 146 A112 104 0 0 1 180 250" marker-end="url(#lm)"/>
+        <path class="loop-arc" d="M180 250 A112 104 0 0 1 68 146" marker-end="url(#lm)"/>
+        <path class="loop-arc" d="M68 146 A112 104 0 0 1 180 42" marker-end="url(#lm)"/>
+        <path d="M180 42 A112 104 0 1 1 179.9 42" fill="none" style="stroke:var(--social)" stroke-width="2.2" stroke-dasharray="3 17" class="flow-dash" opacity=".7"/>
+        <g><rect class="loop-node" x="98" y="22" width="164" height="40" rx="10"/><text x="180" y="47" text-anchor="middle">Trust in institutions erodes</text></g>
+        <g><rect class="loop-node" x="212" y="126" width="142" height="40" rx="10"/><text x="283" y="151" text-anchor="middle">Coordination fails</text></g>
+        <g><rect class="loop-node" x="98" y="230" width="164" height="40" rx="10"/><text x="180" y="255" text-anchor="middle">Health impacts worsen</text></g>
+        <g><rect class="loop-node" x="6" y="126" width="142" height="40" rx="10"/><text x="77" y="151" text-anchor="middle">Economic disruption</text></g>
+      </svg>
+    </div>
+    <div class="prose">
+      <p>Each turn of the loop makes the next crisis harder to handle. So where does trust come from? The paper points to <span class="t" data-t="socialcap">social capital</span>: the networks, norms and trust that let people act together. It comes in two kinds. <b style="color:var(--social)">Bonding ties</b> link people within a group. <b style="color:var(--resp)">Bridging ties</b> link different groups.</p>
+      <p>To see the difference, picture a small town with three groups: farmers, health workers and the local council. Each group already has strong bonding ties. The dotted lines are bridging ties that <em>could</em> exist. Tap them to build or cut them, then send a drought and see who hears about it in time to help.</p>
+    </div>
+    <div class="fig narrow" id="ties">
+      <div id="ties-stage"></div>
+      <div class="legend" style="justify-content:center">
+        <span><i class="dot" style="--c:var(--resp)"></i>Acts together · 2 direct ties</span>
+        <span><i class="dot" style="--c:color-mix(in srgb,var(--resp) 45%,var(--surface))"></i>Helps in time · 1 direct tie</span>
+        <span><i class="dot" style="--c:color-mix(in srgb,var(--risk) 60%,var(--surface))"></i>Helps late · hears second-hand</span>
+        <span><i class="dot" style="--c:var(--surface-2);outline:1px solid var(--line-2)"></i>Never hears</span>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:8px">
+        <span class="tie-count" id="tie-count"></span>
+        <button class="btn primary" type="button" id="drought">Send a drought to the farmers</button>
+      </div>
+      <p class="readout" id="ties-out" aria-live="polite"></p>
+    </div>
+    <div class="prose">
+      <p>A drought is never only a farming problem. It soon becomes a health problem and a problem for the council too. Bonding ties help the farmers support each other, but only bridging ties carry the warning, and the help, across groups. A polycrisis crosses systems, so bridging ties are the kind it needs most.</p>
+      <p>Bridging ties grow in <span class="t" data-t="socialinfra">social infrastructure</span>: libraries, parks, places of worship, community spaces and social businesses. These are everyday places where people meet others outside their own circle. The evidence is concrete. Communities with more of these places have had lower disaster death rates than comparable communities.</p>
+      <p>Social infrastructure is also a <span class="t" data-t="polysol">polysolution</span>, a response that helps several systems at once. Compare it with a fix built for a single hazard:</p>
+    </div>
+    <div class="fig">
+      <div class="pair">
+        <div class="box"><h4>A fix for one hazard</h4>
+          <svg class="seawall" viewBox="0 0 320 150" role="img" aria-label="Cross-section of a sea wall. On the sea side, a tsunami wave is stopped by the tall concrete wall. On the land side, river water pools behind the wall and floods toward houses.">
+            <defs><marker id="rv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1 L9,5 L0,9z" style="fill:var(--sys)"/></marker></defs>
+            <path d="M0,96 L48,96 Q84,96 96,64 Q101,52 108,50 L108,150 L0,150Z" style="fill:color-mix(in srgb,var(--sys) 38%,var(--surface))"/>
+            <path d="M0,150 L0,126 L108,126 L108,150Z" style="fill:color-mix(in srgb,var(--sys) 55%,var(--surface))"/>
+            <path d="M130,108 L320,108 L320,150 L134,150Z" style="fill:var(--line-2)"/>
+            <path d="M130,108 L130,95 L204,95 Q210,101 214,108Z" style="fill:color-mix(in srgb,var(--sys) 45%,var(--surface))"/>
+            <line x1="316" y1="118" x2="206" y2="118" style="stroke:var(--sys)" stroke-width="4" stroke-linecap="round" marker-end="url(#rv)"/>
+            <path d="M108,36 L126,36 L134,150 L104,150Z" style="fill:var(--ink-2)"/>
+            <g style="fill:var(--surface);stroke:var(--ink-2)" stroke-width="1.3">
+              <rect x="222" y="94" width="18" height="14"/><rect x="252" y="94" width="18" height="14"/><rect x="282" y="94" width="18" height="14"/>
+            </g>
+            <g style="fill:var(--ink-2)"><path d="M219,95 L231,84 L243,95Z"/><path d="M249,95 L261,84 L273,95Z"/><path d="M279,95 L291,84 L303,95Z"/></g>
+            <text x="6" y="30" class="svg-lbl b" style="fill:var(--resp);font-size:13px">✓ Tsunami stopped</text>
+            <text x="6" y="116" class="svg-lbl" style="font-size:12px">Sea</text>
+            <text x="138" y="32" class="svg-lbl b" style="font-size:13px">Sea wall</text>
+            <text x="314" y="70" text-anchor="end" class="svg-lbl b" style="fill:var(--crisis);font-size:13px">✕ River water trapped</text>
+            <text x="314" y="140" text-anchor="end" class="svg-lbl" style="fill:var(--sys);font-size:12px">river flows to sea</text>
+          </svg>
+          <div id="hub-a"></div><p class="cap">Japan’s sea walls reduce tsunami damage, but they can trap river water and make floods worse. The risk moves to another system.</p></div>
+        <div class="box" style="border-color:var(--resp)"><h4 style="color:var(--resp)">A polysolution</h4><div id="hub-b"></div><p class="cap">A public library teaches, shelters people from heat waves, offers internet access for job hunting, gives vulnerable people a safe space, and builds bridging ties.</p></div>
+      </div>
+    </div>
+    <div class="prose">
+      <p>Farm to School programmes work the same way, linking food, health, local economies and the environment. Single fixes worked better when crises came one at a time. After the Black Death, England’s lower rents and higher wages helped its economy grow. With entangled crises, a fix aimed at one system can shift the risk onto another.</p>
+      <p>History offers hope as well as warnings. Here are two societies from the plague-and-cold centuries of chapter 5 that coped better than their neighbours:</p>
+    </div>
+    <div class="past">
+      <div><h4>Denmark</h4><p class="when">Little Ice Age</p><p>As icy waters disrupted trade, the government backed experiments in seafaring and canal building. The country enjoyed an economic boom.</p></div>
+      <div><h4>Ming and Qing China</h4><p class="when">Frequent food shocks</p><p>A large network of publicly run granaries provided famine relief each time food shocks hit.</p></div>
+    </div>
+    <div class="prose">
+      <p>Both prepared ahead and adapted quickly, which is the opposite of trigger fixation. Crises can even leave some good behind. After 3/11, some areas near Fukushima invested more in renewable energy.</p>
+    </div>
+    <div class="key" style="--kc:var(--resp)">
+      <p class="eyebrow">What comes first</p>
+      <p>Many democracies face coordinated misinformation campaigns against public health and public goods. Without trust, big social investments won’t win support, so the authors put rebuilding trust first. They call for <span class="t" data-t="demres">democratic resilience</span>, built from the bottom up and the top down. They are also realistic: as shocks overlap, they expect partial, temporary recoveries to become the norm.</p>
+    </div>
+    <div class="prose"><p>To sum up the whole paper:</p></div>
+    <div class="fig narrow">
+      <ol class="takeaways">
+        <li>A polycrisis is crises that are causally entangled across systems, not just crises that happen at the same time.</li>
+        <li>A crisis starts when risk rises and decisions become urgent, before harm. That keeps the window to act in view.</li>
+        <li>Human-driven stress on the Earth system now sits under everything, and it won’t go away.</li>
+        <li>Polycrisis makes familiar disasters more frequent, more connected and harder to recover from.</li>
+        <li>Trust is part of the problem and part of the answer. The best responses help many systems at once.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p><b>Source.</b> Mark, S., Holder, S., Hoyer, D., Schoonover, R., &amp; Aldrich, D. P. (2025). Understanding polycrisis: definitions, applications, and responses. <i>Global Sustainability</i>, 8, e35. <a href="https://doi.org/10.1017/sus.2025.10018" target="_blank" rel="noopener">doi.org/10.1017/sus.2025.10018</a></p>
+    <p>The article is published under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>. This summary paraphrases and adapts it for non-commercial teaching under the same licence. Diagrams and ratings are our interpretations of the paper.</p>
+  </footer>
+</main>
+
+<div id="pop" role="dialog" aria-labelledby="pop-h" hidden>
+  <button class="x" type="button" aria-label="Close" id="pop-x">×</button>
+  <h4 id="pop-h"></h4>
+  <p id="pop-d"></p>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function S(tag,attrs,parent){const e=document.createElementNS(NS,tag);if(attrs)for(const k in attrs){if(attrs[k]!=null)e.setAttribute(k,attrs[k]);}if(parent)parent.appendChild(e);return e;}
+function T(svg,x,y,text,cls,anchor,style){const t=S('text',{x,y,'text-anchor':anchor||'middle',class:cls||'svg-lbl',style:style||null},svg);t.textContent=text;return t;}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function onWidth(el,fn){let w=-1;new ResizeObserver(()=>{const nw=Math.round(el.clientWidth);if(nw>0&&nw!==w){w=nw;fn(nw);}}).observe(el);}
+function onVisible(el,fn){new IntersectionObserver(es=>es.forEach(e=>fn(e.isIntersecting)),{rootMargin:'100px'}).observe(el);}
+
+/* chapter dots + progress */
+const secs=$$('section.ch'),steps=$('#steps');
+secs.forEach(s=>{const a=document.createElement('a');a.href='#'+s.id;a.textContent=s.dataset.n;a.setAttribute('aria-label','Chapter '+s.dataset.n+': '+$('h2',s).textContent);steps.appendChild(a);});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('a',steps).forEach(a=>a.classList.toggle('active',a.hash==='#'+e.target.id));}),{rootMargin:'-35% 0px -60% 0px'});
+secs.forEach(s=>io.observe(s));
+const prog=$('#progress');let tick=false;
+addEventListener('scroll',()=>{if(tick)return;tick=true;requestAnimationFrame(()=>{const h=document.documentElement.scrollHeight-innerHeight;prog.style.width=(h>0?scrollY/h*100:0)+'%';tick=false;});},{passive:true});
+
+/* term popovers */
+const G={
+ entangle:['Causal entanglement','Crises changing each other’s likelihood and severity through feedback, rather than merely happening at the same time.','crisis'],
+ crisis:['Crisis','In this paper: a period of high, usually rising risk in which urgent decisions must be made to avoid severe harm. The Cascade Institute uses “crisis” for the harm itself.','crisis'],
+ window:['Window to act','The time between rising risk and realized harm, when decisions can still prevent disaster. Sometimes called the governance window.','resp'],
+ earth:['Earth-system stress','Human-driven pressure on the planet’s climate, living systems, land, fresh water and chemistry. Largely irreversible.','stress'],
+ fixation:['Trigger fixation','Focusing on the immediate shock and ignoring the slow stresses behind it, which leads to underestimating the damage.','trigger'],
+ trust:['Social trust','Confidence in each other, in institutions and in science. The paper treats its erosion as part of the polycrisis, not just background.','social'],
+ socialcap:['Social capital','The networks, norms and trust that let people act together. Bonding ties link people within a group; bridging ties link different groups.','social'],
+ socialinfra:['Social infrastructure','Places where people build ties across groups: libraries, parks, places of worship, community spaces and social businesses.','resp'],
+ polysol:['Polysolution','A response that brings benefits across several systems at once, instead of treating one crisis in isolation.','resp'],
+ demres:['Democratic resilience','The capacity to keep governance working through simultaneous political and environmental stresses. Built from both the bottom up and the top down.','resp']
+};
+const pop=$('#pop');let popFor=null;
+function openPop(el){const g=G[el.dataset.t];if(!g)return;if(popFor===el&&!pop.hidden){closePop();return;}popFor=el;$('#pop-h').textContent=g[0];$('#pop-d').textContent=g[1];pop.hidden=false;
+  if(innerWidth<700){pop.classList.add('sheet');}else{pop.classList.remove('sheet');const r=el.getBoundingClientRect();let top=r.bottom+8;if(top+pop.offsetHeight>innerHeight-12)top=Math.max(12,r.top-pop.offsetHeight-8);pop.style.left=clamp(r.left,12,innerWidth-pop.offsetWidth-12)+'px';pop.style.top=top+'px';}}
+function closePop(){pop.hidden=true;popFor=null;}
+$('#pop-x').addEventListener('click',closePop);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePop();});
+document.addEventListener('click',e=>{if(!pop.hidden&&!pop.contains(e.target)&&!e.target.closest('.t'))closePop();});
+$$('.t').forEach(el=>{const g=G[el.dataset.t];if(!g)return;el.tabIndex=0;el.setAttribute('role','button');el.style.setProperty('--kc',`var(--${g[2]})`);
+  el.addEventListener('click',e=>{e.stopPropagation();openPop(el);});el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPop(el);}});});
+
+/* hero */
+(function hero(){
+  const box=$('#hero-fig'),cap=$('#hero-cap');
+  const names=['Climate','Ecosystems','Health','Economy','Politics','Food'];
+  const E=[[0,1],[0,5],[1,2],[2,3],[3,4],[4,5],[3,5],[4,2],[0,4]];
+  const caps={sep:'Many crises at once. Each one hurts, but each can be handled on its own.',ent:'A polycrisis. Crises spread through linked systems, so harm multiplies and none can be fixed alone.'};
+  let mode='sep',svg,edges=[],nodes=[],heat=names.map(()=>0),parts=[],live=true,last=0,nextFire=0;
+  function curve(a,b,c){const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;return `M${a[0]},${a[1]} Q${mx+(c[0]-mx)*.35},${my+(c[1]-my)*.35} ${b[0]},${b[1]}`;}
+  function build(W){
+    box.innerHTML='';const H=clamp(Math.round(W*.52),230,320);
+    svg=S('svg',{viewBox:`0 0 ${W} ${H}`,height:H,role:'img','aria-label':'Six systems: climate, ecosystems, health, economy, politics and food. In entangled mode, crises spread between them.'},box);
+    const c=[W/2,H/2-6],rx=Math.min(W*.37,250),ry=H*.33;
+    const pos=names.map((n,i)=>{const a=-Math.PI/2+i*2*Math.PI/names.length;return [c[0]+rx*Math.cos(a),c[1]+ry*Math.sin(a)];});
+    const gE=S('g',{},svg);edges=E.map(([a,b])=>{const p=S('path',{d:curve(pos[a],pos[b],c),class:'h-edge'+(mode==='sep'?' off':'')},gE);return {p,a,b,len:p.getTotalLength()};});
+    svg._gP=S('g',{},svg);const gN=S('g',{},svg);
+    nodes=pos.map((p,i)=>{const g=S('g',{transform:`translate(${p[0].toFixed(1)},${p[1].toFixed(1)})`},gN);const halo=S('circle',{r:12,class:'h-halo',opacity:0},g);S('circle',{r:10,class:'h-node'},g);const hot=S('circle',{r:10,class:'h-hot',opacity:0},g);T(g,0,p[1]<c[1]?-18:28,names[i],'h-lbl');return {halo,hot};});
+    parts=[];setMode(mode,true);
+  }
+  function setMode(m,quiet){mode=m;edges.forEach(e=>e.p.classList.toggle('off',m==='sep'));cap.textContent=caps[m];$$('[data-hm]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hm===m)));if(!quiet){parts.forEach(p=>p.el.remove());parts=[];}if(RM)nodes.forEach((n,i)=>{const h=mode==='ent'?[.9,.5,.6,.7,.4,.8][i]:[.9,0,0,.6,0,0][i];n.hot.setAttribute('opacity',h);});}
+  function fire(i,str){heat[i]=Math.max(heat[i],str);if(mode!=='ent'||str<.35)return;edges.forEach(e=>{if(e.a===i||e.b===i){parts.push({el:S('circle',{r:3.5,class:'h-part'},svg._gP),e,rev:e.b===i,t:0,to:e.a===i?e.b:e.a,str:str*.8});}});}
+  function frame(ts){
+    if(!live){last=0;return;}
+    const dt=last?Math.min(.05,(ts-last)/1000):0;last=ts;
+    if(ts>nextFire){fire(Math.floor(Math.random()*names.length),1);nextFire=ts+(mode==='ent'?1900:1100)+Math.random()*600;}
+    heat=heat.map(h=>h*Math.pow(.35,dt));
+    parts=parts.filter(p=>{p.t+=dt*1.1;if(p.t>=1){p.el.remove();fire(p.to,p.str);return false;}const pt=p.e.p.getPointAtLength(p.e.len*(p.rev?1-p.t:p.t));p.el.setAttribute('cx',pt.x);p.el.setAttribute('cy',pt.y);return true;});
+    nodes.forEach((n,i)=>{const h=heat[i];n.hot.setAttribute('opacity',h.toFixed(3));n.halo.setAttribute('opacity',(h*.22).toFixed(3));n.halo.setAttribute('r',(12+h*14).toFixed(1));});
+    requestAnimationFrame(frame);
+  }
+  onWidth(box,build);
+  $$('[data-hm]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.hm)));
+  if(!RM){onVisible(box,v=>{if(v&&!live){live=true;requestAnimationFrame(frame);}else if(!v)live=false;});requestAnimationFrame(frame);}
+})();
+
+/* definition phrases */
+const PH={
+ a1:'<b>Causal entanglement.</b> The crises don’t just coincide. Each changes the likelihood and severity of the others. This idea is the heart of both definitions.',
+ a2:'<b>Multiple global systems.</b> Ecological, economic, political, health and more, at global scale.',
+ a3:'<b>Degrading humanity’s prospects.</b> This definition is anchored in harm, so it ties a crisis to its outcomes.',
+ b1:'<b>A state of risks.</b> The key move. Polycrisis is located in risk, before any harm, so there is still time to act.',
+ b2:'<b>Macroregional.</b> Continental, transcontinental or global. Because the scale can vary, past eras can be compared with today.',
+ b3:'<b>Ecologically embedded.</b> Stress on the Earth system runs through the links.',
+ b4:'<b>Inexorably interconnected systems.</b> The links can’t be undone. Risks no longer stay within one sector or region.'
+};
+$$('#defs .def').forEach(d=>{const gl=$('.gloss',d);$$('mark',d).forEach(m=>{m.tabIndex=0;m.setAttribute('role','button');const go=()=>{$$('mark',d).forEach(x=>x.classList.toggle('on',x===m));gl.innerHTML=PH[m.dataset.g];};m.addEventListener('click',go);m.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});});
+
+/* bridge lab (simple) */
+(function bridgeLab(){
+  const rw=$('#r-w'),rv=$('#r-v'),rx=$('#r-x');
+  const deck=$('#b-deck'),deckp=$('#b-deckp'),rail=$('#b-rail'),rust=$('#b-rust'),wind=$$('#b-wind path'),clouds=$$('#b-clouds > g'),rain=$('#b-rain'),loc=$('#b-loc');
+  const PH={w:'The wind is weak',v:'The bridge is sturdy',x:'Storms rarely reach it'};
+  let risk=0,t=0,last=0,live=true;
+  function update(){
+    const w=rw.value/100,v=rv.value/100,x=rx.value/100;risk=w*v*x;
+    $('#o-w').textContent=w.toFixed(2);$('#o-v').textContent=v.toFixed(2);$('#o-x').textContent=x.toFixed(2);
+    $('#e-w').textContent=w.toFixed(2);$('#e-v').textContent=v.toFixed(2);$('#e-x').textContent=x.toFixed(2);
+    const z=risk<.1?['Low','var(--resp)']:risk<.3?['Elevated','var(--risk)']:['High','var(--crisis)'];
+    const er=$('#e-r');er.textContent=risk.toFixed(2);er.style.setProperty('--c',z[1]);
+    const ez=$('#e-z');ez.textContent=z[0];ez.style.setProperty('--c',z[1]);
+    $('#e-m').style.left=(risk*100).toFixed(1)+'%';
+    const sag=2+v*16;
+    deckp.setAttribute('d',`M40,108 Q210,${108+2*sag} 380,108 L380,116 Q210,${116+2*sag} 40,116Z`);
+    rail.setAttribute('d',`M40,100 Q210,${100+2*sag} 380,100`);
+    deckp.style.fill=risk>=.3?'var(--crisis)':'var(--ink)';
+    rust.setAttribute('opacity',(v*.9).toFixed(2));
+    wind.forEach((p,i)=>{p.setAttribute('opacity',w>i/3+.05?1:0);p.setAttribute('stroke-width',(1.4+w*2).toFixed(1));});
+    clouds.forEach((c,i)=>c.setAttribute('opacity',x>[.15,.45,.75][i]?1:0));
+    rain.setAttribute('opacity',x.toFixed(2));
+    loc.textContent=x<.34?'Sheltered valley':x<.67?'Open plain':'Stormy coast';
+    const mins=[['w',w],['v',v],['x',x]].sort((a,b)=>a[1]-b[1])[0];
+    $('#e-msg').innerHTML=risk<.1?(mins[1]<.2?`<b>Low risk.</b> ${PH[mins[0]]}, and because the parts multiply, that one factor keeps the whole risk low.`:'<b>Low risk.</b> The bridge is safe for now.')
+      :risk<.3?'<b>Elevated risk.</b> Worth watching, and worth planning repairs.'
+      :'<b>High risk.</b> Leaders face urgent choices: close the bridge, or repair it now? By the paper’s definition this is already a crisis, even though nothing has broken yet.';
+    if(RM)deck.removeAttribute('transform');
+  }
+  function frame(ts){if(!live){last=0;return;}const dt=last?Math.min(.05,(ts-last)/1000):0;last=ts;t+=dt;deck.setAttribute('transform',`rotate(${(Math.sin(t*3.5)*risk*3).toFixed(2)} 210 112)`);requestAnimationFrame(frame);}
+  [rw,rv,rx].forEach(i=>i.addEventListener('input',update));
+  update();
+  if(!RM){onVisible($('#blab'),v=>{if(v&&!live){live=true;requestAnimationFrame(frame);}else if(!v)live=false;});requestAnimationFrame(frame);}
+})();
+
+/* planetary boundaries */
+(function pbounds(){
+  const PB=[['Climate change','x'],['Novel entities (pollution, plastics)','x'],['Stratospheric ozone','w'],['Atmospheric aerosols','w'],['Ocean acidification','a'],['Biogeochemical flows','x'],['Freshwater change','x'],['Land-system change','x'],['Biosphere integrity','x']];
+  const ST={x:['Crossed','var(--crisis)',1.55],a:['Approaching','var(--risk)',.97],w:['Within','var(--resp)',.62]};
+  $('#pb-list').innerHTML=PB.map(p=>`<li><span>${p[0]}</span><span class="pill" style="--c:${ST[p[1]][1]}">${ST[p[1]][0]}</span></li>`).join('');
+  function arc(cx,cy,r0,r1,a0,a1){const p=(r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const [x0,y0]=p(r1,a0),[x1,y1]=p(r1,a1),[x2,y2]=p(r0,a1),[x3,y3]=p(r0,a0);return `M${x0},${y0} A${r1},${r1} 0 0 1 ${x1},${y1} L${x2},${y2} A${r0},${r0} 0 0 0 ${x3},${y3} Z`;}
+  const box=$('#pb-chart');
+  onWidth(box,w=>{const Wd=Math.min(w,340);box.innerHTML='';
+    const svg=S('svg',{viewBox:`0 0 ${Wd} ${Wd}`,width:Wd,height:Wd,role:'img','aria-label':'Nine planetary boundaries: six crossed, one approaching, two within.',style:'margin:0 auto'},box);
+    const c=Wd/2,R0=Wd*.27,rin=Wd*.07;
+    S('circle',{cx:c,cy:c,r:R0,style:'fill:color-mix(in srgb,var(--resp) 16%,transparent)'},svg);
+    PB.forEach((p,i)=>{const a0=-Math.PI/2+i*2*Math.PI/9+.035,a1=a0+2*Math.PI/9-.07;S('path',{d:arc(c,c,rin,R0*ST[p[1]][2],a0,a1),style:`fill:${ST[p[1]][1]}`,opacity:.9},svg);});
+    S('circle',{cx:c,cy:c,r:R0,fill:'none',style:'stroke:var(--resp)','stroke-width':1.5,'stroke-dasharray':'4 3'},svg);
+    T(svg,c,c+4,'6 / 9','svg-mono','middle','fill:var(--ink);font-weight:600');});
+})();
+
+/* small multiples */
+(function multiples(){
+  const D=[
+    {id:'cascading',n:'Cascading',d:'One event sets off the next, in quick succession, in one place.',ex:'Japan 2011: earthquake → tsunami → nuclear meltdown'},
+    {id:'compound',n:'Compound',d:'Independent events strike at the same time and worsen each other.',ex:'East Africa 2019–21: locust swarms + COVID-19'},
+    {id:'rads',n:'Recurring',d:'Disasters repeat in one place over years, each leaving damage behind for the next.',ex:'Puerto Rico 2017–20: two hurricanes, drought, earthquakes'},
+    {id:'poly',n:'Polycrisis',d:'A crisis in one system sets off crises in others, and those set off more. Stress underneath keeps rising, and there is no clear end.',ex:'Today, at global scale'}
+  ];
+  const box=$('#sm');
+  const cards=D.map(o=>{const c=document.createElement('div');c.className='sm-card'+(o.id==='poly'?' hl':'');c.innerHTML=`<h4 style="color:${o.id==='poly'?'var(--crisis)':'var(--pattern)'}">${o.n}</h4><div class="svgbox"></div><p>${o.d}</p><div class="ex">${o.ex}</div>`;box.appendChild(c);return {o,el:$('.svgbox',c)};});
+  function arrow(svg,x1,y1,x2,y2,bend){S('path',{d:`M${x1},${y1} Q${(x1+x2)/2},${(y1+y2)/2-bend} ${x2},${y2}`,fill:'none',style:'stroke:var(--ink-2)','stroke-width':1.5,'marker-end':'url(#smm)'},svg);}
+  function draw(o,el,W){
+    el.innerHTML='';const H=120;const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,'aria-hidden':'true'},el);
+    const defs=S('defs',{},svg);const m=S('marker',{id:'smm',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto'},defs);S('path',{d:'M0,1 L9,5 L0,9z',style:'fill:var(--ink-2)'},m);
+    const L=6,R=W-6,X=f=>L+f*(R-L);
+    if(o.id==='cascading'){const ev=[[.12,'Quake',14],[.5,'Tsunami',12],[.88,'Meltdown',11]];const y=52;
+      ev.forEach((e,i)=>{if(i<2)arrow(svg,X(e[0])+e[2]+3,y,X(ev[i+1][0])-ev[i+1][2]-4,y,22);});
+      ev.forEach(e=>{S('circle',{cx:X(e[0]),cy:y,r:e[2],style:'fill:var(--trigger)'},svg);T(svg,X(e[0]),y+e[2]+16,e[1],'svg-lbl b');});
+      T(svg,L,H-4,'minutes → days','svg-mono','start');}
+    else if(o.id==='compound'){const y1=26,y2=82,mx=X(.72),my=54;
+      S('path',{d:`M${X(.04)},${y1} L${X(.35)},${y1} Q${X(.55)},${y1} ${mx-18},${my-5}`,fill:'none',style:'stroke:var(--sys)','stroke-width':4,'stroke-linecap':'round'},svg);
+      S('path',{d:`M${X(.04)},${y2} L${X(.35)},${y2} Q${X(.55)},${y2} ${mx-18},${my+5}`,fill:'none',style:'stroke:var(--trigger)','stroke-width':4,'stroke-linecap':'round'},svg);
+      T(svg,X(.04),y1-8,'Pandemic','svg-mono','start');T(svg,X(.04),y2+16,'Locusts','svg-mono','start');
+      S('circle',{cx:mx,cy:my,r:17,style:'fill:var(--outcome)'},svg);T(svg,mx+24,my+4,'Hunger','svg-lbl b','start');
+      T(svg,L,H-4,'at the same time','svg-mono','start');}
+    else if(o.id==='rads'){const base=H-22;const st=[[.08,0],[.16,12],[.22,26],[.58,36],[.84,48]];
+      let d=`M${X(.04)},${base}`;st.forEach((s,i)=>{if(i)d+=`L${X(s[0])},${base-st[i-1][1]} L${X(s[0])},${base-s[1]}`;});d+=`L${X(1)},${base-48} L${X(1)},${base} Z`;
+      S('path',{d,style:'fill:color-mix(in srgb,var(--outcome) 22%,transparent)'},svg);
+      [[.16,'Irma'],[.22,'Maria'],[.58,'Drought'],[.84,'Quakes']].forEach(([f,l],i)=>{S('circle',{cx:X(f),cy:30,r:9,style:'fill:var(--trigger)'},svg);T(svg,X(f)+(i===0?-4:i===1?4:0),14,l,'svg-lbl b',i===0?'end':i===1?'start':'middle');});
+      T(svg,X(.3),base-8,'damage carries over','svg-mono','start','fill:var(--outcome)');
+      T(svg,L,H-4,'2017 → 2020 · one place','svg-mono','start');}
+    else{const lw=56,top=10,gap=18,Rr=R-12;const Xp=f=>lw+f*(Rr-lw),Y=l=>top+l*gap;
+      const pm=S('marker',{id:'smp',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto'},defs);S('path',{d:'M0,1 L9,5 L0,9z',style:'fill:var(--crisis)'},pm);
+      ['Climate','Food','Health','Politics'].forEach((l,i)=>{S('line',{x1:lw,x2:R,y1:Y(i),y2:Y(i),class:'grid-l'},svg);T(svg,L,Y(i)+4,l,'svg-mono','start');});
+      S('path',{d:`M${lw},97 L${R},80 L${R},97 Z`,style:'fill:color-mix(in srgb,var(--stress) 30%,transparent)'},svg);
+      T(svg,R-4,94,'rising stress','svg-mono','end','fill:var(--stress)');
+      const ev=[[0,.04],[1,.2],[3,.36],[2,.28],[0,.52],[1,.64],[3,.8],[2,.72],[1,.97]];
+      [[0,1],[1,2],[3,2],[4,5],[2,5],[5,6],[7,6],[6,8]].forEach(([a,b])=>{const A=[Xp(ev[a][1]),Y(ev[a][0])],B=[Xp(ev[b][1]),Y(ev[b][0])];const dx=B[0]-A[0],dy=B[1]-A[1],d=Math.hypot(dx,dy);
+        S('line',{x1:A[0]+dx/d*6,y1:A[1]+dy/d*6,x2:B[0]-dx/d*8,y2:B[1]-dy/d*8,style:'stroke:var(--crisis)','stroke-width':1.5,'marker-end':'url(#smp)'},svg);});
+      ev.forEach(e=>S('circle',{cx:Xp(e[1]),cy:Y(e[0]),r:5,style:'fill:var(--crisis)'},svg));
+      T(svg,L,H-4,'years → decades · global','svg-mono','start');}
+  }
+  cards.forEach(c=>onWidth(c.el,w=>draw(c.o,c.el,w)));
+})();
+
+/* Figure 2 pair */
+(function capacity(){
+  function sim(s){const pts=[],ceil=[];let C=100;const k=.12*(1-.78*s),dt=.5;for(let t=0;t<=100;t+=dt){const B=100-s*40*(t/100);if(Math.abs(t-30)<dt/2)C-=30+s*14;C+=k*(B-C)*dt;C=Math.min(C,B);pts.push([t,C]);ceil.push([t,B]);}return {pts,ceil};}
+  function draw(box,s,W){
+    box.innerHTML='';const H=170;const m={l:42,r:8,t:14,b:18};
+    const x=t=>m.l+t/100*(W-m.l-m.r),y=v=>m.t+(110-v)/110*(H-m.t-m.b);
+    const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H,role:'img','aria-label':s?'Under stress, capacity falls after the shock and never returns to its original level.':'Without stress, capacity falls after the shock and returns to its original level.'},box);
+    [0,100].forEach(v=>{S('line',{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),class:'grid-l'},svg);T(svg,m.l-5,y(v)+4,v+'%','svg-mono','end');});
+    const r=sim(s),P=a=>a.map((p,i)=>(i?'L':'M')+x(p[0]).toFixed(1)+','+y(p[1]).toFixed(1)).join('');
+    if(s)S('path',{d:P(r.ceil),fill:'none',style:'stroke:var(--stress)','stroke-width':1.8,'stroke-dasharray':'6 4'},svg);
+    S('path',{d:P(r.pts)+`L${x(100)},${y(0)}L${x(0)},${y(0)}Z`,style:'fill:color-mix(in srgb,var(--ink) 6%,transparent)'},svg);
+    S('path',{d:P(r.pts),fill:'none',style:'stroke:var(--ink)','stroke-width':2.4},svg);
+    S('circle',{cx:x(30),cy:y(106),r:5,style:'fill:var(--trigger)'},svg);
+    T(svg,m.l,H-3,'time →','svg-mono','start');
+    const end=r.pts[r.pts.length-1][1];T(svg,W-m.r,y(end)-8,Math.round(end)+'%','svg-mono','end','fill:var(--ink);font-weight:600');
+  }
+  const a=$('#cap-a'),b=$('#cap-b');
+  onWidth(a,w=>draw(a,0,w));onWidth(b,w=>draw(b,.85,w));
+})();
+
+/* bonding vs bridging ties */
+(function ties(){
+  const stage=$('#ties-stage'),out=$('#ties-out'),count=$('#tie-count');
+  const GR=[{n:'Farmers',s:'the farmers',c:[88,80],ly:28},{n:'Health workers',s:'the health workers',c:[272,80],ly:28},{n:'Council',s:'the council',c:[180,192],ly:250}];
+  const svg=S('svg',{viewBox:'0 0 360 262',role:'group','aria-label':'Three groups in a town, with possible bridging ties between them.'},stage);
+  svg.style.cssText='width:100%;max-width:480px;display:block;margin:0 auto';
+  const nodes=GR.map(g=>[45,135,225,315].map(a=>{const r=a*Math.PI/180;return [g.c[0]+24*Math.cos(r),g.c[1]+24*Math.sin(r)];}));
+  const gBond=S('g',{style:'stroke:var(--social)','stroke-width':1.6},svg);
+  nodes.forEach(ns=>{for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)S('line',{x1:ns[i][0],y1:ns[i][1],x2:ns[j][0],y2:ns[j][1]},gBond);});
+  const gTies=S('g',{},svg),gPulse=S('g',{},svg);
+  const d2=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  const ties=[];
+  [[0,1],[0,2],[1,2]].forEach(([p,q])=>{
+    const ps=nodes[p].map((n,i)=>i).sort((a,b)=>d2(nodes[p][a],GR[q].c)-d2(nodes[p][b],GR[q].c));
+    const qs=nodes[q].map((n,i)=>i).sort((a,b)=>d2(nodes[q][a],GR[p].c)-d2(nodes[q][b],GR[p].c));
+    [0,1].forEach(k=>{const A=nodes[p][ps[k]],B=nodes[q][qs[k===0?0:1]];ties.push({p,q,A,B,on:false});});
+  });
+  ties[0].on=true;ties[4].on=true;
+  ties.forEach(t=>{
+    const g=S('g',{class:'tie',tabindex:0,role:'button'},gTies);
+    S('line',{x1:t.A[0],y1:t.A[1],x2:t.B[0],y2:t.B[1],class:'hit'},g);
+    S('line',{x1:t.A[0],y1:t.A[1],x2:t.B[0],y2:t.B[1],class:'vis'},g);
+    const mx=(t.A[0]+t.B[0])/2,my=(t.A[1]+t.B[1])/2;
+    S('circle',{cx:mx,cy:my,r:9,class:'h'},g);t.txt=T(g,mx,my+4.5,'+','ht');
+    t.g=g;const go=()=>{t.on=!t.on;reset();paint();};
+    g.addEventListener('click',go);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+  });
+  const grpEls=GR.map((g,i)=>{const el=S('g',{class:'grp'},svg);nodes[i].forEach(n=>S('circle',{cx:n[0],cy:n[1],r:9,class:'pn'},el));
+    T(el,g.c[0],g.ly,g.n,'svg-lbl b',null,'font-size:14px');el._st=T(el,g.c[0],g.ly+16,'','svg-mono',null,'font-size:12px');return el;});
+  let running=false,timer=[];
+  function paint(){
+    ties.forEach(t=>{t.g.classList.toggle('on',t.on);t.txt.textContent=t.on?'−':'+';t.g.setAttribute('aria-label',`${t.on?'Cut':'Build'} a bridging tie between ${GR[t.p].s} and ${GR[t.q].s}`);});
+    const n=ties.filter(t=>t.on).length;count.innerHTML=`Bridging ties: <b>${n}</b> of 6`;
+  }
+  const ST={strong:'acts together',help:'helps in time',late:'helps late',alone:'never hears'};
+  const CLS=['hit','strong','help','late','alone'];
+  function reset(){timer.forEach(clearTimeout);timer=[];gPulse.innerHTML='';running=false;grpEls.forEach(e=>{e.classList.remove(...CLS);e._st.textContent='';});out.innerHTML='Now send the drought and see who hears in time.';}
+  function setSt(i,cls,txt){grpEls[i].classList.remove(...CLS);grpEls[i].classList.add(cls);grpEls[i]._st.textContent=txt;}
+  const between=(a,b)=>ties.filter(t=>t.on&&((t.p===a&&t.q===b)||(t.p===b&&t.q===a)));
+  function drought(){
+    reset();running=true;setSt(0,'hit','hit by drought');
+    const st={};
+    [1,2].forEach(i=>{const d=between(0,i).length;st[i]=d>=2?'strong':d===1?'help':'alone';});
+    [1,2].forEach(i=>{const j=3-i;if(st[i]==='alone'&&st[j]!=='alone'&&between(j,i).length)st[i]='late';});
+    const dur=RM?0:750;
+    function pulse(t,from,delay,cls,done){timer.push(setTimeout(()=>{if(!dur){done();return;}
+      const a=t.p===from?t.A:t.B,b=t.p===from?t.B:t.A;const c=S('circle',{r:6,cx:a[0],cy:a[1],class:'pulse '+cls},gPulse);const t0=performance.now();
+      const step=ts=>{const k=Math.min(1,(ts-t0)/dur);c.setAttribute('cx',a[0]+(b[0]-a[0])*k);c.setAttribute('cy',a[1]+(b[1]-a[1])*k);if(k<1&&running)requestAnimationFrame(step);else{c.remove();if(running)done();}};
+      requestAnimationFrame(step);},delay));}
+    [1,2].forEach(i=>{const s=st[i];
+      if(s==='strong'||s==='help')between(0,i).forEach(t=>pulse(t,0,300,s,()=>setSt(i,s,ST[s])));
+      else if(s==='late')pulse(between(3-i,i)[0],3-i,dur+700,'late',()=>setSt(i,'late',ST.late));});
+    timer.push(setTimeout(()=>{
+      [1,2].forEach(i=>{if(st[i]==='alone')setSt(i,'alone',ST.alone);});
+      const score={strong:3,help:2,late:1,alone:0},tot=score[st[1]]+score[st[2]];
+      grpEls[0]._st.textContent=tot===0?'copes alone':tot<4?'gets some help':'recovers with help';
+      const line=i=>{const pl=i===1,N=pl?'The health workers':'The council',s=st[i];
+        return s==='strong'?`${N} ${pl?'have':'has'} two ties to the farmers, so ${pl?'they hear':'it hears'} fast and ${pl?'plan':'plans'} the response with them.`
+          :s==='help'?`${N} ${pl?'hear':'hears'} directly and ${pl?'send':'sends'} help.`
+          :s==='late'?`${N} only ${pl?'hear':'hears'} second-hand, through ${GR[3-i].s}, so ${pl?'their':'its'} help comes late.`
+          :`${N} never ${pl?'hear':'hears'}, because no tie reaches ${pl?'them':'it'}.`;};
+      out.innerHTML=(tot===0?'<b>The farmers cope alone.</b> ':tot<4?'<b>The farmers get some help.</b> ':'<b>The farmers recover with help.</b> ')+line(1)+' '+line(2)+(tot===0?' Build a bridging tie and try again.':'');
+    },(dur?2*dur+900:0)+300));
+  }
+  $('#drought').addEventListener('click',drought);
+  paint();out.innerHTML='Tap the dotted lines to build bridging ties, then send the drought.';
+})();
+
+/* hub diagrams: one-hazard fix vs polysolution */
+(function hubs(){
+  function hub(box,label,color,spokes){
+    box.innerHTML='';const W=320,H=230,cx=160,cy=115;
+    const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':label+': '+spokes.map(s=>(s[0]==='+'?'helps ':'harms ')+s[1].join(' ')).join(', ')},box);
+    const n=spokes.length,rx=104,ry=82,bw=100;
+    const pos=spokes.map((s,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+rx*Math.cos(a),cy+ry*Math.sin(a)];});
+    spokes.forEach((s,i)=>S('line',{x1:cx,y1:cy,x2:pos[i][0],y2:pos[i][1],style:`stroke:${s[0]==='+'?'var(--resp)':'var(--crisis)'}`,'stroke-width':1.8,'stroke-dasharray':s[0]==='+'?null:'5 4'},svg));
+    S('circle',{cx,cy,r:36,style:`fill:${color}`},svg);
+    label.split(' ').forEach((w,i,arr)=>T(svg,cx,cy+5+(i-(arr.length-1)/2)*15,w,null,'middle','fill:#fff;font:700 13px var(--sans)'));
+    spokes.forEach((s,i)=>{const [x,y]=pos[i];const lines=s[1];const bh=12+lines.length*15;const c=s[0]==='+'?'var(--resp)':'var(--crisis)';
+      S('rect',{x:x-bw/2,y:y-bh/2,width:bw,height:bh,rx:8,style:`fill:var(--surface);stroke:${c}`,'stroke-width':1.5},svg);
+      lines.forEach((l,k)=>T(svg,x,y-bh/2+19+k*15,(k===0?s[0]+' ':'')+l,'svg-lbl b','middle',`fill:${c};font-size:13.5px`));});
+  }
+  const a=$('#hub-a'),b=$('#hub-b');
+  hub(a,'Sea wall','var(--ink-2)',[['+',['Tsunami','protection']],['−',['River','flooding']]]);
+  hub(b,'Public library','var(--resp)',[['+',['Education']],['+',['Heat-wave','shelter']],['+',['Job','access']],['+',['Safe','space']],['+',['Bridging','ties']]]);
+})();
+
+/* spectrum */
+(function spectrum(){
+  const F=['Several interacting systems','Reach beyond one region','Sustained climate stress','Human-made and irreversible'];
+  const C=[
+    {name:'Late Roman Republic',when:'2nd–1st centuries BCE',pos:22,f:['y','n','n','n'],text:'Inequality, unrest and elite rivalry spiralled into civil war. Several systems were in crisis, but the turmoil stayed largely within Rome and the climate was favourable.'},
+    {name:'Medieval Eurasia and the Black Death',when:'c. 11th–17th centuries',pos:62,f:['y','p','y','n'],text:'Trade linked China to Spain just as the climate turned cold and erratic. Plague travelled the trade routes, and famine and war followed. It came close to a polycrisis, but it wasn’t global and the climate stress was natural and temporary.'},
+    {name:'Today',when:'21st century',pos:94,f:['y','y','y','y'],text:'Global interconnection meets human-made, permanent change to the planet.'}
+  ];
+  const spec=$('#spec'),eras=$('#eras');
+  C.forEach((c,i)=>{const m=document.createElement('span');m.className='spec-m';m.style.left=c.pos+'%';m.textContent=i+1;m.setAttribute('aria-hidden','true');spec.appendChild(m);
+    const d=document.createElement('div');d.className='era';d.innerHTML=`<h4><span class="n">${i+1}</span>${c.name}</h4><div class="when">${c.when}</div><p>${c.text}</p><ul class="feats">${F.map((f,k)=>`<li><i class="fm ${c.f[k]}" aria-label="${{y:'shared',p:'partly',n:'not shared'}[c.f[k]]}"></i>${f}</li>`).join('')}</ul>`;eras.appendChild(d);});
+})();
+
+})();
+</script>
+</body>
+</html>
