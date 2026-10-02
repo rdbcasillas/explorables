@@ -10,6 +10,8 @@
               Wikipedia-style footnotes with back-links, floating section label + side index
   Deps: none (vanilla JS + SVG); Google Fonts (Archivo, Newsreader, IBM Plex Mono, Tiro Devanagari Hindi)
   Packaging: single self-contained file
+  Source of truth: github.com/rdbcasillas (local project india-election-issue); rebuild with
+                   scripts/build_standalone.py rather than editing this copy by hand.
   Text status: AI draft, human-edited over many rounds. Facts as of 2 October 2026.
 -->
 <html lang="en">
@@ -330,7 +332,7 @@ figcaption, .note { font-family: var(--f-mono); font-size: .72rem; line-height: 
 .seat-detail { margin-top: .8rem; padding: .8rem .9rem; border-left: 3px solid var(--ink); background: var(--paper); font-size: 1rem; line-height: 1.5; color: var(--ink-2); }
 
 /* 14 objections */
-.slips { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; margin: .4rem 0 1.2rem; }
+.slips { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; justify-content: center; margin: .4rem auto 1.2rem; padding: 1.4rem 1rem .9rem; background: var(--paper); border-radius: 6px; }
 .slip { width: 26px; height: 34px; background: var(--paper); border: 1px solid var(--stamp); border-radius: 2px; position: relative; }
 .slip::before, .slip::after { content: ""; position: absolute; left: 5px; right: 5px; height: 2px; background: color-mix(in srgb, var(--stamp) 45%, transparent); }
 .slip::before { top: 9px; } .slip::after { top: 15px; right: 9px; }
@@ -682,6 +684,35 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 .or span { color: var(--ink); }
 .or.ok b { color: var(--c2); font-weight: 600; }
 .or.bad b { color: var(--stamp); font-weight: 600; }
+
+/* Form 6, simplified */
+.f-skel { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 1rem; align-items: center; padding: .7rem 1rem; border-bottom: 1px solid var(--rule-2); opacity: .55; }
+.fs-l { font-family: var(--f-mono); font-size: .74rem; color: var(--muted); }
+.fs-bars { display: grid; gap: .35rem; }
+.fs-bars i { display: block; height: .45rem; border-radius: 3px; background: var(--rule); }
+.fs-bars i:nth-child(2) { width: 75%; } .fs-bars i:nth-child(3) { width: 55%; }
+@media (max-width: 480px) { .f-skel { grid-template-columns: minmax(0, 1fr); gap: .4rem; } }
+.f-opt { font-family: var(--f-body); font-size: 1.05rem; align-items: center; }
+.fo-hint { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); }
+.f-out p { margin: .5rem 0 0; }
+.fo-none { font-family: var(--f-display); font-stretch: 85%; font-weight: 750; color: var(--ink); margin-top: 0 !important; }
+.blanks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+.blanks span { display: grid; gap: .3rem; font-family: var(--f-mono); font-size: .68rem; color: var(--muted); }
+.blanks i { display: block; height: 2.1rem; border: 1.5px dashed var(--stamp); border-radius: 3px; background: var(--panel); }
+
+/* 14 objections, no-click version */
+.objaxis { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; position: relative; }
+.ax-m { border-top: 2px solid var(--rule); padding-top: .35rem; display: grid; justify-items: center; align-content: start; gap: .25rem; min-height: 4rem; font-family: var(--f-mono); font-size: .64rem; color: var(--muted); text-align: center; }
+.ax-m b { width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--stamp); color: #fff; display: grid; place-items: center; font-size: .66rem; }
+.ax-m:nth-child(-n+5) { border-top-style: dashed; }
+.ax-none { position: absolute; left: 0; width: 50%; top: 2.1rem; text-align: center; font-family: var(--f-mono); font-size: .64rem; color: var(--muted); font-style: italic; }
+.objlist { list-style: none; margin: .6rem 0 0; padding: 0; display: grid; }
+.objlist li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: .8rem; padding: .65rem 0; border-top: 1px solid var(--rule-2); }
+.ol-n { width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--stamp); color: #fff; display: grid; place-items: center; font-family: var(--f-mono); font-size: .66rem; margin-top: .15rem; }
+.objlist li.und .ol-n { background: transparent; border: 1.5px dashed var(--stamp); color: var(--stamp); }
+.ol-when { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .03em; color: var(--stamp); text-transform: uppercase; }
+.ol-what { font-size: 1rem; line-height: 1.45; color: var(--ink-2); }
+.objlist li.ol-head { display: block; font-family: var(--f-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 1rem; }
 
 .callout { background: var(--accent-soft); border-radius: 4px; padding: 1rem 1.1rem; font-size: 1.02rem; line-height: 1.55; margin: 1.6rem 0; }
 .callout b { font-family: var(--f-display); font-stretch: 85%; }
@@ -1091,24 +1122,20 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 </section>
 <figure class="col">
   <div class="form6" id="form6">
-    <div class="fh">
-      <div><div class="t">FORM 6</div><small>[See rules 13(1) and 26] · Application for inclusion of name for new electors</small></div>
-      <small>ECINet · online version</small>
-    </div>
-    <div class="f-part"><div class="pl">A – I</div><div class="pc">State, constituency, name, photo, mobile, Aadhaar (optional), gender, date of birth with proof</div></div>
-    <div class="f-part"><div class="pl">J</div><div class="pc">Present address with proof · disability (optional) · family member already on roll</div></div>
+    <div class="fh"><div class="t">FORM 6</div><small>Online version · for new voters</small></div>
+    <div class="f-skel"><span class="fs-l">Name, photo, age, address…</span><span class="fs-bars"><i></i><i></i><i></i></span></div>
     <div class="f-new">
-      <div class="nh"><b>Added declaration · SIR linkage</b><span>Not in the 1960 Rules · click an option</span></div>
+      <div class="nh"><b>New section, added in 2026</b><span>Pick one</span></div>
       <div class="f-opts" id="fOpts">
-        <button class="f-opt" data-o="1" aria-pressed="false"><span class="box"></span><span>My own name appeared in the electoral roll of the last Special Intensive Revision.</span></button>
-        <button class="f-opt" data-o="2" aria-pressed="false"><span class="box"></span><span>The name of my parent / grandparent appeared in the electoral roll of the last Special Intensive Revision.</span></button>
-        <button class="f-opt" data-o="3" aria-pressed="false"><span class="box"></span><span>Neither my name nor my parent's / grandparent's name appeared in that roll.</span></button>
+        <button class="f-opt" data-o="1" aria-pressed="false"><span class="box"></span><span>I was on the last SIR roll</span></button>
+        <button class="f-opt" data-o="2" aria-pressed="false"><span class="box"></span><span>My parent or grandparent was on it</span></button>
+        <button class="f-opt" data-o="3" aria-pressed="false"><span class="box"></span><span>Neither of us was on it</span></button>
       </div>
-      <div class="f-out" id="fOut">Choose an option to see what it asks you to do.</div>
+      <div class="f-out" id="fOut"><span class="fo-hint">Pick an option to see what the form asks for next.</span></div>
     </div>
-    <div class="f-part"><div class="pl">K</div><div class="pc">Declaration of citizenship, age and ordinary residence · signature</div></div>
+    <div class="f-skel"><span class="fs-l">Declaration and signature</span><span class="fs-bars"><i></i></span></div>
   </div>
-  <figcaption>Simplified version; the options are based on news reports. This section was only in the online form. The paper Form 6 never had it. On 29 September 2026, it was removed from the online form in the 20 states and UTs where the SIR is over. It stays where the SIR is still going on.<sup class="cite" data-ref="newsdrum asianmirror"></sup></figcaption>
+  <figcaption>Simplified. The paper form never had this section. It was removed online on 29 September 2026 in the states where the SIR is over.<sup class="cite" data-ref="newsdrum asianmirror"></sup></figcaption>
 </figure>
 <section class="col">
   <p>Think about who fills in this form. In a state where the SIR is over, "the last SIR roll" means the new roll. A first-time voter is not on it. So they must point to a parent or grandparent instead. But if that relative was among the crores removed (Parts 3 to 5), there is no link to show.<sup class="cite" data-ref="asianmirror onmanorama"></sup></p>
@@ -1159,18 +1186,31 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 </figure>
 <section class="col">
   <p>The report said Sandhu and Joshi had formally objected, in writing, <strong>at least 14 times in 10 months</strong>. They objected to SIR decisions and orders that were issued without their knowledge or advice. On one day alone, they filed four objections. Remember, two members out of three are a majority of the Commission.<sup class="cite" data-ref="ie latestly"></sup></p>
-  <p>In the figure below, each slip of paper is one objection. Under the slips is a timeline of the objections whose dates have been reported. Click any marker to read what that objection said.</p>
+  <p>The figure below shows the 14 objections as slips of paper. Under them is everything reports have said about individual objections: five with dates, and three without. You don't need to click anything. The count starts in November 2025, but none of the objections described so far is from before April 2026.</p>
 </section>
 <figure class="wide">
   <div class="fig">
     <p class="fig-title">At least 14 objections, November 2025 to August 2026</p>
-    <p class="fig-sub">Each slip is one objection on record · four were filed on the same day</p>
+    <p class="fig-sub">Each slip is one objection on record. Four were filed on one day, which has not been reported.</p>
     <div class="slips" id="slips" aria-label="14 objection slips, four grouped together" style="margin-top:1.6rem"></div>
-    <p class="fig-sub" style="margin-bottom:.2rem">Objections with a reported date or description · click a marker</p>
-    <div class="months" id="months"></div>
-    <div class="undated" id="undated"><span>Reported, date not given:</span></div>
-    <div class="obj-detail" id="objDetail"></div>
-    <figcaption>The Indian Express has not published a date for every objection. So only the dated ones are on the timeline. Nothing here is placed on a guessed date.</figcaption>
+    <p class="fig-sub" style="margin:1.2rem 0 .3rem">The objections reports have described, by month</p>
+    <div class="objaxis" aria-hidden="true">
+      <div class="ax-m"><span>Nov ’25</span></div><div class="ax-m"><span>Dec</span></div><div class="ax-m"><span>Jan ’26</span></div><div class="ax-m"><span>Feb</span></div><div class="ax-m"><span>Mar</span></div>
+      <div class="ax-m"><span>Apr</span><b>1</b></div><div class="ax-m"><span>May</span><b>2</b></div><div class="ax-m"><span>Jun</span></div><div class="ax-m"><span>Jul</span><b>3</b></div><div class="ax-m"><span>Aug</span><b>4</b><b>5</b></div>
+      <div class="ax-none">None described from these months</div>
+    </div>
+    <ol class="objlist">
+      <li><span class="ol-n">1</span><div><div class="ol-when">16 Apr 2026 · Vivek Joshi</div><div class="ol-what">No meeting agendas had been sent out in advance for about a year, and minutes were not shared.<sup class="cite" data-ref="nhdgit"></sup></div></div></li>
+      <li><span class="ol-n">2</span><div><div class="ol-when">May 2026 · Vivek Joshi, with Sandhu agreeing</div><div class="ol-what">Form 6 cannot be changed unless the government first changes the 1960 Rules.<sup class="cite" data-ref="jagran"></sup></div></div></li>
+      <li><span class="ol-n">3</span><div><div class="ol-when">29–30 Jul 2026 · both</div><div class="ol-what">An internal order took IT oversight away from one officer and cancelled a planned audit of the software.<sup class="cite" data-ref="nhdgit"></sup></div></div></li>
+      <li><span class="ol-n">4</span><div><div class="ol-when">13 Aug 2026 · Sukhbir Singh Sandhu</div><div class="ol-what">The Form 6 change is "unauthorised and illegal" and "must be removed immediately".<sup class="cite" data-ref="jagran latestly"></sup></div></div></li>
+      <li><span class="ol-n">5</span><div><div class="ol-when">14 Aug 2026 · Sukhbir Singh Sandhu</div><div class="ol-what">Officials legally in charge of the rolls cannot do their jobs, because the software is controlled from Delhi.<sup class="cite" data-ref="nhdgit"></sup></div></div></li>
+      <li class="ol-head">Date not reported</li>
+      <li class="und"><span class="ol-n">–</span><div><div class="ol-when">Both</div><div class="ol-what">Each wrote to the Cabinet Secretary about an internal order on who handles what. The EC says the letters were about one officer on loan from another department.<sup class="cite" data-ref="latestly kv"></sup></div></div></li>
+      <li class="und"><span class="ol-n">–</span><div><div class="ol-when">West Bengal</div><div class="ol-what">How names were added and removed during the Bengal SIR.<sup class="cite" data-ref="latestly"></sup></div></div></li>
+      <li class="und"><span class="ol-n">–</span><div><div class="ol-when">Goa</div><div class="ol-what">The software would not record decisions for 97 voters who had already been approved.<sup class="cite" data-ref="federal kv"></sup></div></div></li>
+    </ol>
+    <figcaption>Reports describe only some of the 14 objections, and give dates for fewer. Nothing here is placed on a guessed date.<sup class="cite" data-ref="ie latestly"></sup></figcaption>
   </div>
 </figure>
 <section class="col">
@@ -1194,12 +1234,11 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
   </div>
 </figure>
 <section class="col">
-  <p>The evidence comes from officials in the states, as well as from the commissioners' notes:</p>
+  <p>Officials in the states reported the same problem:</p>
   <ul class="evid">
-    <li><b>Goa.</b> One ERO sent eight emails in one week, complaining that he could not get access. Nothing changed. The software also would not record decisions for 97 voters who had already been approved.<sup class="cite" data-ref="tribune federal"></sup></li>
+    <li><b>Goa.</b> One ERO sent eight emails in one week, complaining that he could not get access. Nothing changed.<sup class="cite" data-ref="tribune"></sup></li>
     <li><b>West Bengal.</b> Notices were sent out from Delhi in local officers' names, without the officers knowing.<sup class="cite" data-ref="tribune"></sup></li>
     <li><b>Maharashtra.</b> The state's chief electoral officer, S. Chockalingam, asked the Commission to give four decisions back to EROs. ECINet had taken them away. They were: which "discrepancy" cases need a hearing, which documents to accept, which mismatches EROs can fix themselves, and how checks are done. He also said spoken instructions from the EC were not enough. He wanted them in writing.<sup class="cite" data-ref="wiremh"></sup></li>
-    <li><b>The commissioners.</b> On 14 August 2026, Sandhu called the situation "strange". By law, local officers are responsible for the rolls. But access was now controlled by the head of the IT department in Delhi, called the DG (IT). Sandhu said the DG (IT) had no legal power to do this. He wrote that state and district officials were reporting that they could not do their jobs.<sup class="cite" data-ref="nhdgit"></sup></li>
   </ul>
   <p>The Commission says ECINet is safe, and that it does not put power in Delhi's hands. It has set up a committee to check that the software follows the law. A senior EC official leads the committee, and it includes an outside expert from an IIT or IIIT. The EC also says any new software process will go to this committee before it is approved.<sup class="cite" data-ref="kv asianet scrollf6"></sup></p>
   <p>The Commission has answered each of these points. Below, the two sides are shown next to each other.</p>
@@ -1756,14 +1795,15 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
       <div class="stack">${seg(0.4, 'var(--c2)', '', '<b>A handful</b>Only a few appeals were decided before the 23 and 29 April polls.')}${seg(26.76, 'var(--rule)', 'Undecided at the time of the vote', '<b>Still waiting</b>19 tribunals. At the reported pace, 10 lakh appeals would take more than two years.', true)}</div></div>`;
 
   /* ---------- Form 6 ---------- */
+  const blanks = '<div class="blanks"><span><i></i>Constituency no.</span><span><i></i>Part no.</span><span><i></i>Serial no.</span></div>';
   const fOut = {
-    1: 'You must give the constituency, part number and serial number of your own entry in the last SIR roll. Most first-time voters cannot do this. They were too young to be on that roll.',
-    2: 'You must give the constituency, part number and serial number of a parent\'s or grandparent\'s entry in the last SIR roll. Where the SIR is over, that means the new roll. If your relative was removed from it, you have no link to show. Where the SIR is still going on, it means a roll from around 2002.',
-    3: 'This is for anyone whose family is not on that roll. That includes migrants, people whose parents were removed, and families missed in earlier revisions. The two commissioners objected that a question like this cannot be added to a form set by law, unless the government first changes the 1960 Rules.'
+    1: blanks + '<p>Most first-time voters cannot fill these in. They were too young to be on that roll.</p>',
+    2: blanks + '<p>Your parent or grandparent must still be on that roll, and you need the numbers of their entry.</p>',
+    3: '<p class="fo-none">No details asked.</p><p>What happens next is left to the ERO, case by case.</p>'
   };
   $$('#fOpts .f-opt').forEach(b => b.addEventListener('click', () => {
     $$('#fOpts .f-opt').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    $('#fOut').textContent = fOut[b.dataset.o];
+    $('#fOut').innerHTML = fOut[b.dataset.o];
   }));
 
   /* ---------- commission seats ---------- */
@@ -1784,26 +1824,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
   sh += '<span class="slip-group"><em>4 on one day</em><span class="slip"></span><span class="slip"></span><span class="slip"></span><span class="slip"></span></span>';
   slips.innerHTML = sh;
 
-  const objs = {
-    may: { when: 'May 2026 · Vivek Joshi', t: 'Form 6 cannot be changed without amending the Rules', p: 'Joshi pointed out that Form 6 is set by the Registration of Electors Rules, 1960. To change it, for example by adding a compulsory question about parents and grandparents, the central government must first change those Rules. Sandhu agreed.' },
-    aug13: { when: '13 August 2026 · Sukhbir Singh Sandhu', t: '"Unauthorised and illegal… must be removed immediately"', p: 'Three months later, the new section was still on the online Form 6. Sandhu called it unauthorised and illegal, and asked for it to be removed. It stayed until 29 September, after the news report came out.' },
-    aug14: { when: '14 August 2026 · Sukhbir Singh Sandhu', t: 'Statutory officers "could not perform their duties"', p: 'Sandhu wrote that the officials legally in charge of the voter list were complaining. These are the state, district and constituency officers (CEOs, DEOs and EROs). They said their powers had been "curtailed", or cut back, because the software was controlled from Delhi by the IT head.' },
-    cab: { when: 'Date not reported · both commissioners', t: 'Separate letters to the Cabinet Secretary', p: 'An internal order changed who handles what inside the EC. After it, Sandhu and Joshi each wrote to the Cabinet Secretary, T.V. Somanathan. The Indian Express reported that the order could put the power to add, remove and update names in Delhi\'s hands. The EC says the letters were about one officer on loan from another department.' },
-    wb: { when: 'Date not reported', t: 'Handling of deletions in West Bengal', p: 'The commissioners objected to how names were added and removed during the Bengal SIR. About 91 lakh names came off the rolls there.' },
-    goa: { when: 'Date not reported', t: 'Goa: 97 approved voters the software would not record', p: 'Officials could not enter approval decisions for 97 voters because of software problems. The EC later said BLOs had visited them, and 81 had filed new Form 6 applications.' },
-    four: { when: 'One day, date not reported', t: 'Four objections in a single day', p: 'The Indian Express counted four separate objections filed on one day. It has not said which day, or what each one was about.' }
-  };
-  const months = ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
-  const pinsBy = { May: [['may', 'J']], Aug: [['aug13', '13'], ['aug14', '14']] };
-  $('#months').innerHTML = months.map((m, i) => `<div class="month">${m}${i === 0 ? ' ’25' : i === 2 ? ' ’26' : ''}<div class="pins">${(pinsBy[m] || []).map(([k, l]) => `<button class="pin" data-k="${k}" aria-pressed="false" aria-label="Objection, ${m}">${l}</button>`).join('')}</div></div>`).join('');
-  $('#undated').insertAdjacentHTML('beforeend', [['cab', 'Cabinet Secretary letters'], ['wb', 'West Bengal deletions'], ['goa', 'Goa: 97 voters'], ['four', 'Four in one day']].map(([k, l]) => `<button class="ud" data-k="${k}" aria-pressed="false">${l}</button>`).join(''));
-  const setObj = k => {
-    $$('#months .pin, #undated .ud').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === k)));
-    const o = objs[k];
-    $('#objDetail').innerHTML = `<div class="od-when">${o.when}</div><div class="od-t">${o.t}</div><p>${o.p}</p>`;
-  };
-  $$('#months .pin, #undated .ud').forEach(b => b.addEventListener('click', () => setObj(b.dataset.k)));
-  setObj('aug13');
+
 })();
 </script>
 </body>
