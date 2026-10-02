@@ -714,6 +714,29 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 .ol-what { font-size: 1rem; line-height: 1.45; color: var(--ink-2); }
 .objlist li.ol-head { display: block; font-family: var(--f-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-top: 1rem; }
 
+/* combined objections timeline */
+.objtl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.2rem; align-items: end; margin-top: 1.2rem; }
+.tl-months { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 2px; position: relative; align-items: end; }
+.tl-m { display: grid; justify-items: center; gap: .35rem; }
+.tl-slips { display: flex; flex-direction: column-reverse; gap: 4px; align-items: center; min-height: 2.4rem; justify-content: flex-start; }
+.tl-lab { width: 100%; text-align: center; border-top: 2px solid var(--rule); padding-top: .35rem; font-family: var(--f-mono); font-size: .64rem; color: var(--muted); white-space: nowrap; }
+.tl-m.tl-empty:nth-child(-n+5) .tl-lab { border-top-style: dashed; }
+.tl-none { position: absolute; left: 0; width: 50%; bottom: 2.2rem; text-align: center; font-family: var(--f-mono); font-size: .64rem; color: var(--muted); font-style: italic; }
+.tslip { width: 22px; height: 29px; border: 1.5px solid var(--stamp); border-radius: 2px; background: var(--panel); display: grid; place-items: center; position: relative; }
+.tslip b { font-family: var(--f-mono); font-size: .62rem; color: var(--stamp); }
+.tslip:not(:has(b))::before { content: ""; position: absolute; left: 4px; right: 4px; top: 8px; height: 2px; background: color-mix(in srgb, var(--stamp) 45%, transparent); box-shadow: 0 5px 0 color-mix(in srgb, var(--stamp) 45%, transparent); }
+.tl-tray { display: grid; gap: .35rem; justify-items: center; padding-left: 1.2rem; border-left: 1px dashed var(--rule); }
+.tl-slips.tray { flex-direction: row; flex-wrap: wrap; max-width: 9.5rem; justify-content: center; gap: 5px; }
+.tl-same { display: flex; gap: 3px; padding: 1.1rem 4px 4px; border: 1.5px dashed var(--stamp); border-radius: 4px; position: relative; }
+.tl-same em { position: absolute; top: .15rem; left: 0; right: 0; text-align: center; font-style: normal; font-family: var(--f-mono); font-size: .58rem; color: var(--stamp); }
+.tl-tray .tl-lab { border-top: 2px solid var(--rule); }
+@media (max-width: 620px) {
+  .objtl { grid-template-columns: minmax(0, 1fr); }
+  .tl-tray { padding-left: 0; border-left: 0; border-top: 1px dashed var(--rule); padding-top: .9rem; }
+  .tl-lab { font-size: .56rem; }
+  .tslip { width: 18px; height: 24px; }
+}
+
 .callout { background: var(--accent-soft); border-radius: 4px; padding: 1rem 1.1rem; font-size: 1.02rem; line-height: 1.55; margin: 1.6rem 0; }
 .callout b { font-family: var(--f-display); font-stretch: 85%; }
 
@@ -1186,18 +1209,15 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 </figure>
 <section class="col">
   <p>The report said Sandhu and Joshi had formally objected, in writing, <strong>at least 14 times in 10 months</strong>. They objected to SIR decisions and orders that were issued without their knowledge or advice. On one day alone, they filed four objections. Remember, two members out of three are a majority of the Commission.<sup class="cite" data-ref="ie latestly"></sup></p>
-  <p>The figure below shows the 14 objections as slips of paper. Under them is everything reports have said about individual objections: five with dates, and three without. You don't need to click anything. The count starts in November 2025, but none of the objections described so far is from before April 2026.</p>
+  <p>The figure below puts all 14 objections on one timeline, as slips of paper. Five have a reported date, so they sit in their month. The other nine have no reported date, so they sit in a separate pile. Under the chart is what each described objection said. You don't need to click anything.</p>
 </section>
 <figure class="wide">
   <div class="fig">
     <p class="fig-title">At least 14 objections, November 2025 to August 2026</p>
-    <p class="fig-sub">Each slip is one objection on record. Four were filed on one day, which has not been reported.</p>
-    <div class="slips" id="slips" aria-label="14 objection slips, four grouped together" style="margin-top:1.6rem"></div>
-    <p class="fig-sub" style="margin:1.2rem 0 .3rem">The objections reports have described, by month</p>
-    <div class="objaxis" aria-hidden="true">
-      <div class="ax-m"><span>Nov ’25</span></div><div class="ax-m"><span>Dec</span></div><div class="ax-m"><span>Jan ’26</span></div><div class="ax-m"><span>Feb</span></div><div class="ax-m"><span>Mar</span></div>
-      <div class="ax-m"><span>Apr</span><b>1</b></div><div class="ax-m"><span>May</span><b>2</b></div><div class="ax-m"><span>Jun</span></div><div class="ax-m"><span>Jul</span><b>3</b></div><div class="ax-m"><span>Aug</span><b>4</b><b>5</b></div>
-      <div class="ax-none">None described from these months</div>
+    <p class="fig-sub">Each slip is one objection. Slips with a reported date sit in their month. The rest sit in a separate pile.</p>
+    <div class="objtl" aria-label="Timeline of 14 objections: one each in April, May and July 2026, two in August, and nine with no reported date, four of them filed on the same day">
+      <div class="tl-months"><div class="tl-m tl-empty"><div class="tl-slips"></div><span class="tl-lab">Nov ’25</span></div><div class="tl-m tl-empty"><div class="tl-slips"></div><span class="tl-lab">Dec</span></div><div class="tl-m tl-empty"><div class="tl-slips"></div><span class="tl-lab">Jan ’26</span></div><div class="tl-m tl-empty"><div class="tl-slips"></div><span class="tl-lab">Feb</span></div><div class="tl-m tl-empty"><div class="tl-slips"></div><span class="tl-lab">Mar</span></div><div class="tl-m"><div class="tl-slips"><span class="tslip"><b>1</b></span></div><span class="tl-lab">Apr</span></div><div class="tl-m"><div class="tl-slips"><span class="tslip"><b>2</b></span></div><span class="tl-lab">May</span></div><div class="tl-m tl-empty"><div class="tl-slips"></div><span class="tl-lab">Jun</span></div><div class="tl-m"><div class="tl-slips"><span class="tslip"><b>3</b></span></div><span class="tl-lab">Jul</span></div><div class="tl-m"><div class="tl-slips"><span class="tslip"><b>4</b></span><span class="tslip"><b>5</b></span></div><span class="tl-lab">Aug</span></div><div class="tl-none">None reported from these months</div></div>
+      <div class="tl-tray"><div class="tl-slips tray"><span class="tslip"></span><span class="tslip"></span><span class="tslip"></span><span class="tslip"></span><span class="tslip"></span><span class="tl-same"><em>same day</em><span class="tslip"></span><span class="tslip"></span><span class="tslip"></span><span class="tslip"></span></span></div><span class="tl-lab">Date not reported · 9</span></div>
     </div>
     <ol class="objlist">
       <li><span class="ol-n">1</span><div><div class="ol-when">16 Apr 2026 · Vivek Joshi</div><div class="ol-what">No meeting agendas had been sent out in advance for about a year, and minutes were not shared.<sup class="cite" data-ref="nhdgit"></sup></div></div></li>
@@ -1210,7 +1230,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
       <li class="und"><span class="ol-n">–</span><div><div class="ol-when">West Bengal</div><div class="ol-what">How names were added and removed during the Bengal SIR.<sup class="cite" data-ref="latestly"></sup></div></div></li>
       <li class="und"><span class="ol-n">–</span><div><div class="ol-when">Goa</div><div class="ol-what">The software would not record decisions for 97 voters who had already been approved.<sup class="cite" data-ref="federal kv"></sup></div></div></li>
     </ol>
-    <figcaption>Reports describe only some of the 14 objections, and give dates for fewer. Nothing here is placed on a guessed date.<sup class="cite" data-ref="ie latestly"></sup></figcaption>
+    <figcaption>Reports give dates for only some objections, and do not always say which of the 14 a dated objection is. The day of the four same-day objections has not been reported. Nothing here is placed on a guessed date.<sup class="cite" data-ref="ie latestly"></sup></figcaption>
   </div>
 </figure>
 <section class="col">
@@ -1817,12 +1837,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
   $$('#seats .seat').forEach(b => b.addEventListener('click', () => setSeat(+b.dataset.i)));
   setSeat(0);
 
-  /* ---------- 14 objections ---------- */
-  const slips = $('#slips');
-  let sh = '';
-  for (let i = 0; i < 10; i++) sh += '<span class="slip"></span>';
-  sh += '<span class="slip-group"><em>4 on one day</em><span class="slip"></span><span class="slip"></span><span class="slip"></span><span class="slip"></span></span>';
-  slips.innerHTML = sh;
+
 
 
 })();
