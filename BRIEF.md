@@ -59,6 +59,31 @@ heavy lifting on build + first-draft prose, while the human owns the spine and t
   in the caption or Sources. *(Learned on scope-neglect.)*
 - **Small exact datasets go in a table, not a sentence.** "$80, $78, and $88" buried
   in prose is invisible; three rows with a caption is legible and scannable.
+- **News and long-arc pieces: open with the present, then "why now".** Name the one
+  event that turned a slow story into a big one, label older context as background,
+  and say when the piece steps back in time and when it returns. *(Learned on
+  erased-from-the-roll: an earlier controversy given equal billing confused readers.)*
+- **Every section hands off to the next.** Read each section's last paragraph against
+  the next one's first; add a bridge sentence where the jump is unexplained. After a
+  section break, name the subject in full ("the Indian Express report"), never "that
+  report". Tell each chronology once; elsewhere summarise and point to it.
+- **A setup sentence before every figure, and the text explains first.** Say what the
+  reader is about to see and what to notice. Never put a chart straight after another
+  chart. The graphic confirms the text; it must not ask the reader to decode several
+  new ideas at once.
+- **Plain English for second-language readers.** About 14 words per sentence on
+  average, one idea each, everyday words ("removed", not "struck off"). Give every
+  central term a one-sentence plain definition where it is first named, and explain
+  derived numbers in words ("the BJP got 32,707 more votes than Congress. That was
+  its winning margin.").
+- **Describe examples as precisely as the sources do.** "The record had a real error",
+  "the claim was false" and "it was fraud" are different things. *(Learned on
+  erased-from-the-roll: a 124-year-old voter was a real 1900/1990 typo, not a fake.)*
+- **Footnotes, not inline links.** Wikipedia-style `[n]` markers that jump to the
+  Sources list, with ↑ back-links. One cluster at the end of *every* factual paragraph,
+  list item and caption, even when the source repeats; never one per sentence. Link
+  only the story's key primary source inline (new tab, marked ↗). Never invent a
+  source's headline: if you haven't seen it, describe it.
 - End on a *payoff*: what does the reader now see differently / do differently.
 
 ### Writing toolchain (installed at `~/.claude/skills/`, available every session)
@@ -124,6 +149,16 @@ Not every piece needs all six, but the shape is: *vivid → surprise → mechani
   readout, make the consequence visible within the same screenful.
 - Everything keyboard-operable; `<input type=range>` for sliders (styled, not rebuilt).
 - Canvas for anything with >~500 elements (dot grids, particles); SVG otherwise.
+- **Few items? Show them all.** Under ~10 items, list everything, always visible,
+  instead of markers and chips that need clicking. If a tap is required, say exactly
+  what to tap and what happens. *(Learned on erased-from-the-roll: "click a marker"
+  confused readers.)*
+- **Every scrollytelling step must change something visible,** and use the space:
+  highlight what changed, add a per-step side panel, and resize items as more columns
+  arrive. Keep sticky graphics below any fixed header.
+- **Touch wording and tooltips.** Show "Tap" on `(hover: none)` and "Hover" elsewhere
+  (watch for a capitalised "Hover"). Open tooltips on a real tap, not on touchstart,
+  or they flash during every scroll. On phones, show fewer elements (3 nodes, not 5).
 - Reset is a feature — if a reader can break a toy, give them a way back.
 
 ## 5. Images
@@ -140,6 +175,14 @@ Not every piece needs all six, but the shape is: *vivid → surprise → mechani
   November 2007.") lands harder than emotional stage direction ("hold on to how this
   feels"). Never tell the reader what to feel — the image does that or it doesn't.
 
+- **A caption explains how to read the figure, nothing else.** Takeaways and outside
+  numbers go in a short paragraph after it.
+- **Don't let unrelated things line up by accident.** A count drawn above a timeline
+  reads as dates. When only some events are dated, put the whole count on the axis:
+  dated items in their slots, the rest in a labelled "Date not reported" pile.
+- **Label illustrations prominently** ("Illustration · not a real voter list"), and
+  never describe a colour that flips between themes ("the dark area").
+
 ## 6. Packaging (decided per piece)
 - **Single self-contained `.html`** (inline CSS/JS, data-URI images) for portable,
   email-it/Artifact-it pieces. Default for most.
@@ -147,6 +190,11 @@ Not every piece needs all six, but the shape is: *vivid → surprise → mechani
   be deployed (GitHub Pages / Netlify / Vercel).
 - The *content, style, and interaction patterns are identical* either way — only
   packaging differs. Build in the shared style; split files only when the piece demands it.
+
+- **One source of truth when a piece lives in two places** (for example a Claude
+  Artifact and this site). Edit one file and generate the other with a script; the
+  Artifact host adds its own `<head>`, so the site copy needs `<!DOCTYPE html>`,
+  `<meta charset>` and `body{margin:0}`, then a check that it renders in standards mode.
 
 ## 7. Reusable interaction patterns (our growing vocabulary)
 Name them so we can say "make section 3 a step-through sim" and mean the same thing.
@@ -207,6 +255,25 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
   URL-hash link-sharing first; it failed user testing (silent imports, name
   collisions that overwrite people, too much copy-paste choreography).
 
+- **Persona walk-through** — scrollytelling where a handful of invented but typical
+  people (cards) move through a real process step by step (old roll → draft → final),
+  with a per-step side panel and coloured borders on whoever just changed. Reuse the
+  same personas in later sections so the reader connects the pieces.
+- **Form mock with blanks** — a real form drawn with its standard parts faded to grey
+  placeholders and the contested part in full contrast; picking an option shows the
+  empty boxes it demands (constituency no., part no., serial no.) plus one short line.
+- **Law vs practice toggle** — one diagram, two states ("what the law says" / "what
+  happened"), switched by two labelled buttons; the caption names whose account the
+  second state is.
+- **Dated + undated timeline** — every item of a count on one axis: dated items in
+  their month, the rest in a labelled pile at the end, with a numbered list below.
+- **Floating section label + side index** — a top-left pill names the current section
+  and slides to the next one as you scroll; tap it, or hover a slim tick rail on the
+  left edge, to open the index. A lighter cousin of the contents rail.
+- **Real boundary map** — public shapefiles (e.g. DataMeet constituencies) simplified
+  with a small Python script into inline SVG paths; the map stands alone, with the
+  place of interest in full colour and neighbours faint.
+
 _(Add new patterns here as we invent them.)_
 
 ## 8. Build checklist (run before calling a piece done)
@@ -215,6 +282,10 @@ _(Add new patterns here as we invent them.)_
 - [ ] Dark + light both good; reduced-motion respected.
 - [ ] Every stat/claim has a real source in the footer.
 - [ ] The interactive core delivers the "aha" without reading the prose.
+- [ ] Each section's last paragraph leads into the next; no chronology told twice.
+- [ ] A setup sentence sits right before every figure; captions only explain how to read it.
+- [ ] Every factual paragraph has its own footnote cluster; every source is used.
+- [ ] Touch pass: "tap" wording, tap-only tooltips, nothing hidden under fixed headers.
 - [ ] Human has a clean prose draft that's easy to edit in place.
 
 ---
@@ -226,3 +297,4 @@ _(Add new patterns here as we invent them.)_
 | You and Your Research | `you-and-your-research/` | reading edition (contents rail, pull quotes, highlights, margin notes, ELI5 popovers, progress bar), hero photo, loop diagrams ×3, compound-interest slider, importance 2×2 | v3, live on Netlify |
 | AI 2030: Draw Your Future | `ai-2030/` | toy model (draggable radar builder), predict-then-reveal (confidence split vs drawn shape), group board | v1 draft (AI text, awaiting human edit) |
 | Polycrisis in Brief | `polycrisis/` | entangled-network hero, tap-to-gloss definitions, simple risk lab (3 sliders + live SVG), stage timeline, small multiples, before/after charts, tap-to-build ties with 4 outcome states | v1 (AI text, human-edited) |
+| Erased from the Roll | `erased-from-the-roll/` | persona walk-through and roll → parts scrollytelling, real boundary map, unit chart, flow bars, form mock with blanks, law vs practice toggle, dated + undated timeline, footnotes with back-links, floating section label + side index | v1 (AI text, human-edited; facts as of 2 Oct 2026) |
