@@ -65,20 +65,37 @@ heavy lifting on build + first-draft prose, while the human owns the spine and t
   erased-from-the-roll: an earlier controversy given equal billing confused readers.)*
 - **Every section hands off to the next.** Read each section's last paragraph against
   the next one's first; add a bridge sentence where the jump is unexplained. After a
-  section break, name the subject in full ("the Indian Express report"), never "that
-  report". Tell each chronology once; elsewhere summarise and point to it.
+  section break, name the subject in full (the outlet, the document and the date),
+  never "that report". Tell each chronology once; elsewhere summarise and point to it.
 - **A setup sentence before every figure, and the text explains first.** Say what the
   reader is about to see and what to notice. Never put a chart straight after another
   chart. The graphic confirms the text; it must not ask the reader to decode several
   new ideas at once.
 - **Plain English for second-language readers.** About 14 words per sentence on
-  average, one idea each, everyday words ("removed", not "struck off"). Give every
-  central term a one-sentence plain definition where it is first named, and explain
-  derived numbers in words ("the BJP got 32,707 more votes than Congress. That was
-  its winning margin.").
+  average, one idea each, everyday words ("removed", not "struck off"). Use the
+  readers' own conventions: number units (lakh and crore for Indian readers), names
+  for institutions, date format. Give every central term a one-sentence plain
+  definition where it is first named, and explain derived numbers in steps: the
+  overall figure, then the part, then the takeaway in one plain sentence.
+- **Only promise what the piece delivers.** The title, subtitle and opening must not
+  promise an answer the piece doesn't give. "Why X happened" is a promise; if the
+  piece only shows *that* it happened, point the subtitle at the question it does
+  answer. *(Learned on erased-from-the-roll: a subtitle promised a "why" the essay
+  never explained.)*
 - **Describe examples as precisely as the sources do.** "The record had a real error",
   "the claim was false" and "it was fraud" are different things. *(Learned on
-  erased-from-the-roll: a 124-year-old voter was a real 1900/1990 typo, not a fake.)*
+  erased-from-the-roll: a critic's showcase case was called "wrong" when the record
+  really did contain the error, from a typing mistake.)*
+- **When a claim is contradicted later, update every echo.** Report the claim and its
+  date, any fact that tests it (the approval it cites came before the change it
+  supposedly approved), the contradiction, and the reply. Then qualify every place the
+  piece repeats the claim: summaries, both-sides panels, closing lines. Don't call it
+  a climb-down unless the source actually stepped back.
+- **Live stories: write for readers who arrive on different days.** A news piece gets
+  shared for weeks. Describe ongoing events as started or happened ("protests began
+  on 2 October"), not as plans or pending permissions. Keep one plain "Updated [date]"
+  line at the top. A "what happens next" list holds only fixed, scheduled dates
+  (deadlines, publication dates), never events whose status will soon change.
 - **Footnotes, not inline links.** Wikipedia-style `[n]` markers that jump to the
   Sources list, with ↑ back-links. One cluster at the end of *every* factual paragraph,
   list item and caption, even when the source repeats; never one per sentence. Link
@@ -140,6 +157,10 @@ Not every piece needs all six, but the shape is: *vivid → surprise → mechani
 - Color roles (CSS custom props): `--bg`, `--fg`, `--muted`, `--accent`, `--accent-2`,
   `--surface`, `--line`. Change the palette per piece by editing tokens only.
 - One accent color per piece, used with intent (the thing the reader controls / the surprise).
+- **Keep the opening bare.** Title, a short dek and the opening visual, with at most a
+  plain "Updated [date]" line. No topic label above the title ("Country · Topic"), no
+  byline listing the format, reading time or "sources at the end". They read as
+  machine-made. *(Learned on erased-from-the-roll.)*
 
 ## 4. Interactivity
 - **Vanilla JS + SVG/Canvas by default.** No dependencies, works offline, works in a
@@ -180,7 +201,7 @@ Not every piece needs all six, but the shape is: *vivid → surprise → mechani
 - **Don't let unrelated things line up by accident.** A count drawn above a timeline
   reads as dates. When only some events are dated, put the whole count on the axis:
   dated items in their slots, the rest in a labelled "Date not reported" pile.
-- **Label illustrations prominently** ("Illustration · not a real voter list"), and
+- **Label illustrations prominently** ("Illustration · not real data"), and
   never describe a colour that flips between themes ("the dark area").
 
 ## 6. Packaging (decided per piece)
@@ -256,12 +277,12 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
   collisions that overwrite people, too much copy-paste choreography).
 
 - **Persona walk-through** — scrollytelling where a handful of invented but typical
-  people (cards) move through a real process step by step (old roll → draft → final),
+  people (cards) move through a real process step by step (old record → draft → final),
   with a per-step side panel and coloured borders on whoever just changed. Reuse the
   same personas in later sections so the reader connects the pieces.
 - **Form mock with blanks** — a real form drawn with its standard parts faded to grey
   placeholders and the contested part in full contrast; picking an option shows the
-  empty boxes it demands (constituency no., part no., serial no.) plus one short line.
+  empty boxes it demands (each labelled with what you must fill in) plus one short line.
 - **Law vs practice toggle** — one diagram, two states ("what the law says" / "what
   happened"), switched by two labelled buttons; the caption names whose account the
   second state is.
@@ -270,7 +291,7 @@ Name them so we can say "make section 3 a step-through sim" and mean the same th
 - **Floating section label + side index** — a top-left pill names the current section
   and slides to the next one as you scroll; tap it, or hover a slim tick rail on the
   left edge, to open the index. A lighter cousin of the contents rail.
-- **Real boundary map** — public shapefiles (e.g. DataMeet constituencies) simplified
+- **Real boundary map** — public shapefiles (e.g. DataMeet for India) simplified
   with a small Python script into inline SVG paths; the map stands alone, with the
   place of interest in full colour and neighbours faint.
 
@@ -286,6 +307,11 @@ _(Add new patterns here as we invent them.)_
 - [ ] A setup sentence sits right before every figure; captions only explain how to read it.
 - [ ] Every factual paragraph has its own footnote cluster; every source is used.
 - [ ] Touch pass: "tap" wording, tap-only tooltips, nothing hidden under fixed headers.
+- [ ] Title, subtitle and opening only promise what the piece answers; no topic label or
+      reading-time byline at the top.
+- [ ] Live stories: the opening reads true on any day in the next few weeks; "what
+      happens next" lists only fixed dates; a later-contradicted claim is qualified
+      everywhere it appears.
 - [ ] Human has a clean prose draft that's easy to edit in place.
 
 ---
@@ -297,4 +323,4 @@ _(Add new patterns here as we invent them.)_
 | You and Your Research | `you-and-your-research/` | reading edition (contents rail, pull quotes, highlights, margin notes, ELI5 popovers, progress bar), hero photo, loop diagrams ×3, compound-interest slider, importance 2×2 | v3, live on Netlify |
 | AI 2030: Draw Your Future | `ai-2030/` | toy model (draggable radar builder), predict-then-reveal (confidence split vs drawn shape), group board | v1 draft (AI text, awaiting human edit) |
 | Polycrisis in Brief | `polycrisis/` | entangled-network hero, tap-to-gloss definitions, simple risk lab (3 sliders + live SVG), stage timeline, small multiples, before/after charts, tap-to-build ties with 4 outcome states | v1 (AI text, human-edited) |
-| Erased from the Roll | `erased-from-the-roll/` | persona walk-through and roll → parts scrollytelling, real boundary map, unit chart, flow bars, form mock with blanks, law vs practice toggle, dated + undated timeline, footnotes with back-links, floating section label + side index | v1 (AI text, human-edited; facts as of 2 Oct 2026) |
+| Erased from the Roll | `erased-from-the-roll/` | persona walk-through and roll → parts scrollytelling, real boundary map, unit chart, flow bars, form mock with blanks, law vs practice toggle, dated + undated timeline, footnotes with back-links, floating section label + side index | v1 (AI text, human-edited; updated 6 Oct 2026) |
