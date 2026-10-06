@@ -101,7 +101,6 @@ strong { font-weight: 600; }
 .hero { max-width: var(--wide); margin-inline: auto; padding-block: 3.5rem 2rem; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3rem; align-items: center; }
 @media (max-width: 820px) { .hero { grid-template-columns: minmax(0,1fr); gap: 2rem; padding-block: 2.5rem 1rem; } }
 .kicker { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; gap: .75rem; flex-wrap: wrap; }
-.kicker b { color: var(--accent); font-weight: 600; }
 h1 {
   font-family: var(--f-display); font-stretch: 68%; font-weight: 850;
   font-size: clamp(3.2rem, 9vw, 6rem); line-height: .9; letter-spacing: -.01em;
@@ -110,7 +109,6 @@ h1 {
 h1 .struck { position: relative; color: var(--muted); white-space: nowrap; }
 h1 .struck::after { content: ""; position: absolute; left: -2%; right: -2%; top: 52%; height: .09em; background: var(--stamp); transform: rotate(-2deg); }
 .dek { font-size: 1.3rem; line-height: 1.5; color: var(--ink-2); max-width: 34rem; }
-.byline { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); margin-top: 1.5rem; }
 
 /* electoral roll illustration */
 .roll { background: var(--panel); border: 1px solid var(--rule); box-shadow: var(--shadow); padding: .9rem; border-radius: 3px; }
@@ -763,10 +761,9 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 <!-- ============ HERO ============ -->
 <header class="hero" id="top">
   <div>
-    <div class="kicker"><b>India · Electoral rolls</b><span>As of 1 October 2026</span></div>
+    <div class="kicker"><span>Updated 6 October 2026</span></div>
     <h1><span class="struck">Erased</span> from the Roll</h1>
     <p class="dek">In just over a year, India's Election Commission has removed more than 13 crore names from draft voter lists. Now two of the Commission's three members say important decisions were taken without them. This is the story of how a clean-up of voter lists turned into a demand that the Chief Election Commissioner resign.<sup class="cite" data-ref="civ13 latestly"></sup></p>
-    <div class="byline">An illustrated explainer · about 15 minutes · sources at the end</div>
   </div>
   <div>
     <div class="roll" id="roll" aria-label="Illustration of one page of an electoral roll with about one in seven entries stamped deleted">
@@ -780,8 +777,8 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 
 <!-- ============ PROLOGUE ============ -->
 <section class="col">
-  <p>On 2 October, Gandhi Jayanti, protests against the Election Commission were called in several places. In Delhi, student groups and activists called a gathering at Jantar Mantar. They include AISA president Neha Bora, lawyer Prashant Bhushan and RJD MP Manoj Jha. In Mumbai, the Cockroach Janta Party called a protest at Shivaji Park. As of 1 October, police had not given permission in Delhi, and had refused it in Mumbai. The opposition INDIA alliance is also holding "Save Democracy" marches in districts from 2 to 8 October. Its MPs plan to march to the Election Commission's office on 6 October.<sup class="cite" data-ref="newsdrum2 telangana aninews"></sup></p>
-  <p><mark class="key">The protests share one demand: Chief Election Commissioner <strong>Gyanesh Kumar</strong> must resign.</mark> Congress also wants him arrested, and wants an independent check of the voter lists. Opposition MPs are preparing a second attempt to remove him from office.<sup class="cite" data-ref="telangana newsdrum2 aninews outlook"></sup></p>
+  <p>On 2 October 2026, Gandhi Jayanti, protests against the Election Commission began in several cities. In Delhi, police detained more than 700 people heading to Jantar Mantar, among them student leaders, activists and opposition politicians. In Mumbai, people gathered at Shivaji Park. The opposition INDIA alliance also called "Save Democracy" marches in districts across the country.<sup class="cite" data-ref="theweek telangana newsdrum2"></sup></p>
+  <p><mark class="key">The protests share one demand: Chief Election Commissioner <strong>Gyanesh Kumar</strong> must resign.</mark> Congress also wants him arrested, and wants an independent check of the voter lists. Opposition MPs have said they are preparing a second attempt to remove him from office.<sup class="cite" data-ref="telangana newsdrum2 aninews outlook"></sup></p>
   <p>Why now? People have been arguing about India's voter lists for more than a year. What turned it into a national story was a newspaper report. On 23 September, <a class="ext" href="https://indianexpress.com/article/express-exclusive/election-commission-sir-14-objections-gyanesh-kumar-sukhbir-singh-sandhu-vivek-joshi-10889737/" target="_blank" rel="noopener">the <em>Indian Express</em> reported</a> that two of the Election Commission's three members had objected in writing at least 14 times in ten months. They said decisions about a huge revision of the voter lists had been taken without them. Within days, the opposition, student groups and activists were calling people onto the streets.<sup class="cite" data-ref="ie latestly aj"></sup></p>
   <p>To see why that report hit so hard, this story first goes back a little. It explains how the voter list works, the first fight over it in 2025, and what the revision did to crores of voters. Then it comes back to the report itself.</p>
 </section>
@@ -1191,7 +1188,8 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
   </div>
 </figure>
 <section class="col">
-  <p>The Commission says Form 6 itself was never changed. It says the new section is a separate, temporary step that applies only during an SIR. It also says the Supreme Court approved the SIR's document rules on 27 May 2026.<sup class="cite" data-ref="sg kv"></sup></p>
+  <p>The Commission says Form 6 itself was never changed. It says the new section is a separate, temporary step that applies only during an SIR. In a press note on 26 September 2026, it went further: it said the Supreme Court had upheld the new section. The court did uphold the Bihar SIR, in a judgment on 27 May 2026. But the new section was added to the form only in July.<sup class="cite" data-ref="sg kv livelawf6 openf6"></sup></p>
+  <p>On 5 October, the Supreme Court itself answered. It was hearing a petition against decisions the CEC is accused of taking on his own. Chief Justice Surya Kant said, "Any modified Form 6 has not been approved by us." The court asked for the records, to see who had changed the form. The same day, the EC posted a "fact-check" on X calling the opposition's claims misleading, and repeated that the new section had been upheld.<sup class="cite" data-ref="livelawf6 openf6 jagranfc"></sup></p>
   <p>Two of the Commission's own members disagreed, in writing, months before the public knew. Their objections became public only on 23 September. Within a week, the EC said the new section would apply only during an SIR. It removed the parent and grandparent questions from the online form in the 20 states and UTs where the SIR is over.<sup class="cite" data-ref="jagran latestly scrollf6 asianmirror"></sup></p>
   <p>Form 6 was only one of the things those two members objected to. That brings us back to where this story started: the Indian Express report.</p>
 </section>
@@ -1272,7 +1270,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
         <ul>
           <li>All three SIR orders (24 June 2025, 27 October 2025, 14 May 2026) were approved by all three members.<sup class="cite" data-ref="kv"></sup></li>
           <li>Disagreeing on details is a normal part of discussion. The Commission took about 40 new steps in this period. The 14 objections should be seen against that.<sup class="cite" data-ref="sg"></sup></li>
-          <li>Form 6 was not changed. The new section is an extra step only for the SIR, and the Supreme Court approved it.<sup class="cite" data-ref="kv sg"></sup></li>
+          <li>Form 6 was not changed. The new section is an extra step only for the SIR, and the Supreme Court upheld it.<sup class="cite" data-ref="kv sg jagranfc"></sup></li>
           <li>The commissioners' letters to the Cabinet Secretary were about one officer on loan from another department. They were not about policy or software.<sup class="cite" data-ref="kv"></sup></li>
           <li>A committee with an IIT or IIIT expert will review ECINet. Deadlines in Delhi and Maharashtra have been extended.<sup class="cite" data-ref="scrollf6"></sup></li>
         </ul>
@@ -1281,6 +1279,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
         <ul>
           <li>Decisions taken by the CEC alone are not decisions of the Commission. The Supreme Court's Seshan judgment says decisions must be taken together.<sup class="cite" data-ref="federal"></sup></li>
           <li>Adding a question to a form that is set by law, without changing the law, is "unauthorised and illegal" (Sandhu).<sup class="cite" data-ref="jagran"></sup></li>
+          <li>The Supreme Court never approved the new section. The Chief Justice said so in court on 5 October 2026.<sup class="cite" data-ref="livelawf6"></sup></li>
           <li>Central control of the software takes away powers the law gives to EROs. It puts crores of records under one office in Delhi.<sup class="cite" data-ref="tribune nhdgit"></sup></li>
           <li>In Goa, the software would not record decisions for 97 voters who had been approved. The EC says 81 of them have since filed Form 6 again.<sup class="cite" data-ref="federal kv"></sup></li>
           <li>All three members agreeing to start the SIR does not mean they agreed to every later decision about how it was run.<sup class="cite" data-ref="federal"></sup></li>
@@ -1311,16 +1310,13 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 <section class="col">
   <p>Since 24 September, there have been reports that opposition parties are preparing a new notice. This time they will use the commissioners' objections. They argue that if two of the three members objected in writing, the CEC went beyond his powers. But the new notice must still get past step 2. Resigning is the only faster way out, and that is what the protesters are demanding.<sup class="cite" data-ref="outlook"></sup></p>
   <div class="pull">"This is not an issue of ruling versus Opposition."<small>Manoj Jha, RJD MP, announcing the Jantar Mantar protest</small></div>
-  <p>BJP spokesperson Sambit Patra called the campaign a smear by parties that keep losing elections. The Commission says everything it did was legal and was approved by the Supreme Court.<sup class="cite" data-ref="aj"></sup></p>
-  <p>The next few weeks will test both sides. Here are the dates to watch.</p>
+  <p>BJP spokesperson Sambit Patra called the campaign a smear by parties that keep losing elections. The Commission says everything it did was legal and was approved by the Supreme Court. On Form 6, the Chief Justice has said the court approved no such change (Part 7).<sup class="cite" data-ref="aj livelawf6"></sup></p>
+  <p>Meanwhile, the revision itself is not finished. These are the dates still set for it.</p>
 </section>
 
 <figure class="col">
   <p class="fig-title" style="margin-bottom:.8rem">What happens next</p>
   <ul class="tl">
-    <li class="key"><span class="d">2 Oct</span><span class="e">Protests at Jantar Mantar, Delhi (11 am), and Shivaji Park, Mumbai. As of 1 October, police permission was pending in Delhi and refused in Mumbai. INDIA alliance "Save Democracy" marches begin in districts and run until 8 October.<sup class="cite" data-ref="telangana newsdrum2"></sup></span></li>
-    <li><span class="d">4 Oct</span><span class="e">MNS and Shiv Sena (UBT) march over the Election Commission row.<sup class="cite" data-ref="fpj"></sup></span></li>
-    <li><span class="d">6 Oct</span><span class="e">Opposition MPs march to the Election Commission's office in Delhi.<sup class="cite" data-ref="newsdrum2"></sup></span></li>
     <li><span class="d">12 Oct</span><span class="e">Last date (extended) to apply to get back on the roll in Maharashtra.<sup class="cite" data-ref="scrollf6"></sup></span></li>
     <li><span class="d">29 Oct</span><span class="e">Last date for deciding applications and objections in Phase III states.<sup class="cite" data-ref="civ13"></sup></span></li>
     <li><span class="d">30 Oct</span><span class="e">Last date (extended) to apply to get back on the roll in Delhi.<sup class="cite" data-ref="scrollf6"></sup></span></li>
@@ -1370,13 +1366,17 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
     <li id="ref-asianet" data-title="ECI refutes report, calls ECINet secure and decentralised platform" data-outlet="Asianet Newsable"><span class="bk"></span><a href="https://newsable.asianetnews.com/india/eci-refutes-report-calls-ecinet-secure-decentralised-platform-articleshow-7v10kbb" target="_blank" rel="noopener">ECI refutes report, calls ECINet secure and decentralised platform</a>, <span class="outlet">Asianet Newsable</span>.</li>
     <li id="ref-scrollf6" data-title="EC says old Form 6 will be used in non-SIR period, IT portal to be reviewed" data-outlet="Scroll"><span class="bk"></span><a href="https://amp.scroll.in/latest/1096031/ec-says-old-form-6-will-be-used-in-non-sir-period-it-portal-to-be-reviewed" target="_blank" rel="noopener">EC says old Form 6 will be used in non-SIR period, IT portal to be reviewed</a>, <span class="outlet">Scroll</span>.</li>
     <li id="ref-aj" data-title="India's &quot;cockroach&quot; movement demands election chief's resignation" data-outlet="Al Jazeera"><span class="bk"></span><a href="https://www.aljazeera.com/news/2026/9/25/indias-cockroach-movement-demands-election-chiefs-resignation" target="_blank" rel="noopener">India's "cockroach" movement demands election chief's resignation</a>, <span class="outlet">Al Jazeera</span>.</li>
-    <li id="ref-fpj" data-title="Cockroach Janata Party announces Oct 2 Shivaji Park protest" data-outlet="Free Press Journal"><span class="bk"></span><a href="https://www.freepressjournal.in/mumbai/cockroach-janata-party-announces-oct-2-shivaji-park-protest-over-election-commission-concerns" target="_blank" rel="noopener">Cockroach Janata Party announces Oct 2 Shivaji Park protest</a>, <span class="outlet">Free Press Journal</span>.</li>
+    
     <li id="ref-outlook" data-title="As pressure on Gyanesh Kumar mounts, how are Election Commission members removed?" data-outlet="Outlook"><span class="bk"></span><a href="https://www.outlookindia.com/national/as-pressure-on-gyanesh-kumar-mounts-how-are-election-commission-members-removed" target="_blank" rel="noopener">As pressure on Gyanesh Kumar mounts, how are Election Commission members removed?</a>, <span class="outlet">Outlook</span>.</li>
     <li id="ref-air" data-title="RS Chairman and LS Speaker reject notice of motion against CEC" data-outlet="News on AIR"><span class="bk"></span><a href="https://www.newsonair.gov.in/rs-chairman-cp-radhakrishnan-and-ls-speaker-om-bilra-reject-impeachment-notice-of-motion-against-cec-gyanesh-kumar" target="_blank" rel="noopener">RS Chairman and LS Speaker reject notice of motion against CEC</a>, <span class="outlet">News on AIR</span>.</li>
     <li id="ref-air91" data-title="ECI revises voter list, removing over 91 lakh names in West Bengal" data-outlet="News on AIR"><span class="bk"></span><a href="https://www.newsonair.gov.in/assembly-election-2026-eci-revises-voter-list-removing-over-91-lakh-names-in-west-bengal" target="_blank" rel="noopener">ECI revises voter list, removing over 91 lakh names in West Bengal</a>, <span class="outlet">News on AIR</span>.</li>
     <li id="ref-gujsam" data-title="Can Gyanesh Kumar be arrested? What Section 16 protects CEC from under 2023 law" data-outlet="Gujarat Samachar"><span class="bk"></span><a href="https://english.gujaratsamachar.com/news/national/can-gyanesh-kumar-be-arrested-what-section-16-protects-cec-from-under-2023-law-75691884821" target="_blank" rel="noopener">Can Gyanesh Kumar be arrested? What Section 16 protects CEC from under 2023 law</a>, <span class="outlet">Gujarat Samachar</span>.</li>
     <li id="ref-jagranimm" data-title="Is CEC Gyanesh Kumar immune from arrest? How an SC petition is countering it" data-outlet="Daily Jagran"><span class="bk"></span><a href="https://www.thedailyjagran.com/india/news/eci-sir-row-cec-gyanesh-kumar-immune-from-arrest-how-an-sc-petition-is-countering-it-explained-10330541" target="_blank" rel="noopener">Is CEC Gyanesh Kumar immune from arrest? How an SC petition is countering it</a>, <span class="outlet">Daily Jagran</span>.</li>
     <li id="ref-telangana" data-title="Activists, student leaders call for October 2 protest over EC functioning" data-outlet="Telangana Today"><span class="bk"></span><a href="https://telanganatoday.com/activists-student-leaders-call-for-october-2-protest-over-ec-functioning" target="_blank" rel="noopener">Activists, student leaders call for October 2 protest over EC functioning</a>, <span class="outlet">Telangana Today</span>.</li>
+    <li id="ref-theweek" data-title="CEC Gyanesh Kumar row: Delhi Police on toes as protesters, activists return to Jantar Mantar" data-outlet="The Week"><span class="bk"></span><a href="https://www.theweek.in/news/india/2026/10/03/cec-gyanesh-kumar-row-delhi-police-on-toes-as-protesters-activists-return-to-jantar-mantar.html" target="_blank" rel="noopener">CEC Gyanesh Kumar row: Delhi Police on toes as protesters, activists return to Jantar Mantar</a>, <span class="outlet">The Week</span>.</li>
+    <li id="ref-livelawf6" data-title="Modified Form 6 has not been approved by Supreme Court: CJI Surya Kant" data-outlet="LiveLaw"><span class="bk"></span><a href="https://www.livelaw.in/top-stories/supreme-court-says-modified-form-6-not-approved-by-it-election-commission-pleas-against-cec-gyanesh-kumar-unilateral-sir-decisions-553100" target="_blank" rel="noopener">Modified Form 6 has not been approved by Supreme Court: CJI Surya Kant</a>, <span class="outlet">LiveLaw</span>.</li>
+    <li id="ref-openf6" data-title="Supreme Court denies approval of modified Form 6 used by Election Commission in SIR" data-outlet="Open"><span class="bk"></span><a href="https://openthemagazine.com/india/cji-says-supreme-court-didnt-approve-modified-form-6-cited-by-ec-in-sir" target="_blank" rel="noopener">Supreme Court denies approval of modified Form 6 used by Election Commission in SIR</a>, <span class="outlet">Open</span>.</li>
+    <li id="ref-jagranfc" data-title="'Misleading': EC 'fact-checks' Rahul Gandhi's claims on Form 6, clarifies its stance after SC's remark" data-outlet="Daily Jagran"><span class="bk"></span><a href="https://www.thedailyjagran.com/india/news/ec-fact-checks-rahul-gandhis-claims-on-form-6-reiterates-declaration-upheld-by-supreme-court-10331667" target="_blank" rel="noopener">'Misleading': EC 'fact-checks' Rahul Gandhi's claims on Form 6, clarifies its stance after SC's remark</a>, <span class="outlet">Daily Jagran</span>.</li>
     <li id="ref-newsdrum2" data-title="Anti-CEC protests tomorrow: CJP plans Mumbai stir, Jantar Mantar nod awaited" data-outlet="NewsDrum"><span class="bk"></span><a href="https://www.newsdrum.in/national/anti-cec-protests-tomorrow-cjp-plans-mumbai-stir-jantar-mantar-nod-awaited-12613567" target="_blank" rel="noopener">Anti-CEC protests tomorrow: CJP plans Mumbai stir, Jantar Mantar nod awaited</a>, <span class="outlet">NewsDrum</span>.</li>
     <li id="ref-aninews" data-title="Delhi Police yet to grant permission for Oct 2 protest against CEC Gyanesh Kumar at Jantar Mantar" data-outlet="ANI"><span class="bk"></span><a href="https://www.aninews.in/news/national/general-news/delhi-police-yet-to-grant-permission-for-oct-2-protest-against-cec-gyanesh-kumar-at-jantar-mantar20261001160929/" target="_blank" rel="noopener">Delhi Police yet to grant permission for Oct 2 protest against CEC Gyanesh Kumar at Jantar Mantar</a>, <span class="outlet">ANI</span>.</li>
     <li id="ref-frontline" data-title="Telangana's SIR becomes an exercise in exclusion" data-outlet="Frontline"><span class="bk"></span><a href="https://frontline.thehindu.com/the-nation/telangana-special-intensive-revision-voter-deletions-sir/article71498928.ece" target="_blank" rel="noopener">Telangana's SIR becomes an exercise in exclusion</a>, <span class="outlet">Frontline</span>.</li>
