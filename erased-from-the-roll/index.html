@@ -12,7 +12,7 @@
   Packaging: single self-contained file
   Source of truth: a separate local project (india-election-issue). Rebuild this copy with
                    its scripts/build_standalone.py rather than editing it by hand.
-  Text status: AI draft, human-edited over many rounds. Facts as of 2 October 2026.
+  Text status: AI draft, human-edited over many rounds. Facts as of 6 October 2026.
 -->
 <html lang="en">
 <head>
@@ -75,7 +75,6 @@
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
 body {
-  margin: 0;
   background: var(--paper); color: var(--ink);
   font-family: var(--f-body); font-size: 1.1875rem; line-height: 1.6;
   padding-inline: 16px; padding-block: 0 4rem;
@@ -109,6 +108,7 @@ h1 {
 h1 .struck { position: relative; color: var(--muted); white-space: nowrap; }
 h1 .struck::after { content: ""; position: absolute; left: -2%; right: -2%; top: 52%; height: .09em; background: var(--stamp); transform: rotate(-2deg); }
 .dek { font-size: 1.3rem; line-height: 1.5; color: var(--ink-2); max-width: 34rem; }
+.shortlink { font-family: var(--f-mono); font-size: .8rem; line-height: 1.5; color: var(--muted); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: .6rem 0; margin-top: 1.2rem; max-width: 34rem; }
 
 /* electoral roll illustration */
 .roll { background: var(--panel); border: 1px solid var(--rule); box-shadow: var(--shadow); padding: .9rem; border-radius: 3px; }
@@ -744,6 +744,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
 .foot { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 1rem; margin-top: 2rem; }
 </style>
 <meta name="description" content="How a clean-up of India's voter lists removed crores of names, and why the Chief Election Commissioner now faces calls to resign.">
+<style>body { margin: 0; }</style>
 </head>
 <body>
 <div class="progress" id="progress" aria-hidden="true"></div>
@@ -764,6 +765,7 @@ mark.key { color: inherit; font-weight: 600; background: linear-gradient(transpa
     <div class="kicker"><span>Updated 6 October 2026</span></div>
     <h1><span class="struck">Erased</span> from the Roll</h1>
     <p class="dek">In just over a year, India's Election Commission has removed more than 13 crore names from draft voter lists. Now two of the Commission's three members say important decisions were taken without them. This is the story of how a clean-up of voter lists turned into a demand that the Chief Election Commissioner resign.<sup class="cite" data-ref="civ13 latestly"></sup></p>
+    <p class="shortlink">Short on time? Read the short version: <a href="https://explorables.netlify.app/how-do-you-delete/">How Do You Delete 13 Crore Voters? →</a></p>
   </div>
   <div>
     <div class="roll" id="roll" aria-label="Illustration of one page of an electoral roll with about one in seven entries stamped deleted">
