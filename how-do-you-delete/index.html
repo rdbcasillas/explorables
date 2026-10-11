@@ -107,6 +107,8 @@ figcaption { font-family: var(--f-mono); font-size: .72rem; line-height: 1.55; c
 .theme .ti { font-size: 1rem; line-height: 1; }
 .tile-links { display: block; margin-top: 8px; font-family: var(--f-mono); font-size: .74rem; color: var(--muted); }
 .tile-links a { font-weight: 600; }
+.ts { display: none; }
+.kidgrid { display: contents; }
 .hint { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); margin: -6px 0 12px; }
 .seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; margin-bottom: 14px; max-width: 100%; }
 .seg button { font-family: var(--f-mono); font-weight: 600; font-size: .78rem; line-height: 1.2; padding: 9px 12px; background: none; color: var(--ink); border: 0; cursor: pointer; min-height: 42px; }
@@ -293,14 +295,53 @@ sup.cite a:hover { text-decoration: underline; }
 .sources .o { font-family: var(--f-mono); font-size: .76rem; color: var(--muted); }
 
 @media (max-width: 520px) {
-  .street { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .zones { grid-template-columns: 1fr; }
+  /* Phones: keep each interactive figure's working part within one screen */
+  .tl { display: none; }
+  .ts { display: inline; }
+  figure { padding: 12px; }
+  /* street: 6 houses a row, two rows */
+  .street { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; }
+  .house { padding: 3px 0 2px; border-width: 1.5px; }
+  .house svg { width: 30px; height: 26px; }
+  .house .nm { font-size: .64rem; }
+  .house .tag { font-size: .54rem; min-height: 1.3em; }
+  .readout { min-height: 0; margin-top: 10px; font-size: 1rem; }
+  .next-btn { margin-top: 10px; min-height: 46px; padding: 10px 14px; font-size: 1rem; }
+  /* documents: three narrow boxes side by side, smaller cards, drawer shrinks when empty */
+  .zones { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+  .zone { padding: 6px 5px; }
+  .zone h4 { font-size: .58rem; letter-spacing: .04em; margin-bottom: 5px; }
+  .zone .cards, .drawer { gap: 4px; }
+  .dcard { font-size: .64rem; padding: 4px 6px; }
+  .drawer { min-height: 30px; padding: 6px; }
+  .drawer-l { margin-bottom: 4px; }
+  .znote { font-size: .6rem; }
+  /* figure title and Replay on one row */
+  .fig-head { flex-wrap: nowrap; margin-bottom: 8px; }
+  .fig-title { font-size: .98rem; min-width: 0; }
+  .replay { padding: 4px 10px; font-size: .7rem; min-height: 32px; }
+  /* family scan: children in two columns */
+  .fam { font-size: .74rem; gap: 2px; }
+  .fr { padding: 4px 6px; }
+  .fr.kids { border-top: 0; margin-top: 0; }
+  .kidgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px; border-top: 1px dashed var(--rule); padding-top: 2px; }
+  .fr .flag { font-size: .66rem; }
+  .verdict-box { font-size: .95rem; padding: 8px 10px; }
+  /* BLO month: smaller number, task labels on one line */
+  .big4 b { font-size: 2.3rem; }
+  .tasks { flex-wrap: nowrap; gap: 4px; margin-top: 6px; }
+  .task { font-size: .66rem; padding: 3px 7px; white-space: nowrap; }
   .tiles { grid-template-columns: 1fr; }
   h2 { font-size: 1.75rem; }
   .t { font-size: 21px; }
   .t.sm { font-size: 18px; }
   .t.hd { font-size: 16px; }
   .verdict, .al, .rungt { font-size: 19px; }
+}
+@media (max-width: 360px) {
+  /* the narrowest phones: keep document cards inside their three boxes */
+  .dcard { font-size: .58rem; padding: 4px; max-width: 100%; overflow-wrap: anywhere; }
+  .zone { padding: 6px 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
@@ -311,7 +352,7 @@ sup.cite a:hover { text-decoration: underline; }
 </head>
 <body>
 <div class="progress" id="progress"></div>
-<button class="theme" id="theme" type="button" aria-label="Switch to dark mode"><span class="ti" aria-hidden="true"></span><span class="tl"></span></button>
+<button class="theme" id="theme" type="button" aria-label="Switch to dark mode"><span class="ti" aria-hidden="true"></span><span class="tlab"></span></button>
 
 <main>
 <header class="hero col">
@@ -449,9 +490,9 @@ sup.cite a:hover { text-decoration: underline; }
     <div class="big4"><b id="v4num">0</b><span id="v4unit">voters for one BLO</span></div>
     <svg id="crowd" viewBox="0 0 600 340" role="img" aria-label="One BLO facing 1,200 voters, three tasks each, 120 tasks a day for 30 days"></svg>
     <div class="tasks" id="v4tasks">
-      <span class="task" data-c="amber">1 · Hand out the form</span>
-      <span class="task" data-c="teal">2 · Collect it signed</span>
-      <span class="task" data-c="accent">3 · Upload it on the app</span>
+      <span class="task" data-c="amber">1 · Hand out<span class="tl"> the form</span></span>
+      <span class="task" data-c="teal">2 · Collect<span class="tl"> it signed</span></span>
+      <span class="task" data-c="accent">3 · Upload<span class="tl"> it on the app</span></span>
     </div>
     <p class="readout" id="v4read" aria-live="polite"></p>
     <button class="next-btn pulse" type="button" id="v4next">Each voter needs three things ▶</button>
@@ -675,9 +716,10 @@ const PEOPLE = [
 const HOUSE = '<svg viewBox="0 0 46 40" aria-hidden="true"><path class="hs" d="M4 18 L23 4 L42 18 V38 H4 Z"/><rect class="door" x="18" y="24" width="10" height="14"/></svg>';
 $('#street').innerHTML = PEOPLE.map(([n], i) => `<div class="house" data-i="${i}">${HOUSE}<span class="nm">${n}</span><span class="tag"></span></div>`).join('');
 const houses = [...document.querySelectorAll('.house')];
-function setHouse(h, cls, tag) { h.className = 'house ' + cls; h.querySelector('.tag').textContent = tag; }
+// tag = full label (desktop), short = compact label for phones
+function setHouse(h, cls, tag, short = tag) { h.className = 'house ' + cls; h.querySelector('.tag').innerHTML = tag ? `<span class="tl">${tag}</span><span class="ts">${short}</span>` : ''; }
 function showNormal() {
-  houses.forEach((h, i) => PEOPLE[i][1] === 'died' ? setHouse(h, 'gone dead', 'Died · family showed proof') : setHouse(h, '', ''));
+  houses.forEach((h, i) => PEOPLE[i][1] === 'died' ? setHouse(h, 'gone dead', 'Died · family showed proof', 'Died') : setHouse(h, '', ''));
   $('#v1read').innerHTML = '<b>A normal year: 1 name removed.</b> Gopal\'s family showed proof that he died. Everyone else stays on the list without doing anything.';
 }
 const runSir = player(async stale => {
@@ -689,9 +731,9 @@ const runSir = player(async stale => {
     h.classList.add('visit');
     await wait(260);
     if (stale()) return;
-    if (st === 'home') setHouse(h, 'ok', 'Form back ✓');
+    if (st === 'home') setHouse(h, 'ok', 'Form back ✓', '✓');
     else if (st === 'died') setHouse(h, 'gone dead', 'Dead');
-    else setHouse(h, 'gone absent away', st === 'work' ? 'Absent · at work' : 'Absent · visiting');
+    else setHouse(h, 'gone absent away', st === 'work' ? 'Absent · at work' : 'Absent · visiting', 'Absent');
     await wait(120);
   }
   if (stale()) return;
@@ -824,21 +866,24 @@ onView($('#v2b'), async () => { await wait(700); runSort(); });
 $('#v2b .replay').onclick = () => { flip(fillDrawer); setTimeout(runSort, RM ? 0 : 1200); };
 
 /* ---------- V3: the family scan ---------- */
+// [name, relation, born, flag (desktop), flag (phones)]
 const FAM = [
   ['Ram Prasad', 'father', 1950, ''],
   ['Laxmi Devi', 'mother', 1964, ''],
-  ['Sunil', '', 1978, 'Only 14 years younger than his mother. Rule: a parent less than 15 years older.'],
+  ['Sunil', '', 1978, 'Only 14 years younger than his mother. Rule: a parent less than 15 years older.', 'Mother only 14 years older'],
   ['Anil', '', 1980, ''],
   ['Kavita', '', 1983, ''],
   ['Rekha', '', 1985, ''],
   ['Manoj', '', 1988, ''],
-  ['Puja', '', 1990, 'Spelled "Pooja" on the old list. Rule: name doesn\'t match.'],
+  ['Puja', '', 1990, 'Spelled "Pooja" on the old list. Rule: name doesn\'t match.', '"Pooja" on old list'],
   ['Deepak', '', 1993, '']
 ];
 const fam = $('#fam');
-fam.insertAdjacentHTML('beforeend', FAM.map(([n, rel, y, f], i) =>
-  `<div class="fr${i === 2 ? ' kids' : ''}" data-f="${f ? 1 : 0}"><span>${n}${rel ? ` <span class="rel">· ${rel}</span>` : ''}</span><span class="yr">${y}</span>${f ? `<span class="flag">⚑ ${f}</span>` : ''}</div>`).join('') +
-  `<div class="fr kids" data-f="1"><span>Children linked to Ram Prasad</span><span class="yr">7</span><span class="flag">⚑ Rule: six or more children linked to one father.</span></div>`);
+const famRow = ([n, rel, y, f, fs], i) =>
+  `<div class="fr${i === 2 ? ' kids' : ''}" data-f="${f ? 1 : 0}"><span>${n}${rel ? ` <span class="rel">· ${rel}</span>` : ''}</span><span class="yr">${y}</span>${f ? `<span class="flag">⚑ <span class="tl">${f}</span><span class="ts">${fs}</span></span>` : ''}</div>`;
+fam.insertAdjacentHTML('beforeend', FAM.slice(0, 2).map(famRow).join('') +
+  `<div class="kidgrid">${FAM.slice(2).map((r, i) => famRow(r, i + 2)).join('')}</div>` +
+  `<div class="fr kids" data-f="1"><span>Children linked to Ram Prasad</span><span class="yr">7</span><span class="flag">⚑ <span class="tl">Rule: six or more children linked to one father.</span><span class="ts">6 or more children, one father</span></span></div>`);
 const frows = [...fam.querySelectorAll('.fr')], scan = $('#scan');
 const runScan = player(async stale => {
   frows.forEach(r => r.classList.remove('hit')); $('#famVerdict').classList.remove('on');
@@ -1017,7 +1062,7 @@ const isDark = () => {
 function paintThemeBtn() {
   const d = isDark();
   themeBtn.querySelector('.ti').textContent = d ? '☀' : '☾';
-  themeBtn.querySelector('.tl').textContent = d ? 'Light' : 'Dark';
+  themeBtn.querySelector('.tlab').textContent = d ? 'Light' : 'Dark';
   themeBtn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
 }
 try { const saved = localStorage.getItem('theme'); if (saved) document.documentElement.dataset.theme = saved; } catch (e) {}
