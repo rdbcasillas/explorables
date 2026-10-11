@@ -168,6 +168,7 @@ svg text { font-family: var(--f-mono); }
 .zones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
 .zone { border-radius: 6px; padding: 8px; border: 1.5px solid; min-width: 0; }
 .zone h4 { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 6px; }
+.znote { font-family: var(--f-mono); font-size: .72rem; line-height: 1.4; color: var(--amber); margin: 8px 0 0; }
 .zone .cards { display: flex; flex-wrap: wrap; gap: 6px; min-height: 34px; align-content: flex-start; }
 .zone.yes { border-color: var(--teal); } .zone.yes h4 { color: var(--teal); }
 .zone.id { border-color: var(--amber); border-style: dashed; } .zone.id h4 { color: var(--amber); }
@@ -394,10 +395,10 @@ sup.cite a:hover { text-decoration: underline; }
     <div class="drawer" id="drawer"></div>
     <div class="zones">
       <div class="zone yes"><h4>Counts</h4><div class="cards" data-z="ok"></div></div>
-      <div class="zone id"><h4>ID only</h4><div class="cards" data-z="id"></div></div>
+      <div class="zone id"><h4>Counts only as ID</h4><div class="cards" data-z="id"></div><p class="znote">Proves who you are, not your age, address or citizenship. You may need another paper too.</p></div>
       <div class="zone no"><h4>Doesn't count</h4><div class="cards" data-z="no"></div></div>
     </div>
-    <figcaption>From the EC's list for Phase II, which also has a few rarer papers, such as forest rights certificates. Aadhaar proves who you are, not your citizenship, birth date or address; it was added after a Supreme Court order.<sup class="cite" data-ref="jagrandocs sirwiki"></sup></figcaption>
+    <figcaption>From the EC's list for Phase II, which also has a few rarer papers, such as forest rights certificates. Aadhaar was added after a Supreme Court order.<sup class="cite" data-ref="jagrandocs sirwiki"></sup></figcaption>
   
     <a class="more" href="https://www.thedailyjagran.com/india/sir-phase-2-aadhaar-not-proof-of-citizenship-dob-or-domicile-but-acceptable-as-id-proof-check-list-of-valid-documents-special-intensive-revision-10276136" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">The EC's full list of accepted documents, and what Aadhaar can prove</span><span class="more-o">Daily Jagran ↗</span></a>
   </figure>
