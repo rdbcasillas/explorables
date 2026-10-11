@@ -16,6 +16,8 @@ Parametric Press. Built with an LLM doing the heavy lifting; human owns the spin
 - **`polycrisis/`** — a six-chapter visual summary of Mark et al. (2025), *Understanding polycrisis*: what makes crises entangled, why a crisis starts with risk (a small bridge risk lab), planetary boundaries, how disasters combine, and why trust and "polysolutions" help (tap-to-build bridging ties). *(v1; AI text, human-edited)*
 - **`erased-from-the-roll/`** — India's 2025–26 voter-roll revision (SIR): how the roll works, who was removed and why, the new Form 6 declaration, the two Election Commissioners' 14 objections, and the demand that the CEC resign. Scroll-driven graphics, a real Bengaluru constituency map, footnoted sources. *(v1; AI text, human-edited)*
 
+- **`how-do-you-delete/`** — the short version of *Erased from the Roll*: the five steps that took 13 crore names off the draft voter lists, each acted out by an animated figure, then what studies in each state do and don't show about who it helped. *(v1; AI text, human-edited)*
+
 ## New piece, quick start
 1. Skim `BRIEF.md`.
 2. Copy `template/index.html` into a new `<topic>/` folder (or start single-file).

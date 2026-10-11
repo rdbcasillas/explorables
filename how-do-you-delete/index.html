@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<!--
+  Explorable: How Do You Delete 13 Crore Voters? (v1) - the short version of Erased from the Roll
+  Topic: the five steps that took 13 crore names off India's draft voter lists in the SIR,
+         and what the evidence does and doesn't show about who it helped.
+  Pattern(s): guided two-state figures with one big next-step button (normal year vs SIR street;
+              law vs ECINet), animated mechanism figures that play on scroll with replay pills
+              (waffle Delhi -> Bengaluru, link lines, self-sorting documents, software scan,
+              three-beat BLO workload, slide-and-ladder), illustration/real-data badges,
+              per-figure "Read more" source links, studies-by-state summary, light/dark switch
+  Deps: none (vanilla JS + SVG); Google Fonts (Archivo, Newsreader, IBM Plex Mono)
+  Packaging: single self-contained file
+  Source of truth: a separate local project (india-election-issue). Rebuild this copy with
+                   its scripts/build_standalone.py rather than editing it by hand.
+  Text status: AI draft, human-edited over many rounds. Facts as of 11 October 2026.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How Do You Delete 13 Crore Voters?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="The short version of Erased from the Roll: five steps that took 13 crore names off India's draft voter lists, and what we still don't know about who it helped.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column; each step is a short text block and one animated figure that plays when it scrolls into view. Same tokens as the long essay, so it reads as its short edition. */
+:root {
+  --paper: #F5F4F8;
+  --panel: #FFFFFF;
+  --ink: #1B1726;
+  --ink-2: #484257;
+  --muted: #6E6880;
+  --rule: #DCD8E4;
+  --accent: #5B3FA8;
+  --accent-soft: #ECE6FA;
+  --key-hl: #E4DBFB;
+  --stamp: #BE3229;
+  --stamp-soft: #FBE9E7;
+  --teal: #00806F;
+  --teal-soft: #DDF1EE;
+  --amber: #A8680A;
+  --amber-soft: #F7EBD6;
+  --grey-bar: #C9C4D4;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15131B; --panel: #1E1B27; --ink: #ECE9F3; --ink-2: #C3BDD2; --muted: #918AA4; --rule: #34303F;
+    --accent: #A691F0; --accent-soft: #2A2340; --key-hl: #43357A; --stamp: #EE6A5E; --stamp-soft: #3A1E1D;
+    --teal: #3DB5A6; --teal-soft: #163A36; --amber: #D9A04A; --amber-soft: #3B2C12; --grey-bar: #4A4558; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15131B; --panel: #1E1B27; --ink: #ECE9F3; --ink-2: #C3BDD2; --muted: #918AA4; --rule: #34303F;
+  --accent: #A691F0; --accent-soft: #2A2340; --key-hl: #43357A; --stamp: #EE6A5E; --stamp-soft: #3A1E1D;
+  --teal: #3DB5A6; --teal-soft: #163A36; --amber: #D9A04A; --amber-soft: #3B2C12; --grey-bar: #4A4558; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 1.1875rem; line-height: 1.6; }
+.progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--accent); z-index: 10; }
+.col { max-width: 38rem; margin: 0 auto; padding-inline: 16px; }
+a { color: var(--accent); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+p { margin: 0 0 1em; }
+strong { font-weight: 600; }
+mark.key { background: var(--key-hl); color: var(--ink); font-weight: 600; padding: 0 .12em; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+header.hero { padding-block: 44px 8px; }
+.date { font-family: var(--f-mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+h1 { font-family: var(--f-display); font-stretch: 68%; font-weight: 850; font-size: clamp(2.7rem, 11vw, 4.6rem); line-height: .94; margin: 0 0 22px; text-wrap: balance; }
+h1 .num { color: var(--stamp); }
+.answer { font-size: 1.32rem; line-height: 1.5; }
+.longlink { font-family: var(--f-mono); font-size: .8rem; line-height: 1.5; color: var(--muted); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 10px 0; margin: 22px 0 0; }
+
+.step { margin-top: 60px; }
+.step-no { font-family: var(--f-mono); font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--stamp); margin: 0 0 4px; }
+h2 { font-family: var(--f-display); font-stretch: 75%; font-weight: 800; font-size: 2rem; line-height: 1.05; margin: 0 0 16px; text-wrap: balance; }
+
+/* figures */
+figure { margin: 8px 0 24px; padding: 16px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
+.fig-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.fig-title { font-family: var(--f-display); font-stretch: 85%; font-weight: 700; font-size: 1.08rem; line-height: 1.25; margin: 0; }
+figcaption { font-family: var(--f-mono); font-size: .72rem; line-height: 1.55; color: var(--muted); margin-top: 12px; }
+.replay { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-weight: 600; font-size: .78rem; color: var(--accent); background: var(--accent-soft); border: 1.5px solid var(--accent); border-radius: 999px; padding: 6px 14px; cursor: pointer; min-height: 36px; white-space: nowrap; }
+.replay::before { content: "↻"; font-size: 1.05rem; line-height: 1; }
+.replay:hover, .replay:focus-visible { color: var(--panel); background: var(--accent); }
+.next-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 14px; font-family: var(--f-display); font-stretch: 85%; font-weight: 700; font-size: 1.1rem; color: var(--panel); background: var(--stamp); border: 0; border-radius: 8px; padding: 14px 18px; cursor: pointer; min-height: 52px; }
+.next-btn.back { color: var(--ink); background: none; border: 1.5px solid var(--ink); font-size: 1rem; }
+.next-btn:hover, .next-btn:focus-visible { filter: brightness(1.08); }
+.next-btn.pulse { animation: pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stamp) 45%, transparent); } 50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--stamp) 0%, transparent); } }
+.replay[hidden], .next-btn[hidden], .more[hidden], figcaption[hidden] { display: none; }
+.more { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: baseline; margin-top: 14px; padding: 10px 12px; border-radius: 6px; background: var(--paper); border: 1px solid var(--rule); text-decoration: none; color: var(--ink); }
+.more:hover, .more:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+.more-l { grid-row: span 2; font-family: var(--f-mono); font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.more-t { font-size: 1rem; line-height: 1.35; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.more-o { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); }
+.badge { display: inline-block; font-family: var(--f-mono); font-size: .66rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; margin-bottom: 10px; }
+.badge.ill { color: var(--amber); background: var(--amber-soft); }
+.badge.real { color: var(--teal); background: var(--teal-soft); }
+.theme { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 12px; z-index: 11; display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: .74rem; font-weight: 600; color: var(--ink); background: var(--panel); border: 1.5px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 36px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.theme:hover, .theme:focus-visible { border-color: var(--accent); }
+.theme .ti { font-size: 1rem; line-height: 1; }
+.tile-links { display: block; margin-top: 8px; font-family: var(--f-mono); font-size: .74rem; color: var(--muted); }
+.tile-links a { font-weight: 600; }
+.hint { font-family: var(--f-mono); font-size: .72rem; color: var(--muted); margin: -6px 0 12px; }
+.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; margin-bottom: 14px; max-width: 100%; }
+.seg button { font-family: var(--f-mono); font-weight: 600; font-size: .78rem; line-height: 1.2; padding: 9px 12px; background: none; color: var(--ink); border: 0; cursor: pointer; min-height: 42px; }
+.seg button + button { border-left: 1.5px solid var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+.readout { font-size: 1.05rem; line-height: 1.45; margin: 14px 0 0; min-height: 3em; }
+.readout b { font-weight: 600; }
+svg text { font-family: var(--f-mono); }
+.legend { display: grid; gap: 6px; margin-top: 12px; font-family: var(--f-mono); font-size: .8rem; line-height: 1.35; }
+.legend div { display: grid; grid-template-columns: 14px 1fr auto; gap: 8px; align-items: center; }
+.legend i { width: 14px; height: 14px; border-radius: 2px; }
+.legend b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* V1: the street */
+.street { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.house { display: grid; justify-items: center; gap: 1px; padding: 6px 2px 4px; border-radius: 6px; border: 2px solid transparent; text-align: center; transition: border-color .2s, background-color .3s; }
+.house svg { width: 46px; height: 40px; }
+.house .hs { fill: var(--accent-soft); stroke: var(--ink-2); stroke-width: 1.6; transition: fill .3s; }
+.house .door { fill: var(--panel); stroke: var(--ink-2); stroke-width: 1.4; transition: fill .3s; }
+.house .nm { font-family: var(--f-mono); font-size: .78rem; font-weight: 500; }
+.house .tag { font-family: var(--f-mono); font-size: .6rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; line-height: 1.2; min-height: 2.4em; color: var(--muted); }
+.house.visit { border-color: var(--ink); }
+.house.ok .tag { color: var(--teal); }
+.house.gone .nm { text-decoration: line-through; text-decoration-thickness: 2px; }
+.house.absent .hs { fill: var(--stamp-soft); }
+.house.absent .tag { color: var(--stamp); }
+.house.absent .nm { text-decoration-color: var(--stamp); }
+.house.away .door { fill: var(--ink-2); }
+.house.dead .hs { fill: var(--rule); }
+
+/* V1b: waffle */
+.waffle { display: grid; grid-template-columns: repeat(20, minmax(0, 1fr)); gap: 3px; }
+.waffle i { aspect-ratio: 1; border-radius: 2px; background: var(--rule); transition: background-color .25s; }
+
+/* V2: link lines */
+.ln { fill: none; stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset calc(1s * var(--slow, 1)) ease; }
+.ln.good { stroke: var(--teal); }
+.ln.bad { stroke: var(--stamp); stroke-dasharray: 2 7; opacity: 0; transition: opacity calc(.6s * var(--slow, 1)); }
+.ln.bad.on { opacity: 1; }
+.svgbox { fill: var(--paper); stroke: var(--rule); stroke-width: 1.5; }
+.card { fill: var(--panel); stroke: var(--ink-2); stroke-width: 1.5; transition: fill .3s, stroke .3s; }
+.card.good { fill: var(--teal-soft); stroke: var(--teal); }
+.card.bad { fill: var(--stamp-soft); stroke: var(--stamp); }
+.t { fill: var(--ink); font-size: 18px; }
+.t.sm { font-size: 15px; fill: var(--muted); }
+.rungt { font-size: 17px; }
+.t.b { font-weight: 600; }
+.t.hd { font-size: 13px; letter-spacing: .08em; fill: var(--muted); }
+.row-hl { fill: transparent; transition: fill .3s; }
+.row-hl.on { fill: var(--teal-soft); }
+.verdict { font-size: 16px; font-weight: 600; opacity: 0; transition: opacity .4s; }
+.verdict.on { opacity: 1; }
+.verdict.good { fill: var(--teal); }
+.verdict.bad { fill: var(--stamp); }
+
+/* V2b: document sort */
+.drawer { display: flex; flex-wrap: wrap; gap: 6px; min-height: 48px; padding: 10px; border: 1.5px dashed var(--rule); border-radius: 6px; align-content: flex-start; }
+.drawer-l { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.zones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.zone { border-radius: 6px; padding: 8px; border: 1.5px solid; min-width: 0; }
+.zone h4 { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 6px; }
+.zone .cards { display: flex; flex-wrap: wrap; gap: 6px; min-height: 34px; align-content: flex-start; }
+.zone.yes { border-color: var(--teal); } .zone.yes h4 { color: var(--teal); }
+.zone.id { border-color: var(--amber); border-style: dashed; } .zone.id h4 { color: var(--amber); }
+.zone.no { border-color: var(--stamp); } .zone.no h4 { color: var(--stamp); }
+.dcard { font-family: var(--f-mono); font-size: .76rem; line-height: 1.25; padding: 7px 9px; border-radius: 4px; background: var(--paper); border: 1px solid var(--rule); color: var(--ink); will-change: transform; }
+.zone.yes .dcard { background: var(--teal-soft); border-color: transparent; }
+.zone.id .dcard { background: var(--amber-soft); border-color: transparent; }
+.zone.no .dcard { background: var(--stamp-soft); border-color: transparent; }
+.zone.no .dcard.big { outline: 2px solid var(--stamp); font-weight: 600; }
+
+/* V3: family scan */
+.fam { position: relative; display: grid; gap: 3px; font-family: var(--f-mono); font-size: .82rem; }
+.fam-h { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: grid; grid-template-columns: 1fr auto; padding: 0 8px 4px; }
+.fr { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 6px 8px; border-radius: 4px; transition: background-color .3s; }
+.fr .yr { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.fr .rel { color: var(--muted); }
+.fr.kids { border-top: 1px dashed var(--rule); margin-top: 2px; }
+.fr .flag { grid-column: 1 / -1; color: var(--stamp); font-weight: 600; font-size: .74rem; line-height: 1.35; display: none; }
+.fr.hit { background: var(--stamp-soft); }
+.fr.hit .flag { display: block; }
+.scan { position: absolute; left: -6px; right: -6px; height: 3px; top: 0; background: var(--accent); box-shadow: 0 0 12px 2px var(--accent); opacity: 0; pointer-events: none; }
+.verdict-box { margin-top: 10px; padding: 10px 12px; border-radius: 6px; background: var(--stamp-soft); color: var(--ink); font-size: 1rem; line-height: 1.45; opacity: 0; transition: opacity .5s; }
+.verdict-box.on { opacity: 1; }
+
+/* V3b and evidence bars */
+.sbar { display: flex; height: 40px; border-radius: 4px; overflow: hidden; background: var(--grey-bar); }
+.sbar span { display: block; height: 100%; transition: width calc(1.2s * var(--slow, 1)) ease; }
+.bars { display: grid; gap: 12px; }
+.brow .bl { font-family: var(--f-mono); font-size: .78rem; color: var(--ink-2); margin-bottom: 4px; display: flex; justify-content: space-between; gap: 10px; }
+.brow .bl b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.track { display: flex; height: 24px; }
+.track span { display: block; height: 100%; transition: width calc(1s * var(--slow, 1)) ease; }
+.panel-h { font-family: var(--f-mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.panels { display: grid; gap: 22px; }
+
+/* V4: the month */
+.daybar { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-family: var(--f-mono); font-size: .86rem; margin-bottom: 8px; }
+.daybar b { font-family: var(--f-display); font-stretch: 75%; font-weight: 800; font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.dot { fill: var(--rule); transition: fill .2s; }
+.dot.on { fill: var(--accent); }
+.big4 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 0 0 6px; }
+.big4 b { font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: 3rem; line-height: 1; color: var(--stamp); font-variant-numeric: tabular-nums; }
+.big4 span { font-family: var(--f-mono); font-size: .86rem; color: var(--ink-2); }
+.cp { transition: opacity .25s; }
+.cp circle { stroke: none; }
+.cp rect { stroke: none; }
+.cal { transition: opacity calc(.5s * var(--slow, 1)); }
+.calbox { fill: var(--stamp-soft); stroke: var(--stamp); stroke-width: 1.2; }
+.caln { fill: var(--stamp); font-family: var(--f-display); font-weight: 800; font-size: 24px; }
+.tasks { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.task { font-family: var(--f-mono); font-size: .76rem; padding: 5px 10px; border-radius: 999px; border: 1.5px solid var(--rule); color: var(--muted); opacity: .4; transition: opacity .3s, color .3s, border-color .3s; }
+.task.on { opacity: 1; }
+.task.on[data-c="amber"] { color: var(--amber); border-color: var(--amber); }
+.task.on[data-c="teal"] { color: var(--teal); border-color: var(--teal); }
+.task.on[data-c="accent"] { color: var(--accent); border-color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tile { padding: 12px 14px; border-left: 3px solid var(--stamp); background: var(--panel); border-radius: 0 6px 6px 0; }
+.tile b { display: block; font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: 2.2rem; line-height: 1; color: var(--stamp); margin-bottom: 6px; }
+.tile span { font-family: var(--f-mono); font-size: .76rem; line-height: 1.4; color: var(--ink-2); display: block; }
+
+/* V5: chute and ladder */
+.rail { stroke: var(--ink-2); stroke-width: 3; stroke-linecap: round; }
+.chute { fill: none; stroke: var(--stamp); stroke-width: 4; stroke-linecap: round; }
+.ground { stroke: var(--rule); stroke-width: 2; }
+.plat { stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.rung-l { transition: opacity .4s; }
+.rung-l.dim { opacity: .3; }
+.who circle { fill: var(--panel); stroke: var(--ink); stroke-width: 2.5; }
+.who line { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; }
+
+/* V5b: law vs ECINet */
+.nbox { fill: var(--panel); stroke: var(--ink-2); stroke-width: 1.5; transition: fill .3s, stroke .3s, opacity .3s; }
+.nbox.lead { fill: var(--teal-soft); stroke: var(--teal); }
+.nbox.lead.delhi { fill: var(--stamp-soft); stroke: var(--stamp); }
+.nbox.faded { opacity: .45; }
+.arw { fill: none; stroke-width: 3; transition: opacity .4s; }
+.arw.law { stroke: var(--teal); }
+.arw.net { stroke: var(--stamp); }
+.arw.sup { stroke: var(--muted); stroke-dasharray: 5 6; stroke-width: 2; }
+.hide { opacity: 0; }
+.al { font-size: 16px; transition: opacity .4s; }
+.al.law { fill: var(--teal); } .al.net { fill: var(--stamp); } .al.sup { fill: var(--muted); }
+
+/* evidence */
+.ev { display: grid; gap: 10px; margin: 18px 0; }
+.ev > div { padding: 12px 14px; border-radius: 6px; border-left: 4px solid; background: var(--panel); }
+.ev .known { border-color: var(--accent); }
+.ev .notp { border-color: var(--stamp); }
+.ev .settle { border-color: var(--teal); }
+.ev h4 { font-family: var(--f-mono); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 6px; }
+.ev ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font-size: 1.05rem; line-height: 1.45; }
+.known h4 { color: var(--accent); } .notp h4 { color: var(--stamp); } .settle h4 { color: var(--teal); }
+.finds { display: grid; gap: 14px; }
+.fstate { display: grid; gap: 0; }
+.mstate { font-family: var(--f-display); font-stretch: 80%; font-weight: 800; font-size: 1.2rem; margin: 0 0 6px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.msum { font-size: 1.02rem; line-height: 1.45; margin: 0 0 10px; color: var(--ink-2); }
+.mpanel + .mpanel { border-top: 1px solid var(--rule); padding-top: 18px; }
+.fsrc { font-family: var(--f-mono); font-size: .74rem; font-weight: 600; white-space: nowrap; }
+.tilt.amb { background: var(--amber-soft); color: var(--amber); }
+.frow { display: grid; gap: 4px; justify-items: start; padding: 8px 0 10px; border-bottom: 1px solid var(--rule); }
+.frow:first-child { padding-top: 0; }
+.frow .fs { font-family: var(--f-display); font-stretch: 85%; font-weight: 700; }
+.tilt { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; white-space: nowrap; }
+.tilt.bjp { background: var(--stamp-soft); color: var(--stamp); }
+.tilt.none { background: var(--accent-soft); color: var(--accent); }
+.frow p { grid-column: 1 / -1; margin: 0; font-size: 1rem; line-height: 1.45; }
+
+.end { margin-top: 60px; padding-top: 22px; border-top: 2px solid var(--ink); }
+.cta { display: inline-block; margin-top: 4px; font-family: var(--f-display); font-stretch: 85%; font-weight: 700; font-size: 1.1rem; color: var(--panel); background: var(--ink); text-decoration: none; padding: 12px 18px; border-radius: 6px; }
+.cta:hover, .cta:focus-visible { background: var(--accent); }
+
+sup.cite { font-family: var(--f-body); font-weight: 600; font-size: .66em; line-height: 0; white-space: nowrap; margin-left: 1px; }
+sup.cite a { text-decoration: none; }
+sup.cite a:hover { text-decoration: underline; }
+.sources { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--rule); padding-bottom: 72px; }
+.sources h2 { font-family: var(--f-mono); font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin: 0 0 4px; }
+.sources > p { font-size: .9rem; color: var(--muted); }
+.sources ol { font-size: .88rem; line-height: 1.45; color: var(--ink-2); padding-left: 1.7em; display: grid; gap: 5px; margin: 0; }
+.sources li:target { background: var(--accent-soft); }
+.sources .bk { font-family: var(--f-mono); font-size: .78rem; margin-right: 4px; }
+.sources .bk a { text-decoration: none; }
+.sources .o { font-family: var(--f-mono); font-size: .76rem; color: var(--muted); }
+
+@media (max-width: 520px) {
+  .street { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .zones { grid-template-columns: 1fr; }
+  .tiles { grid-template-columns: 1fr; }
+  h2 { font-size: 1.75rem; }
+  .t { font-size: 21px; }
+  .t.sm { font-size: 18px; }
+  .t.hd { font-size: 16px; }
+  .verdict, .al, .rungt { font-size: 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<button class="theme" id="theme" type="button" aria-label="Switch to dark mode"><span class="ti" aria-hidden="true"></span><span class="tl"></span></button>
+
+<main>
+<header class="hero col">
+  <p class="date">Updated 11 October 2026</p>
+  <h1>How Do You Delete <span class="num">13 Crore</span> Voters?</h1>
+  <p class="answer"><mark class="key">Normally, you stay on the voter list unless someone proves you should go. In the re-check India began in 2025, you go unless you prove you should stay.</mark> Voters got about a month to return a signed form, and about one in seven didn't make the draft list.<sup class="cite" data-ref="indiancurrents ddnews wionsir3 civ13"></sup></p>
+  <p>Since June 2025, India's Election Commission (EC) has been re-checking every voter, in a Special Intensive Revision, or SIR. In the states covered so far, 13.3 crore of about 95 crore names were left off the draft voter lists. Some people later got back on.<sup class="cite" data-ref="civ13 sirwiki"></sup></p>
+  <p>Here is how it happened, in five steps. Then comes the harder question: who did it help?</p>
+  <p class="longlink">This is the short version. For the history, the people affected and the fight inside the Election Commission, read the full story, <a href="https://explorables.netlify.app/erased-from-the-roll/">Erased from the Roll</a>.</p>
+</header>
+
+<!-- ================= STEP 1 ================= -->
+<section class="step col" id="step1">
+  <p class="step-no">Step 1</p>
+  <h2>Flip the default</h2>
+  <p>The first step is the rule itself. A Booth Level Officer (BLO), usually a local schoolteacher, brings every voter a form. If a signed form doesn't come back within about a month, the name is left off the draft list.<sup class="cite" data-ref="sirwiki ttfaq"></sup></p>
+  <p>Here is one made-up street of twelve neighbours in a normal year. Tap the red button under it to run the SIR on the same street.</p>
+  <figure id="v1">
+    <span class="badge ill">Illustration · real numbers vary</span>
+    <div class="fig-head" style="margin-bottom:6px">
+      <div class="seg" role="group" aria-label="Choose a rule" style="margin:0">
+        <button type="button" data-mode="normal" aria-pressed="true">A normal year</button>
+        <button type="button" data-mode="sir" aria-pressed="false">The SIR</button>
+      </div>
+      <button class="replay" type="button" hidden>Replay</button>
+    </div>
+    <div class="street" id="street"></div>
+    <p class="readout" id="v1read" aria-live="polite"></p>
+    <button class="next-btn pulse" type="button" id="v1next">Now run the SIR on this street ▶</button>
+    <figcaption>Simplified to show how the rule works. The neighbours are made up, and real numbers vary from street to street.</figcaption>
+  
+    <a class="more" href="https://telanganatoday.com/sir-in-hyderabad-several-doubts-and-questions-are-being-raised-by-voters-and-telangana-today-provides-answers-to-address-them" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">How the SIR form works: BLO visits, family signatures, documents</span><span class="more-o">Telangana Today ↗</span></a>
+  </figure>
+  <p>Now scale it up with real numbers. These 100 squares stand for all the names removed from Delhi's draft list, coloured by the reason the BLO wrote down. Tap the button under it to compare Bengaluru.</p>
+  <figure id="v1b">
+    <span class="badge real">Real data</span>
+    <div class="fig-head"><p class="fig-title" id="wTitle">Why names were removed in Delhi</p><button class="replay" type="button">Replay</button></div>
+    <div class="waffle" id="waffle" role="img" aria-label=""></div>
+    <div class="legend">
+      <div><i style="background:var(--stamp)"></i><span>Absent, shifted or "other"</span><b id="wc0">0</b></div>
+      <div><i style="background:var(--grey-bar)"></i><span>Dead</span><b id="wc1">0</b></div>
+      <div><i style="background:var(--accent)"></i><span>Listed twice</span><b id="wc2">0</b></div>
+    </div>
+    <button class="next-btn pulse" type="button" id="wNext" hidden>Now see Bengaluru ▶</button>
+    <figcaption id="wCapDelhi">Each square is about 47,500 names. Delhi's draft list, 2026: 43.32 lakh absent, shifted or "other", 2.82 lakh dead, 1.41 lakh listed twice.<sup class="cite" data-ref="civ13"></sup></figcaption>
+    <figcaption id="wCapBlr" hidden>Each square is about 49,400 names. Bengaluru, August 2026: 49.42 lakh names flagged for removal before the draft list, and voters could still object. 33.8 lakh shifted, 7.98 lakh absent, about 3.9 lakh "other", 3.15 lakh dead and 60,005 listed twice.<sup class="cite" data-ref="printblr"></sup></figcaption>
+    <a class="more" id="wMoreDelhi" href="https://www.civilsdaily.com/news/sir-draft-rolls-see-over-13-cr-deletions-so-far-delhi-leads-with-33-left-out/" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">Delhi's deletions by reason, and the 13 crore national total</span><span class="more-o">Civilsdaily ↗</span></a>
+    <a class="more" id="wMoreBlr" href="https://theprint.in/india/governance/absent-shifted-deceased-duplicate-almost-half-of-bengalurus-voters-face-deletion-in-sir/3008408/" target="_blank" rel="noopener" hidden><span class="more-l">Read more</span><span class="more-t">Almost half of Bengaluru's voters flagged as absent, shifted, dead or duplicate</span><span class="more-o">ThePrint ↗</span></a>
+  </figure>
+  <p><mark class="key">"Absent" only means that no signed form came back.</mark> It does not prove that anyone moved.<sup class="cite" data-ref="civ13"></sup></p>
+</section>
+
+<!-- ================= STEP 2 ================= -->
+<section class="step col" id="step2">
+  <p class="step-no">Step 2</p>
+  <h2>Ask for a link to a list from 2002</h2>
+  <p>Returning the form is not enough. You must also link yourself to the last time this was done, around 2002–2004 in most states. Either your own name was on that old list, or a parent's was.<sup class="cite" data-ref="wirephases ttfaq"></sup> Watch three neighbours try.</p>
+  <figure id="v2">
+    <span class="badge ill">Illustration</span>
+    <div class="fig-head"><p class="fig-title">Linking to the old list</p><button class="replay" type="button">Replay</button></div>
+    <svg viewBox="0 0 600 300" role="img" aria-label="Ramesh links through his own old entry, Priya through her father's, Arjun cannot link and gets a notice">
+      <text class="t hd" x="16" y="22">OLD LIST · 2003</text>
+      <rect class="svgbox" x="16" y="32" width="244" height="252" rx="6"/>
+      <g id="oldRows"></g>
+      <text class="t hd" x="350" y="22">TODAY</text>
+      <g id="todayCards"></g>
+      <path id="lnA" class="ln good" d=""/>
+      <path id="lnB" class="ln good" d=""/>
+      <path id="lnC" class="ln bad" d=""/>
+      <text id="qmark" class="t b verdict bad" x="282" y="262" style="font-size:22px">?</text>
+    </svg>
+    <figcaption>Simplified to show how linking works. The people are made up. Priya was born after 2003, so she links through her father. Arjun's parents never registered to vote.</figcaption>
+  
+    <a class="more" href="https://m.thewire.in/article/rights/three-phases-of-sir-how-ec-has-applied-varying-rules-for-the-nationwide-voter-roll-revision" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">How the rules on linking to the 2002–04 lists differ across the three phases</span><span class="more-o">The Wire ↗</span></a>
+  </figure>
+  <p>No link means a notice: you must prove you are eligible with documents.<sup class="cite" data-ref="ttfaq sirwiki"></sup> Here is a typical drawer of papers, sorted by the EC's list.</p>
+  <figure id="v2b">
+    <span class="badge real">Real list · sample drawer</span>
+    <div class="fig-head"><p class="fig-title">Which documents count</p><button class="replay" type="button">Replay</button></div>
+    <p class="drawer-l">Your drawer</p>
+    <div class="drawer" id="drawer"></div>
+    <div class="zones">
+      <div class="zone yes"><h4>Counts</h4><div class="cards" data-z="ok"></div></div>
+      <div class="zone id"><h4>ID only</h4><div class="cards" data-z="id"></div></div>
+      <div class="zone no"><h4>Doesn't count</h4><div class="cards" data-z="no"></div></div>
+    </div>
+    <figcaption>From the EC's list for Phase II, which also has a few rarer papers, such as forest rights certificates. Aadhaar proves who you are, not your citizenship, birth date or address; it was added after a Supreme Court order.<sup class="cite" data-ref="jagrandocs sirwiki"></sup></figcaption>
+  
+    <a class="more" href="https://www.thedailyjagran.com/india/sir-phase-2-aadhaar-not-proof-of-citizenship-dob-or-domicile-but-acceptable-as-id-proof-check-list-of-valid-documents-special-intensive-revision-10276136" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">The EC's full list of accepted documents, and what Aadhaar can prove</span><span class="more-o">Daily Jagran ↗</span></a>
+  </figure>
+  <p><mark class="key">The voter ID card you vote with does not count as proof that you can vote.</mark> This step is hardest for people with the fewest papers: married women whose surnames changed, migrant workers, and tribal and homeless people.<sup class="cite" data-ref="ajbengal frontline"></sup></p>
+</section>
+
+<!-- ================= STEP 3 ================= -->
+<section class="step col" id="step3">
+  <p class="step-no">Step 3</p>
+  <h2>Let software flag families</h2>
+  <p>Even a link may not be enough. Software compares each family's details with the old list and flags anything that looks odd. The EC calls these "logical discrepancies", and each one means a hearing.<sup class="cite" data-ref="frontline wireld"></sup> Watch it check one made-up family against three of the real rules.</p>
+  <figure id="v3">
+    <span class="badge ill">Illustration</span>
+    <div class="fig-head"><p class="fig-title">One family, checked by software</p><button class="replay" type="button">Replay</button></div>
+    <div class="fam" id="fam">
+      <div class="fam-h"><span>Name</span><span>Born</span></div>
+      <div class="scan" id="scan"></div>
+    </div>
+    <div class="verdict-box" id="famVerdict">Three rules were triggered. All seven children are called to hearings, to prove who their parents are.</div>
+    <figcaption>Simplified to show how the checks work. The family is made up. The rules are real, as reported by Frontline (Telangana) and The Wire (West Bengal).<sup class="cite" data-ref="frontline wireld"></sup></figcaption>
+  
+    <a class="more" href="https://frontline.thehindu.com/the-nation/telangana-special-intensive-revision-voter-deletions-sir/article71498928.ece" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">The software's rules, and a Hyderabad family called to hearings</span><span class="more-o">Frontline ↗</span></a>
+  </figure>
+  <p><mark class="key">Big families, early marriages and guessed birth dates all look suspicious to the software.</mark> In West Bengal, 60 lakh people were flagged. Judges then reviewed every case, on the Supreme Court's orders.<sup class="cite" data-ref="wire27 wireld"></sup></p>
+  <figure id="v3b">
+    <span class="badge real">Real data</span>
+    <div class="fig-head"><p class="fig-title">What happened to West Bengal's 60 lakh flagged cases</p><button class="replay" type="button">Replay</button></div>
+    <div class="sbar" role="img" aria-label="Of 60 lakh flagged, 32.68 lakh cleared and 27.16 lakh ruled ineligible"><span id="wbA" style="width:0;background:var(--accent-soft)"></span><span id="wbB" style="width:0;background:var(--stamp)"></span></div>
+    <div class="legend">
+      <div><i style="background:var(--grey-bar)"></i><span>Flagged</span><b>60 lakh</b></div>
+      <div><i style="background:var(--accent-soft);outline:1px solid var(--rule)"></i><span>Cleared by judges</span><b>32.68 lakh</b></div>
+      <div><i style="background:var(--stamp)"></i><span>Ruled ineligible</span><b>27.16 lakh</b></div>
+    </div>
+    <figcaption>About 250 serving and retired judges decided the cases. Those ruled ineligible could appeal, but only a few appeals were decided before the state voted in April 2026.<sup class="cite" data-ref="wire27 wireld"></sup></figcaption>
+  
+    <a class="more" href="https://m.thewire.in/article/law/democracy-under-threat-as-supreme-court-ec-leave-27-lakh-bengal-voters-in-limbo" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">What happened to West Bengal's 60 lakh flagged voters, and the 19 tribunals</span><span class="more-o">The Wire ↗</span></a>
+  </figure>
+</section>
+
+<!-- ================= STEP 4 ================= -->
+<section class="step col" id="step4">
+  <p class="step-no">Step 4</p>
+  <h2>Do it in a rush</h2>
+  <p>BLOs are mostly schoolteachers and anganwadi workers with their own jobs. One BLO's area can hold up to about 1,200 voters. In Phase II, each BLO had one month to reach all of them, collect the forms and upload them on a phone app.<sup class="cite" data-ref="blo statesman1200 indiancurrents"></sup> Tap through the red button to see what that means for one person.</p>
+  <figure id="v4">
+    <span class="badge ill">Illustration · real numbers vary</span>
+    <div class="fig-head"><p class="fig-title">One BLO's month</p><button class="replay" type="button">Start over</button></div>
+    <div class="big4"><b id="v4num">0</b><span id="v4unit">voters for one BLO</span></div>
+    <svg id="crowd" viewBox="0 0 600 340" role="img" aria-label="One BLO facing 1,200 voters, three tasks each, 120 tasks a day for 30 days"></svg>
+    <div class="tasks" id="v4tasks">
+      <span class="task" data-c="amber">1 · Hand out the form</span>
+      <span class="task" data-c="teal">2 · Collect it signed</span>
+      <span class="task" data-c="accent">3 · Upload it on the app</span>
+    </div>
+    <p class="readout" id="v4read" aria-live="polite"></p>
+    <button class="next-btn pulse" type="button" id="v4next">Each voter needs three things ▶</button>
+    <figcaption>A worked example, not one real BLO. Each tiny figure is one voter. A BLO's area holds up to about 1,200, and many hold fewer, so real workloads vary. The three tasks are as the EC describes them, with more visits if nobody is home. 3,600 tasks over 30 days is 120 a day.<sup class="cite" data-ref="blo statesman1200 indiancurrents ttfaq"></sup></figcaption>
+    <a class="more" href="https://www.indiancurrents.org/article-review-the-process-of-sir--death-of-many-blos-due-to-work-pressure-demand-it-jacob-peenikaparambil-2824.php" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">The BLOs' one-month deadline, and the deaths reported</span><span class="more-o">Indian Currents ↗</span></a>
+  </figure>
+  <p>The pace had a cost.<sup class="cite" data-ref="indiancurrents etvblo frontline"></sup></p>
+  <div class="tiles">
+    <div class="tile"><b>16</b><span>BLOs died in the first three weeks of Phase II. Their families blamed work pressure. The EC asked each state for a report.</span><span class="tile-links">Read about it: <a href="https://www.indiancurrents.org/article-review-the-process-of-sir--death-of-many-blos-due-to-work-pressure-demand-it-jacob-peenikaparambil-2824.php" target="_blank" rel="noopener">Indian Currents ↗</a> · <a href="https://www.etvbharat.com/en/bharat/blo-deaths-election-commission-seeks-report-from-ceos-ready-to-offer-additional-support-enn25112504536" target="_blank" rel="noopener">ETV Bharat ↗</a></span></div>
+    <div class="tile"><b>8 Sept</b><span>is when Telangana first put online its list of voters who had been sent "logical discrepancy" notices calling them to hearings. That was weeks after the notices went out, and several thousand people missed their hearing dates.</span><span class="tile-links">Read about it: <a href="https://frontline.thehindu.com/the-nation/telangana-special-intensive-revision-voter-deletions-sir/article71498928.ece" target="_blank" rel="noopener">Frontline ↗</a></span></div>
+  </div>
+  <p style="margin-top:18px"><mark class="key">In a rush, the people who drop off are the ones who were away, busy, or never reached.</mark></p>
+</section>
+
+<!-- ================= STEP 5 ================= -->
+<section class="step col" id="step5">
+  <p class="step-no">Step 5</p>
+  <h2>Make the way back hard</h2>
+  <p>If you are left off, you get about a month to apply to get back on. The way back is Form 6, the form for new voters. You apply as if you had never voted, and sign that it is your first time. A false statement can mean up to a year in jail.<sup class="cite" data-ref="wirebihar sabrang ecif6"></sup> Falling off took one step. Climbing back takes four.</p>
+  <figure id="v5">
+    <span class="badge ill">Illustration</span>
+    <div class="fig-head"><p class="fig-title">Off in one step, back in four</p><button class="replay" type="button">Replay</button></div>
+    <svg id="ladder" viewBox="0 0 600 340" role="img" aria-label="A voter slides off the list after one missed form, then climbs four steps of a ladder to get back on">
+      <line class="plat" x1="24" y1="80" x2="200" y2="80"/>
+      <text class="t b" x="24" y="68" style="fill:var(--accent)">On the list</text>
+      <path id="chute" class="chute" d="M 200 80 C 260 90, 220 270, 300 300"/>
+      <text class="t" x="214" y="180" text-anchor="end" style="fill:var(--stamp)">1 missed</text>
+      <text class="t" x="214" y="202" text-anchor="end" style="fill:var(--stamp)">form</text>
+      <line class="ground" x1="16" y1="300" x2="584" y2="300"/>
+      <text class="t sm" x="24" y="326">Off the list</text>
+      <line class="rail" x1="330" y1="300" x2="330" y2="40"/>
+      <line class="rail" x1="360" y1="300" x2="360" y2="40"/>
+      <g id="rungs"></g>
+      <text class="t b" x="374" y="44" style="fill:var(--teal)">Back on?</text>
+      <g class="who" id="who"><circle cx="0" cy="-27" r="8"/><line x1="0" y1="-19" x2="0" y2="-6"/><line x1="0" y1="-6" x2="-6" y2="0"/><line x1="0" y1="-6" x2="6" y2="0"/><line x1="-7" y1="-15" x2="7" y2="-15"/></g>
+    </svg>
+    <figcaption>A simplified picture. The slide is the one missed form that takes a name off. Each step on the ladder is one thing a person must do to get back on.<sup class="cite" data-ref="sabrang ecif6"></sup></figcaption>
+  
+    <a class="more" href="https://sabrangindia.in/ecs-new-online-form-6-requirement-raises-questions-over-procedure-and-legality/" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">Why re-applying on Form 6 is a problem for people who were deleted</span><span class="more-o">SabrangIndia ↗</span></a>
+  </figure>
+  <p>Bihar, the first state to finish, shows how few made the climb. Its draft list dropped 65 lakh names. In the month that followed, 21.53 lakh names were added, and that count includes first-time voters. The final list still had 47 lakh fewer names than before the SIR.<sup class="cite" data-ref="wirebihar"></sup></p>
+  <p>Meanwhile, control moved away from local officials. By law, each constituency's Electoral Registration Officer (ERO) decides who is added or removed. Since January 2026, all voter-list work runs on new EC software, ECINet. Two of the EC's three members say this moved control to Delhi.<sup class="cite" data-ref="tribune nhdgit"></sup> The diagram starts with what the law says. Tap the red button to see what they say changed.</p>
+  <figure id="v5b">
+    <span class="badge ill">Simplified diagram</span>
+    <div class="seg" role="group" aria-label="Choose a view">
+      <button type="button" data-net="law" aria-pressed="true">What the law says</button>
+      <button type="button" data-net="net" aria-pressed="false">What ECINet did</button>
+    </div>
+    <svg viewBox="0 0 600 230" role="img" aria-label="Who can change a name on the voter list">
+      <rect id="nbEro" class="nbox lead" x="16" y="24" width="210" height="62" rx="6"/>
+      <text class="t b" x="30" y="50">ERO</text><text class="t sm" x="30" y="72">your constituency</text>
+      <rect id="nbDel" class="nbox" x="374" y="24" width="210" height="62" rx="6"/>
+      <text class="t b" x="388" y="50">EC, Delhi</text><text class="t sm" x="388" y="72">IT department</text>
+      <rect class="nbox" x="200" y="160" width="200" height="54" rx="6"/>
+      <text class="t b" x="300" y="193" text-anchor="middle">Voter list</text>
+      <path id="aLaw" class="arw law" d="M 120 88 C 120 130, 190 150, 214 160" marker-end="url(#mLaw)"/>
+      <path id="aSup" class="arw sup" d="M 372 54 L 230 54"/>
+      <path id="aNet" class="arw net hide" d="M 420 88 C 420 120, 400 140, 380 160" marker-end="url(#mNet)"/>
+      <text id="tLaw" class="al law" x="20" y="130">decides each name</text>
+      <text id="tSup" class="al sup" x="250" y="46">supervises</text>
+      <text id="tNet" class="al net hide" x="438" y="112">controls</text>
+      <text id="tNet2" class="al net hide" x="438" y="132">access and</text>
+      <text id="tNet3" class="al net hide" x="438" y="152">changes names</text>
+      <text id="tEro" class="al net hide" x="20" y="108">lost full access</text>
+      <defs>
+        <marker id="mLaw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--teal)"/></marker>
+        <marker id="mNet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--stamp)"/></marker>
+      </defs>
+    </svg>
+    <button class="next-btn pulse" type="button" id="v5next">Now see what ECINet did ▶</button>
+    <figcaption>A simplified diagram. The second view is the account given by two of the EC's three members in their written notes. The EC says ECINet is safe and keeps power where the law puts it.<sup class="cite" data-ref="tribune nhdgit kv"></sup></figcaption>
+  
+    <a class="more" href="https://www.nationalheraldindia.com/politics/ecipress-note-silent-on-role-of-dg-itseema-khanna-flagged-by-election-commissioners" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">The commissioners' objections about ECINet and the EC's IT division</span><span class="more-o">National Herald ↗</span></a>
+  </figure>
+  <p><mark class="key">Getting off the list took one missed form. Getting back on takes four steps and a deadline.</mark></p>
+</section>
+
+<!-- ================= EVIDENCE ================= -->
+<section class="step col" id="evidence">
+  <p class="step-no">The harder question</p>
+  <h2>Did it help the BJP?</h2>
+  <p>So that is how 13 crore names came off. Many people then ask: was this done to help the ruling party? Here the evidence is thinner, and it points in different directions.</p>
+
+  <div class="ev"><div class="known">
+    <h4>What we know</h4>
+    <ul>
+      <li>Most removed names were marked "absent", not dead.<sup class="cite" data-ref="civ13"></sup></li>
+      <li>Results varied hugely by state: about one in three voters removed in Delhi, about one in thirty in Kerala. The EC says cities simply have more people who have moved.<sup class="cite" data-ref="scrolldelhi sirwiki civ3"></sup></li>
+      <li>Muslims were hit harder in West Bengal and Maharashtra, according to two analyses (chart below).<sup class="cite" data-ref="wire49 madhyamam"></sup></li>
+    </ul>
+  </div></div>
+
+  <p>The chart below shows two states. In each, compare the grey bar with the red bar.</p>
+  <figure id="vm">
+    <span class="badge real">Real data · estimates</span>
+    <p class="fig-title" style="margin-bottom:14px">Who was hit hardest</p>
+    <div class="panels">
+      <div class="mpanel">
+        <h4 class="mstate">West Bengal</h4>
+        <p class="msum">Muslims are about 27 of every 100 people in the state, but 70 of every 100 people ruled ineligible.</p>
+        <div class="bars">
+          <div class="brow"><div class="bl"><span>Muslim share of the state's people</span><b>27%</b></div><div class="track"><span data-w="27" style="width:0;background:var(--grey-bar)"></span></div></div>
+          <div class="brow"><div class="bl"><span>Muslim share of people ruled ineligible</span><b>70%</b></div><div class="track"><span data-w="70" style="width:0;background:var(--stamp)"></span></div></div>
+        </div>
+      </div>
+      <div class="mpanel">
+        <h4 class="mstate">Maharashtra</h4>
+        <p class="msum">Across the state, about 21 of every 100 voters were left off the draft list. In the 38 seats with the most Muslims, where they are more than 1 in 5 people, it was about 30 of every 100.</p>
+        <div class="bars">
+          <div class="brow"><div class="bl"><span>Left off the draft, whole state</span><b>21.1%</b></div><div class="track"><span data-w="21.1" style="width:0;background:var(--grey-bar)"></span></div></div>
+          <div class="brow"><div class="bl"><span>Left off the draft, 38 seats with the most Muslims</span><b>29.8%</b></div><div class="track"><span data-w="29.8" style="width:0;background:var(--stamp)"></span></div></div>
+        </div>
+      </div>
+    </div>
+    <figcaption>All bars use one 0–100% scale. The EC's lists have no religion column, so The Wire sorted names by surname, a method whose error rate cannot be measured. The population share is from the 2011 Census. Maharashtra figures are from an analysis of the EC's draft-list data.<sup class="cite" data-ref="wire49 censuswb madhyamam"></sup></figcaption>
+    <a class="more" href="https://m.thewire.in/article/rights/sir-bengal-samserganj-muslim-removals-under-adjudication-bjp-winning-margin" target="_blank" rel="noopener"><span class="more-l">Read more</span><span class="more-t">Who was ruled ineligible in West Bengal, and the 49 close seats</span><span class="more-o">The Wire ↗</span></a>
+  </figure>
+
+  <div class="ev"><div class="notp">
+    <h4>What is not proven</h4>
+    <ul>
+      <li>That the deletions were planned to help the BJP. No one has shown intent.<sup class="cite" data-ref="scrollbengal"></sup></li>
+      <li>How the removed people would have voted. The data cannot show it.<sup class="cite" data-ref="scrollbengal"></sup></li>
+      <li>That the deletions decided who won West Bengal. Three separate analyses say the BJP would have won a majority anyway.<sup class="cite" data-ref="scrollbengal isaswb rayblr"></sup></li>
+    </ul>
+  </div></div>
+
+  <p>Researchers and reporters have compared deletions with election results. That is only possible in states that have voted since their SIR.</p>
+  <figure id="vs">
+    <span class="badge real">Summary of real studies</span>
+    <p class="fig-title" style="margin-bottom:12px">What the studies found</p>
+    <div class="finds"><div class="fstate"><h4 class="mstate">West Bengal</h4><div class="frow"><span class="tilt bjp">Linked to BJP gains</span><p>Seats where the list shrank more swung more towards the BJP. The authors call it "an association rather than proof". With no deletions, they estimate the BJP would still have won about 163 of 294 seats; 148 is a majority. <a class="fsrc" href="https://scroll.in/article/1093602/data-analysis-how-sir-deletions-shaped-bjps-landslide-in-bengal" target="_blank" rel="noopener">Scroll · Joshi and Sircar ↗</a></p></div><div class="frow"><span class="tilt amb">Played a role, didn't decide it</span><p>The deletions "played a role" but would not have changed the BJP's big win; those under the judges' review may have swung about two dozen close seats. It adds that the TMC also lost Muslim votes to other parties, such as the Congress and the Left. <a class="fsrc" href="https://www.isas.nus.edu.sg/papers/west-bengal-assembly-election-the-bjps-wave-overwhelms-the-tmc/" target="_blank" rel="noopener">ISAS · Ronojoy Sen ↗</a></p></div><div class="frow"><span class="tilt none">Not enough to change the result</span><p>Even if everyone removed after the judges' review had voted for the runner-up, the BJP would lose at most 26 seats and keep 181. <a class="fsrc" href="https://debrajray.com/wp-content/uploads/2026/05/SIR2026.pdf" target="_blank" rel="noopener">Debraj Ray, economist ↗</a></p></div><div class="frow"><span class="tilt none">No simple link</span><p>The five seats with the most deletions were all won by the Trinamool Congress; the five with the fewest, by the BJP. <a class="fsrc" href="https://www.thehansindia.com/news/national/west-bengal-sir-data-tmc-won-seats-with-highest-voter-deletions-eci-figures-show-1130179" target="_blank" rel="noopener">Hans India, using EC figures ↗</a></p></div></div><div class="fstate"><h4 class="mstate">Tamil Nadu</h4><div class="frow"><span class="tilt none">Linked to a non-BJP winner</span><p>The more names a seat lost, the more often Vijay's new party, TVK, won: 2 of 19 seats that lost under 10,000 names, and all 10 that lost over 80,000. The report says this does not show the deletions decided the result. <a class="fsrc" href="https://www.oneindia.com/chennai/did-sir-deletions-influence-tvks-victory-vijays-party-won-all-10-seats-with-80-000-deletions-8225771.html" target="_blank" rel="noopener">Oneindia ↗</a></p></div></div><div class="fstate"><h4 class="mstate">Bihar</h4><div class="frow"><span class="tilt none">No link</span><p>The same Scroll researchers found no pattern linking deletions to the results. <a class="fsrc" href="https://scroll.in/article/1093602/data-analysis-how-sir-deletions-shaped-bjps-landslide-in-bengal" target="_blank" rel="noopener">Scroll · Joshi and Sircar ↗</a></p></div><div class="frow"><span class="tilt amb">Big enough to matter</span><p>In 174 of 243 seats, more names were deleted than the winning margin. The Quint says this does not show that deletions changed the results. <a class="fsrc" href="https://www.thequint.com/news/politics/bihar-assembly-elections-2025-sir-nda-wins-75-seats" target="_blank" rel="noopener">The Quint ↗</a></p></div></div><div class="fstate"><h4 class="mstate">Uttar Pradesh</h4><div class="frow"><span class="tilt none">Hit BJP seats</span><p>The most deletions were in BJP-held city seats. Some BJP leaders worry this hurts them. <a class="fsrc" href="https://theprint.in/politics/sir-curse-in-up-bjp-held-constituencies-face-highest-voter-deletions-yogis-gorakhpur-an-exception/2903768/" target="_blank" rel="noopener">ThePrint ↗</a></p></div></div><div class="fstate"><h4 class="mstate">Delhi, Maharashtra, Karnataka and other Phase III states</h4><div class="frow"><span class="tilt amb">Too early to tell</span><p>The lists are still drafts, and no election has been held since, so no one can test this yet. What is known is who is being removed: about 1 in 3 voters in Delhi, and about 1 in 5 in Maharashtra and Karnataka, more in seats with many Muslims. <a class="fsrc" href="https://scroll.in/latest/1095388/sir-33-delhi-voters-deleted-from-draft-list-21-in-maharashtra" target="_blank" rel="noopener">Scroll ↗</a></p></div></div></div>
+    <figcaption>Each row is one analysis or report, grouped by state. The tags sum up what each found; the sources give the full methods and their limits. The Tamil Nadu report does not name who ran the numbers.<sup class="cite" data-ref="scrollbengal isaswb rayblr hanswb tnoneindia quintbihar printup scrolldelhi civ13 madhyamam"></sup></figcaption>
+  </figure>
+  <p>The EC says its rules apply to everyone equally. The Supreme Court ruled in May 2026 that the SIR is legal.<sup class="cite" data-ref="frontline civ3"></sup></p>
+  <p><mark class="key">A rule can fall hardest on migrants, poor families and Muslims, and tilt results, without anyone planning it. Unequal harm is not the same as proof of intent.</mark></p>
+
+  <div class="ev"><div class="settle">
+    <h4>What would settle it</h4>
+    <ul>
+      <li>An independent check of a random sample of "absent" names. Are those people really gone?</li>
+      <li>ECINet's records: who removed which names, and from where.</li>
+      <li>Booth-level data comparing deletions with how each booth voted before.</li>
+    </ul>
+  </div></div>
+</section>
+
+<section class="end col">
+  <p class="step-no">The bottom line</p>
+  <p>Whoever gained, the way this was done is a problem in itself. A voter away for work, a family whose birth dates were guessed, a name spelled two ways: none of these depends on which party a person votes for. In Uttar Pradesh, the biggest losses were in seats the BJP holds.<sup class="cite" data-ref="frontline ajbengal printup"></sup> <mark class="key">The bigger question is whether anyone should lose their vote because a form did not come back.</mark></p>
+  <p>Inside the Commission, two of its three members objected in writing to how parts of this were run, at least 14 times in ten months. The <em>Indian Express</em> reported it on 23 September 2026. That report turned a year-long argument into street protests demanding that the Chief Election Commissioner resign.<sup class="cite" data-ref="ie latestly aj"></sup></p>
+  <p>The full story covers it, along with the 2025 history and the people caught in the middle.</p>
+  <a class="cta" href="https://explorables.netlify.app/erased-from-the-roll/">Read Erased from the Roll →</a>
+</section>
+
+<section class="sources col">
+  <h2>Sources</h2>
+  <p>Numbers in brackets in the text, like [1], point to these sources. The ↑ links jump back to where each was cited.</p>
+  <ol id="refList"></ol>
+</section>
+</main>
+
+<script>
+const REFS = {"tnoneindia": ["Oneindia", "Did SIR Deletions Influence TVK\u2019s Victory? Vijay\u2019s Party Won All 10 Seats With Over 80,000 Voter Deletions", "https://www.oneindia.com/chennai/did-sir-deletions-influence-tvks-victory-vijays-party-won-all-10-seats-with-80-000-deletions-8225771.html"], "isaswb": ["ISAS, National University of Singapore", "West Bengal Assembly Election: BJP Wave Overwhelms TMC", "https://www.isas.nus.edu.sg/papers/west-bengal-assembly-election-the-bjps-wave-overwhelms-the-tmc/"], "rayblr": ["Debraj Ray", "SIR and the BJP\u2019s Bengal Majority", "https://debrajray.com/wp-content/uploads/2026/05/SIR2026.pdf"], "hanswb": ["The Hans India", "West Bengal SIR Data: TMC Won Seats With Highest Voter Deletions, ECI Figures Show", "https://www.thehansindia.com/news/national/west-bengal-sir-data-tmc-won-seats-with-highest-voter-deletions-eci-figures-show-1130179"], "quintbihar": ["The Quint", "Bihar: SIR Deletions Exceed Win Margins in 75 Seats NDA Snatched From Opposition", "https://www.thequint.com/news/politics/bihar-assembly-elections-2025-sir-nda-wins-75-seats"], "etvblo": ["ETV Bharat", "BLO deaths: Election Commission seeks report from CEOs", "https://www.etvbharat.com/en/bharat/blo-deaths-election-commission-seeks-report-from-ceos-ready-to-offer-additional-support-enn25112504536"], "printblr": ["ThePrint", "Absent, shifted, deceased, duplicate: Almost half of Bengaluru\u2019s voters face deletion in SIR", "https://theprint.in/india/governance/absent-shifted-deceased-duplicate-almost-half-of-bengalurus-voters-face-deletion-in-sir/3008408/"], "ddnews": ["DD News", "ECI extends SIR deadlines by one week; final electoral roll on February 14", "https://ddnews.gov.in/en/eci-extends-sir-deadlines-by-one-week-final-electoral-roll-on-february-14/"], "wionsir3": ["WION", "EC announces Phase-III of SIR: Schedule released for 16 states, 3 UTs", "https://www.wionews.com/india-news/ec-announces-phase-iii-of-sir-schedule-released-for-16-states-3-uts-check-full-list-1778760105739"], "civ13": ["Civilsdaily", "SIR draft rolls see over 13 cr deletions so far, Delhi leads with 33% left out", "https://www.civilsdaily.com/news/sir-draft-rolls-see-over-13-cr-deletions-so-far-delhi-leads-with-33-left-out/"], "sirwiki": ["Wikipedia", "Special Intensive Revision", "https://en.wikipedia.org/wiki/Special_Intensive_Revision"], "frontline": ["Frontline", "Telangana's SIR becomes an exercise in exclusion", "https://frontline.thehindu.com/the-nation/telangana-special-intensive-revision-voter-deletions-sir/article71498928.ece"], "ajbengal": ["Al Jazeera", "Muslims the target? Fury as millions lose voting rights in Bengal", "https://www.aljazeera.com/news/2026/4/16/muslims-the-target-fury-as-millions-lose-voting-rights-in-indias-bengal"], "wireld": ["The Wire", "In Bengal SIR, &quot;logical discrepancy&quot; became the Election Commission's alibi for mass voter exclusion", "https://m.thewire.in/article/government/in-west-bengal-sir-logical-discrepancy-became-the-election-commissions-alibi-for-mass-voter-exclusion"], "wire27": ["The Wire", "Why leaving 27 lakh voters in limbo is a threat to democracy", "https://m.thewire.in/article/law/democracy-under-threat-as-supreme-court-ec-leave-27-lakh-bengal-voters-in-limbo"], "indiancurrents": ["Indian Currents", "Review the process of SIR: death of many BLOs due to work pressure", "https://www.indiancurrents.org/article-review-the-process-of-sir--death-of-many-blos-due-to-work-pressure-demand-it-jacob-peenikaparambil-2824.php"], "wirebihar": ["The Wire", "Bihar SIR: electoral roll shrinks by 6%, net 47 lakh excluded", "https://m.thewire.in/article/government/bihar-sir-election-commission-releases-final-electoral-roll"], "sabrang": ["SabrangIndia", "EC's new online Form 6 requirement raises questions over procedure and legality", "https://sabrangindia.in/ecs-new-online-form-6-requirement-raises-questions-over-procedure-and-legality/"], "ecif6": ["Election Commission of India", "Guidelines for filling up Form 6 (Section 31 warning)", "https://voters.eci.gov.in/guidelines/Form-6_en.pdf"], "tribune": ["The Tribune", "Inside the ECI rift", "https://www.tribuneindia.com/news/comment/inside-the-eci-rift/"], "nhdgit": ["National Herald", "ECI press note silent on role of DG (IT) flagged by election commissioners", "https://www.nationalheraldindia.com/politics/ecipress-note-silent-on-role-of-dg-itseema-khanna-flagged-by-election-commissioners"], "scrolldelhi": ["Scroll", "SIR: 33% Delhi voters deleted from draft list, 21% in Maharashtra", "https://scroll.in/latest/1095388/sir-33-delhi-voters-deleted-from-draft-list-21-in-maharashtra"], "civ3": ["Civilsdaily", "SIR: deletions have increased in Phase 3 States/UT", "https://www.civilsdaily.com/news/sir-deletions-have-increased-in-phase-3-states-ut/"], "wire49": ["The Wire", "In 49 seats in Bengal, the winning margin was less than SIR removals", "https://m.thewire.in/article/rights/sir-bengal-samserganj-muslim-removals-under-adjudication-bjp-winning-margin"], "censuswb": ["Wikipedia", "Islam in West Bengal (2011 Census figures)", "https://en.wikipedia.org/wiki/Islam_in_West_Bengal"], "madhyamam": ["Madhyamam", "Nearly 30% excluded in Muslim-heavy Maharashtra seats", "https://madhyamamonline.com/india/nearly-30-excluded-in-muslim-heavy-maharashtra-seats-delhi-deletions-exceed-winning-margins-1552884"], "aj": ["Al Jazeera", "India's &quot;cockroach&quot; movement demands election chief's resignation", "https://www.aljazeera.com/news/2026/9/25/indias-cockroach-movement-demands-election-chiefs-resignation"], "ie": ["The Indian Express", "ECI SIR row: Commissioners object to Gyanesh Kumar over roll deletions", "https://indianexpress.com/article/express-exclusive/election-commission-sir-14-objections-gyanesh-kumar-sukhbir-singh-sandhu-vivek-joshi-10889737/"], "latestly": ["LatestLY", "Who are Sukhbir Singh Sandhu and Vivek Joshi, and what were their 14 objections?", "https://www.latestly.com/india/news/who-are-sukhbir-singh-sandhu-and-vivek-joshi-and-what-were-their-14-objections-to-cec-gyanesh-kumar-7617196.html"], "kv": ["Kashmir Vision", "EC asserts all SIR decisions unanimous", "https://kashmirvision.in/2026/09/27/ec-asserts-all-sir-decisions-unanimous-cabinet-secretary-letters-not-related-to-policy-matters/"], "ttfaq": ["Telangana Today", "SIR in Hyderabad: Several doubts and questions are being raised by voters, and Telangana Today provides answers to address them", "https://telanganatoday.com/sir-in-hyderabad-several-doubts-and-questions-are-being-raised-by-voters-and-telangana-today-provides-answers-to-address-them"], "wirephases": ["The Wire", "Three Phases of SIR: How EC Has Applied Varying Rules for the Nationwide Voter Roll Revision", "https://m.thewire.in/article/rights/three-phases-of-sir-how-ec-has-applied-varying-rules-for-the-nationwide-voter-roll-revision"], "jagrandocs": ["Daily Jagran", "SIR Phase 2: Aadhaar Not Proof Of Citizenship, DOB Or Domicile, But Acceptable As ID Proof | Check List Of Valid Documents", "https://www.thedailyjagran.com/india/sir-phase-2-aadhaar-not-proof-of-citizenship-dob-or-domicile-but-acceptable-as-id-proof-check-list-of-valid-documents-special-intensive-revision-10276136"], "scrollbengal": ["Scroll", "Data analysis: How SIR deletions shaped BJP’s landslide in Bengal", "https://scroll.in/article/1093602/data-analysis-how-sir-deletions-shaped-bjps-landslide-in-bengal"], "printup": ["ThePrint", "SIR curse? In UP, BJP-held constituencies face highest voter deletions, Yogi’s Gorakhpur an exception", "https://theprint.in/politics/sir-curse-in-up-bjp-held-constituencies-face-highest-voter-deletions-yogis-gorakhpur-an-exception/2903768/"], "organiser": ["Organiser", "TMC’s ‘Vote Chori’ charge fails SIR data test: Five highest-deletion seats won by Trinamool, five lowest by BJP", "https://organiser.org/2026/10/08/385418/bharat/west-bengal/tmcs-vote-chori-charge-fails-sir-data-test-five-highest-deletion-seats-won-by-trinamool-five-lowest-by-bjp/"], "statesman1200": ["The Statesman", "Max voters assigned to polling station reduced from 1,500 to 1,200", "https://www.thestatesman.com/india/max-voters-assigned-to-polling-station-reduced-from-1500-to-1200-ec-1503436023.html"], "blo": ["Election Commission of India", "Handbook for Booth Level Officers", "https://ceomeghalaya.nic.in/blos/blos-handbook.pdf"]};
+
+/* ---------- citations ---------- */
+const order = [], num = {}, backs = {};
+document.querySelectorAll('sup.cite').forEach((s, i) => {
+  const keys = s.dataset.ref.split(/\s+/);
+  s.id = 'c' + i;
+  keys.forEach(k => {
+    if (!(k in num)) { order.push(k); num[k] = order.length; backs[k] = []; }
+    backs[k].push(s.id);
+  });
+  const ns = [...new Set(keys.map(k => num[k]))].sort((a, b) => a - b);
+  s.innerHTML = '[' + ns.map(n => {
+    const r = REFS[order[n - 1]];
+    const t = document.createElement('span'); t.innerHTML = r[1];
+    return `<a href="#ref-${n}" title="${r[0]}: ${t.textContent.replace(/"/g, '&quot;')}">${n}</a>`;
+  }).join(',&#8201;') + ']';
+});
+// keep each citation on the same line as the word before it
+document.querySelectorAll('sup.cite').forEach(sup => {
+  const prev = sup.previousSibling;
+  if (!prev || prev.nodeType !== 3) return;
+  const m = prev.textContent.match(/(\S+)$/);
+  if (!m) return;
+  prev.textContent = prev.textContent.slice(0, -m[1].length);
+  const nw = document.createElement('span');
+  nw.style.whiteSpace = 'nowrap';
+  sup.replaceWith(nw);
+  nw.append(m[1], sup);
+});
+const letters = 'abcdefghijklmnopqrstuvwxyz';
+document.getElementById('refList').innerHTML = order.map((k, i) => {
+  const [outlet, title, url] = REFS[k], b = backs[k];
+  const bk = b.length === 1 ? `<a href="#${b[0]}" aria-label="Back to text">↑</a>` : '↑ ' + b.map((id, j) => `<a href="#${id}" aria-label="Back to citation ${j + 1}">${letters[j]}</a>`).join(' ');
+  return `<li id="ref-${i + 1}"><span class="bk">${bk}</span><a href="${url}" target="_blank" rel="noopener">${title}</a> <span class="o">${outlet}</span></li>`;
+}).join('');
+
+/* ---------- helpers ---------- */
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// SLOW stretches every animation. 1 = original speed; each step of 1.25x is 20% slower. Now two steps: 1.25 x 1.25.
+const SLOW = 1.5625;
+document.documentElement.style.setProperty('--slow', SLOW);
+const wait = ms => new Promise(r => setTimeout(r, RM ? 0 : ms * SLOW));
+const $ = s => document.querySelector(s);
+function onView(el, fn) {
+  // fire once the figure's top has passed the lower third of the screen, so it plays where the reader is looking
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.disconnect(); setTimeout(fn, RM ? 0 : 350); } }), { rootMargin: '0px 0px -40% 0px', threshold: 0 });
+  io.observe(el);
+}
+// each figure gets a run counter, so a replay cancels the run in progress
+function player(fn) { let id = 0; const run = () => { const me = ++id; return fn(() => me !== id); }; run.cancel = () => { id++; }; return run; }
+
+/* ---------- V1: one street, two rules ---------- */
+const PEOPLE = [
+  ['Asha', 'home'], ['Gopal', 'died'], ['Ravi', 'home'], ['Sunita', 'work'], ['Meena', 'home'], ['Arjun', 'home'],
+  ['Farah', 'home'], ['Vikas', 'home'], ['Kamla', 'visit'], ['Tara', 'home'], ['Joseph', 'home'], ['Imran', 'home']
+];
+const HOUSE = '<svg viewBox="0 0 46 40" aria-hidden="true"><path class="hs" d="M4 18 L23 4 L42 18 V38 H4 Z"/><rect class="door" x="18" y="24" width="10" height="14"/></svg>';
+$('#street').innerHTML = PEOPLE.map(([n], i) => `<div class="house" data-i="${i}">${HOUSE}<span class="nm">${n}</span><span class="tag"></span></div>`).join('');
+const houses = [...document.querySelectorAll('.house')];
+function setHouse(h, cls, tag) { h.className = 'house ' + cls; h.querySelector('.tag').textContent = tag; }
+function showNormal() {
+  houses.forEach((h, i) => PEOPLE[i][1] === 'died' ? setHouse(h, 'gone dead', 'Died · family showed proof') : setHouse(h, '', ''));
+  $('#v1read').innerHTML = '<b>A normal year: 1 name removed.</b> Gopal\'s family showed proof that he died. Everyone else stays on the list without doing anything.';
+}
+const runSir = player(async stale => {
+  houses.forEach(h => setHouse(h, '', ''));
+  $('#v1read').innerHTML = 'The BLO goes door to door…';
+  for (let i = 0; i < houses.length; i++) {
+    if (stale()) return;
+    const h = houses[i], st = PEOPLE[i][1];
+    h.classList.add('visit');
+    await wait(260);
+    if (stale()) return;
+    if (st === 'home') setHouse(h, 'ok', 'Form back ✓');
+    else if (st === 'died') setHouse(h, 'gone dead', 'Dead');
+    else setHouse(h, 'gone absent away', st === 'work' ? 'Absent · at work' : 'Absent · visiting');
+    await wait(120);
+  }
+  if (stale()) return;
+  $('#v1read').innerHTML = '<b>The SIR: 3 names removed.</b> Sunita and Kamla are alive. Nobody signed their forms, so they were marked "absent". No one had to prove they moved.';
+});
+// the reader moves from a normal year to the SIR with one big button
+const v1next = $('#v1next');
+function setMode(m) {
+  document.querySelectorAll('#v1 [data-mode]').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m));
+  const sir = m === 'sir';
+  v1next.textContent = sir ? '◀ Back to a normal year' : 'Now run the SIR on this street ▶';
+  v1next.classList.toggle('back', sir);
+  if (sir) v1next.classList.remove('pulse');
+  $('#v1 .replay').hidden = !sir;
+  if (sir) runSir(); else { runSir.cancel(); showNormal(); }
+}
+document.querySelectorAll('#v1 [data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+v1next.onclick = () => setMode(v1next.classList.contains('back') ? 'normal' : 'sir');
+$('#v1 .replay').onclick = () => setMode('sir');
+showNormal();
+
+/* ---------- V1b: Delhi, then Bengaluru ---------- */
+const CITIES = {
+  delhi: { title: 'Why names were removed in Delhi', parts: [91, 6, 3] },
+  blr:   { title: 'Why names were flagged in Bengaluru', parts: [93, 6, 1] }
+};
+const waffle = $('#waffle'), wNext = $('#wNext');
+waffle.innerHTML = '<i></i>'.repeat(100);
+const wcells = [...waffle.children];
+const WCOL = ['var(--stamp)', 'var(--grey-bar)', 'var(--accent)'];
+let wCity = 'delhi';
+function showCityChrome(c) {
+  const blr = c === 'blr';
+  $('#wTitle').textContent = CITIES[c].title;
+  $('#wCapDelhi').hidden = blr; $('#wCapBlr').hidden = !blr;
+  $('#wMoreDelhi').hidden = blr; $('#wMoreBlr').hidden = !blr;
+  const [a, b, d] = CITIES[c].parts;
+  waffle.setAttribute('aria-label', `${a} of 100 squares absent, shifted or other; ${b} dead; ${d} listed twice`);
+}
+const runWaffle = player(async stale => {
+  wNext.hidden = true;
+  showCityChrome(wCity);
+  wcells.forEach(c => c.style.background = '');
+  ['wc0', 'wc1', 'wc2'].forEach(id => $('#' + id).textContent = '0');
+  await wait(300);
+  let i = 0;
+  // one colour group at a time, two squares per tick, with a pause between groups
+  for (let k = 0; k < 3; k++) {
+    const n = CITIES[wCity].parts[k];
+    for (let j = 0; j < n; j++, i++) {
+      if (stale()) return;
+      wcells[i].style.background = WCOL[k];
+      $('#wc' + k).textContent = j + 1;
+      if (j % 2 === 1) await wait(55);
+    }
+    await wait(700);
+  }
+  if (stale()) return;
+  wNext.textContent = wCity === 'delhi' ? 'Now see Bengaluru ▶' : '◀ Back to Delhi';
+  wNext.classList.toggle('back', wCity === 'blr');
+  wNext.hidden = false;
+});
+wNext.onclick = () => { wNext.classList.remove('pulse'); wCity = wCity === 'delhi' ? 'blr' : 'delhi'; runWaffle(); };
+$('#v1b .replay').onclick = runWaffle;
+onView($('#v1b'), runWaffle);
+
+/* ---------- V2: linking to the old list ---------- */
+const OLD = ['Ramesh Yadav, 29', 'Suresh Iyer, 41', 'Anita Das, 35', 'Mohan Lal, 60', 'Rekha Singh, 33', 'Salim Khan, 47'];
+$('#oldRows').innerHTML = OLD.map((n, i) => `<rect class="row-hl" id="or${i}" x="22" y="${44 + i * 38}" width="232" height="32" rx="4"/><text class="t" x="34" y="${66 + i * 38}">${n}</text>`).join('');
+const TODAY = [['Ramesh, 52', 'own name'], ['Priya, 21', 'via her father'], ['Arjun, 30', '']];
+$('#todayCards').innerHTML = TODAY.map(([n], i) => `<rect class="card" id="tc${i}" x="350" y="${40 + i * 84}" width="234" height="64" rx="6"/><text class="t b" x="364" y="${66 + i * 84}">${n}</text><text class="verdict" id="tv${i}" x="364" y="${90 + i * 84}"></text>`).join('');
+const LINES = [['#lnA', 0, 0], ['#lnB', 1, 1]];
+function curve(cardI, rowI) { const y1 = 72 + cardI * 84, y2 = 60 + rowI * 38; return `M 348 ${y1} C 300 ${y1}, 300 ${y2}, 258 ${y2}`; }
+LINES.forEach(([s, c, r]) => $(s).setAttribute('d', curve(c, r)));
+$('#lnC').setAttribute('d', 'M 348 240 C 320 240, 300 250, 292 256');
+function resetV2() {
+  LINES.forEach(([s]) => { const p = $(s), L = p.getTotalLength(); p.style.transition = 'none'; p.style.strokeDasharray = L; p.style.strokeDashoffset = L; p.getBoundingClientRect(); p.style.transition = ''; });
+  $('#lnC').classList.remove('on'); $('#qmark').classList.remove('on');
+  [0, 1, 2].forEach(i => { $('#tc' + i).setAttribute('class', 'card'); const v = $('#tv' + i); v.setAttribute('class', 'verdict'); v.textContent = ''; });
+  OLD.forEach((_, i) => $('#or' + i).classList.remove('on'));
+}
+const runV2 = player(async stale => {
+  resetV2(); await wait(400);
+  const steps = [[0, '#lnA', 0, '✓ own entry'], [1, '#lnB', 1, '✓ via her father']];
+  for (const [ci, ln, ri, msg] of steps) {
+    if (stale()) return;
+    $(ln).style.strokeDashoffset = 0;
+    await wait(900); if (stale()) return;
+    $('#or' + ri).classList.add('on');
+    $('#tc' + ci).setAttribute('class', 'card good');
+    const v = $('#tv' + ci); v.textContent = msg; v.setAttribute('class', 'verdict on good');
+    await wait(500);
+  }
+  if (stale()) return;
+  $('#lnC').classList.add('on'); await wait(700); if (stale()) return;
+  $('#qmark').classList.add('on');
+  $('#tc2').setAttribute('class', 'card bad');
+  const v = $('#tv2'); v.textContent = '✕ no link: notice'; v.setAttribute('class', 'verdict on bad');
+});
+resetV2();
+onView($('#v2'), runV2);
+$('#v2 .replay').onclick = runV2;
+
+/* ---------- V2b: sort the drawer ---------- */
+const DOCS = [['Aadhaar card', 'id'], ['Voter ID card', 'no', 'big'], ['Birth certificate', 'ok'], ['Ration card', 'no'], ['Class 10 certificate', 'ok'], ['PAN card', 'no'], ['Passport', 'ok'], ['Driving licence', 'no'], ['Caste certificate', 'ok'], ['Govt job or pension ID', 'ok']];
+const drawer = $('#drawer');
+const dcards = DOCS.map(([t, z, x]) => { const d = document.createElement('span'); d.className = 'dcard' + (x ? ' ' + x : ''); d.textContent = t; d.dataset.z = z; return d; });
+function flip(moves) {
+  const first = new Map(dcards.map(c => [c, c.getBoundingClientRect()]));
+  moves();
+  dcards.forEach(c => {
+    const a = first.get(c), b = c.getBoundingClientRect();
+    const dx = a.left - b.left, dy = a.top - b.top;
+    if (!dx && !dy) return;
+    c.style.transition = 'none'; c.style.transform = `translate(${dx}px, ${dy}px)`;
+    c.getBoundingClientRect();
+    c.style.transition = RM ? 'none' : `transform ${.6 * SLOW}s cubic-bezier(.2,.7,.2,1)`; c.style.transform = '';
+  });
+}
+function fillDrawer() { dcards.forEach(c => drawer.appendChild(c)); }
+const runSort = player(async stale => {
+  for (const c of dcards) {
+    if (stale()) return;
+    flip(() => document.querySelector(`#v2b .cards[data-z="${c.dataset.z}"]`).appendChild(c));
+    await wait(230);
+  }
+});
+fillDrawer();
+onView($('#v2b'), async () => { await wait(700); runSort(); });
+$('#v2b .replay').onclick = () => { flip(fillDrawer); setTimeout(runSort, RM ? 0 : 1200); };
+
+/* ---------- V3: the family scan ---------- */
+const FAM = [
+  ['Ram Prasad', 'father', 1950, ''],
+  ['Laxmi Devi', 'mother', 1964, ''],
+  ['Sunil', '', 1978, 'Only 14 years younger than his mother. Rule: a parent less than 15 years older.'],
+  ['Anil', '', 1980, ''],
+  ['Kavita', '', 1983, ''],
+  ['Rekha', '', 1985, ''],
+  ['Manoj', '', 1988, ''],
+  ['Puja', '', 1990, 'Spelled "Pooja" on the old list. Rule: name doesn\'t match.'],
+  ['Deepak', '', 1993, '']
+];
+const fam = $('#fam');
+fam.insertAdjacentHTML('beforeend', FAM.map(([n, rel, y, f], i) =>
+  `<div class="fr${i === 2 ? ' kids' : ''}" data-f="${f ? 1 : 0}"><span>${n}${rel ? ` <span class="rel">· ${rel}</span>` : ''}</span><span class="yr">${y}</span>${f ? `<span class="flag">⚑ ${f}</span>` : ''}</div>`).join('') +
+  `<div class="fr kids" data-f="1"><span>Children linked to Ram Prasad</span><span class="yr">7</span><span class="flag">⚑ Rule: six or more children linked to one father.</span></div>`);
+const frows = [...fam.querySelectorAll('.fr')], scan = $('#scan');
+const runScan = player(async stale => {
+  frows.forEach(r => r.classList.remove('hit')); $('#famVerdict').classList.remove('on');
+  scan.style.transition = 'none'; scan.style.opacity = 1; scan.style.top = frows[0].offsetTop + 'px';
+  await wait(300);
+  for (const r of frows) {
+    if (stale()) return;
+    scan.style.transition = RM ? 'none' : `top ${.35 * SLOW}s linear`;
+    scan.style.top = (r.offsetTop + r.offsetHeight / 2) + 'px';
+    await wait(360); if (stale()) return;
+    if (r.dataset.f === '1') { r.classList.add('hit'); await wait(650); }
+  }
+  if (stale()) return;
+  scan.style.opacity = 0;
+  $('#famVerdict').classList.add('on');
+});
+onView($('#v3'), runScan);
+$('#v3 .replay').onclick = runScan;
+
+/* ---------- V3b: 60 lakh split ---------- */
+const runSplit = player(async stale => {
+  const a = $('#wbA'), b = $('#wbB');
+  a.style.transition = b.style.transition = 'none'; a.style.width = b.style.width = '0';
+  a.getBoundingClientRect(); a.style.transition = b.style.transition = '';
+  await wait(700); if (stale()) return;
+  a.style.width = '54.6%';
+  await wait(1300); if (stale()) return;
+  b.style.width = '45.4%';
+});
+onView($('#v3b'), runSplit);
+$('#v3b .replay').onclick = runSplit;
+
+/* ---------- V4: one BLO's month, in three beats ---------- */
+const crowd = $('#crowd');
+const COLS = 40, ROWS = 30, X0 = 120, Y0 = 18, DX = 11.8, DY = 10;
+let cg = '';
+for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+  const x = X0 + c * DX, y = Y0 + r * DY;
+  cg += `<g class="cp" style="opacity:0"><circle cx="${x}" cy="${y + 1}" r="2.3"/><rect x="${x - 3}" y="${y + 3.8}" width="6" height="4.2" rx="2"/></g>`;
+}
+// the BLO, drawn larger on the left, with a bag of forms
+const blo = `<g transform="translate(52 150)" class="who"><circle cx="0" cy="-27" r="12"/><line x1="0" y1="-15" x2="0" y2="22"/><line x1="0" y1="22" x2="-12" y2="50"/><line x1="0" y1="22" x2="12" y2="50"/><line x1="-14" y1="-4" x2="14" y2="-4"/><rect x="10" y="4" width="18" height="16" rx="2" style="fill:var(--panel);stroke:var(--ink);stroke-width:2.5"/></g><text class="t b" x="52" y="232" text-anchor="middle">1 BLO</text>`;
+let cal = '<g class="cal" id="cal" style="opacity:0">';
+for (let d = 0; d < 30; d++) {
+  const c = d % 6, r = Math.floor(d / 6), x = X0 + c * 80, y = Y0 + r * 60;
+  cal += `<g class="cday" style="opacity:0"><rect class="calbox" x="${x}" y="${y}" width="72" height="52" rx="4"/><text class="caln" x="${x + 36}" y="${y + 34}" text-anchor="middle">120</text></g>`;
+}
+cal += '</g>';
+crowd.innerHTML = blo + `<g id="crowdG">${cg}</g>` + cal;
+const people = [...crowd.querySelectorAll('.cp')], days = [...crowd.querySelectorAll('.cday')];
+const shuffled = people.map((p, i) => [Math.sin(i * 12.9898) * 43758.5453 % 1, p]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+const tint = (p, col) => { p.querySelectorAll('circle, rect').forEach(e => e.style.fill = col); };
+function countTo(el, from, to, ms) {
+  return tween(ms, k => { el.textContent = Math.round(from + (to - from) * k).toLocaleString('en-IN'); });
+}
+const v4next = $('#v4next'), v4num = $('#v4num'), v4unit = $('#v4unit'), v4read = $('#v4read');
+const tasks = [...document.querySelectorAll('#v4tasks .task')];
+let beat = 0;
+const runBeat1 = player(async stale => {
+  beat = 1;
+  people.forEach(p => { p.style.opacity = 0; tint(p, 'var(--grey-bar)'); });
+  $('#crowdG').style.opacity = 1; $('#cal').style.opacity = 0; days.forEach(d => d.style.opacity = 0);
+  tasks.forEach(t => t.classList.remove('on'));
+  v4num.textContent = '0'; v4unit.textContent = 'voters for one BLO'; v4read.innerHTML = '';
+  v4next.hidden = true; v4next.textContent = 'Each voter needs three things ▶'; v4next.classList.add('pulse');
+  const count = countTo(v4num, 0, 1200, 1600);
+  for (let i = 0; i < shuffled.length; i += 30) {
+    if (stale()) return;
+    for (let k = i; k < i + 30; k++) shuffled[k].style.opacity = 1;
+    await wait(40);
+  }
+  await count; if (stale()) return;
+  v4read.innerHTML = '<b>One BLO. Up to 1,200 voters in their area.</b>';
+  v4next.hidden = false;
+});
+const runBeat2 = player(async stale => {
+  beat = 2; v4next.hidden = true; v4read.innerHTML = '';
+  v4unit.textContent = 'tasks for one BLO';
+  const cols = ['var(--amber)', 'var(--teal)', 'var(--accent)'];
+  for (let pass = 0; pass < 3; pass++) {
+    if (stale()) return;
+    tasks[pass].classList.add('on');
+    const count = countTo(v4num, 1200 * (pass === 0 ? 1 : pass), 1200 * (pass + 1), 1100);
+    for (let i = 0; i < shuffled.length; i += 40) {
+      if (stale()) return;
+      for (let k = i; k < i + 40; k++) tint(shuffled[k], cols[pass]);
+      await wait(36);
+    }
+    await count; await wait(250);
+  }
+  if (stale()) return;
+  v4read.innerHTML = 'Three rounds through the same 1,200 people: <b>3,600 tasks</b>. More visits if nobody is home.';
+  v4next.textContent = 'Now fit it into one month ▶'; v4next.hidden = false;
+});
+const runBeat3 = player(async stale => {
+  beat = 3; v4next.hidden = true; v4read.innerHTML = '';
+  $('#crowdG').style.opacity = .12; $('#cal').style.opacity = 1;
+  v4unit.textContent = 'tasks a day, for 30 days';
+  const count = countTo(v4num, 3600, 120, 1400);
+  for (const d of days) { if (stale()) return; d.style.opacity = 1; await wait(45); }
+  await count; if (stale()) return;
+  v4read.innerHTML = '<b>120 tasks a day, every day, for a month.</b> On top of their usual job, mostly teaching or running an anganwadi.';
+});
+v4next.onclick = () => { v4next.classList.remove('pulse'); (beat === 1 ? runBeat2 : runBeat3)(); };
+$('#v4 .replay').onclick = () => { runBeat2.cancel(); runBeat3.cancel(); runBeat1(); };
+v4next.hidden = true;
+onView($('#v4'), runBeat1);
+
+/* ---------- V5: chute and ladder ---------- */
+const RUNGS = [[250, 'Find out', "you're off"], [196, 'Fill Form 6 as', 'a new voter'], [142, "Sign: 'my first", "time' ⚠ jail risk"], [88, 'Wait for the', 'ERO to decide']];
+$('#rungs').innerHTML = RUNGS.map(([y, a, b], i) =>
+  `<line class="rail" x1="330" y1="${y}" x2="360" y2="${y}"/><g class="rung-l" id="rl${i}"><text class="t rungt" x="374" y="${y - 2}">${i + 1}. ${a}</text><text class="t rungt" x="374" y="${y + 18}">${b}</text></g>`).join('');
+const who = $('#who'), chute = $('#chute');
+const place = (x, y) => who.setAttribute('transform', `translate(${x} ${y})`);
+function tween(ms, step) {
+  return new Promise(res => {
+    if (RM) { step(1); return res(); }
+    const t0 = performance.now();
+    const tick = now => { const k = Math.min(1, (now - t0) / (ms * SLOW)); step(k); k < 1 ? requestAnimationFrame(tick) : res(); };
+    requestAnimationFrame(tick);
+  });
+}
+const runLadder = player(async stale => {
+  RUNGS.forEach((_, i) => $('#rl' + i).classList.add('dim'));
+  place(110, 80);
+  await wait(700); if (stale()) return;
+  const L = chute.getTotalLength();
+  await tween(650, k => { const p = chute.getPointAtLength(L * k * k); place(p.x, p.y); });
+  if (stale()) return;
+  await wait(400);
+  await tween(500, k => place(300 + (345 - 300) * k, 300));
+  let y = 300;
+  for (let i = 0; i < RUNGS.length; i++) {
+    if (stale()) return;
+    const ty = RUNGS[i][0], y0 = y;
+    await tween(900, k => place(345, y0 + (ty - y0) * k));
+    y = ty;
+    $('#rl' + i).classList.remove('dim');
+    await wait(500);
+  }
+  if (stale()) return;
+  await tween(700, k => place(345, y + (40 - y) * k));
+});
+place(110, 80);
+onView($('#v5'), runLadder);
+$('#v5 .replay').onclick = runLadder;
+
+/* ---------- V5b: law vs ECINet ---------- */
+function setNet(m) {
+  document.querySelectorAll('#v5b [data-net]').forEach(b => b.setAttribute('aria-pressed', b.dataset.net === m));
+  const net = m === 'net';
+  $('#nbEro').setAttribute('class', net ? 'nbox faded' : 'nbox lead');
+  $('#nbDel').setAttribute('class', net ? 'nbox lead delhi' : 'nbox');
+  ['#aLaw', '#tLaw', '#aSup', '#tSup'].forEach(s => $(s).classList.toggle('hide', net));
+  ['#aNet', '#tNet', '#tNet2', '#tNet3', '#tEro'].forEach(s => $(s).classList.toggle('hide', !net));
+}
+document.querySelectorAll('#v5b [data-net]').forEach(b => b.onclick = () => { setNet(b.dataset.net); syncNet(); });
+const v5next = $('#v5next');
+function syncNet() {
+  const net = $('#v5b [data-net="net"]').getAttribute('aria-pressed') === 'true';
+  v5next.textContent = net ? '◀ Back to what the law says' : 'Now see what ECINet did ▶';
+  v5next.classList.toggle('back', net);
+  if (net) v5next.classList.remove('pulse');
+}
+v5next.onclick = () => { setNet(v5next.classList.contains('back') ? 'law' : 'net'); syncNet(); };
+
+/* ---------- evidence bars ---------- */
+onView($('#vm'), () => document.querySelectorAll('#vm [data-w]').forEach(s => s.style.width = s.dataset.w + '%'));
+
+/* ---------- light / dark switch ---------- */
+const themeBtn = $('#theme');
+const isDark = () => {
+  const t = document.documentElement.dataset.theme;
+  return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+};
+function paintThemeBtn() {
+  const d = isDark();
+  themeBtn.querySelector('.ti').textContent = d ? '☀' : '☾';
+  themeBtn.querySelector('.tl').textContent = d ? 'Light' : 'Dark';
+  themeBtn.setAttribute('aria-label', d ? 'Switch to light mode' : 'Switch to dark mode');
+}
+try { const saved = localStorage.getItem('theme'); if (saved) document.documentElement.dataset.theme = saved; } catch (e) {}
+themeBtn.onclick = () => {
+  const next = isDark() ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('theme', next); } catch (e) {}
+  paintThemeBtn();
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', paintThemeBtn);
+paintThemeBtn();
+
+/* ---------- reading progress ---------- */
+const bar = $('#progress');
+addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - innerHeight;
+  bar.style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
+}, { passive: true });
+</script>
+</body>
+</html>
